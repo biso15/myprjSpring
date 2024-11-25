@@ -1,52 +1,58 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<web-app version="2.5" xmlns="http://java.sun.com/xml/ns/javaee"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee https://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
-
-	<!-- The definition of the Root Spring Container shared by all Servlets and Filters -->
-	<!-- ContextLoaderListener를 이용해 root-context를 생성한다. -->
-	<context-param>
-		<param-name>contextConfigLocation</param-name>
-		<param-value>  <!-- bean으로 등록해놓는 파일 -->
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee https://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
+  <context-param>
+    <param-name>contextConfigLocation</param-name>
+    <param-value>  
 			classpath:config/root-context.xml
 			classpath:config/security.xml
 		</param-value>
-	</context-param>
-	
-	<!-- Creates the Spring Container shared by all Servlets and Filters -->
-	<listener>
-		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>  <!-- 모든 통신을 하는 프로그램은 감지기가 있는데, 통신을 감지하는 리스너 파일 -->
-	</listener>
-
-	<!-- Processes application requests -->
-	<!-- DispacherServlet을 이용하여 servlet-context를 생성한다. -->
-	<servlet>
-		<servlet-name>appServlet</servlet-name>
-		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
-		<init-param>
-			<param-name>contextConfigLocation</param-name>  <!-- 환경설정 -->
-			<param-value>classpath:config/servlet-context.xml</param-value>
-		</init-param>
-		<load-on-startup>1</load-on-startup>
-	</servlet>
-	
-	<servlet-mapping>
-		<servlet-name>appServlet</servlet-name>
-		<url-pattern>*.do</url-pattern>  <!-- .do로 접근하면 DispatcherServlet가 처리함 -->
-	</servlet-mapping>
-	
-	<!-- 인코딩 -->
-	<filter>
-		<filter-name>encodingFilter</filter-name>
-		<filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
-		<init-param>
-			<param-name>encoding</param-name>
-			<param-value>UTF-8</param-value>  <!-- 자바의 request.setCharacterEncoding("UTF-8");와 비슷 -->
-		</init-param>
-	</filter>	
-	<filter-mapping>
-		<filter-name>encodingFilter</filter-name>
-		<url-pattern>/*</url-pattern>	
-	</filter-mapping>
-
+  </context-param>
+  <listener>
+    <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+  </listener>
+  <servlet>
+    <servlet-name>appServlet</servlet-name>
+    <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+    <init-param>
+      <param-name>contextConfigLocation</param-name>
+      <param-value>classpath:config/servlet-context.xml</param-value>
+    </init-param>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>appServlet</servlet-name>
+    <url-pattern>*.do</url-pattern>
+  </servlet-mapping>
+  <filter>
+    <filter-name>encodingFilter</filter-name>
+    <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+    <init-param>
+      <param-name>encoding</param-name>
+      <param-value>UTF-8</param-value>
+    </init-param>
+  </filter>
+  <filter-mapping>
+    <filter-name>encodingFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
+  <servlet>
+    <description></description>
+    <display-name>HomeController</display-name>
+    <servlet-name>HomeController</servlet-name>
+    <servlet-class>com.myprj.myapp.controller.HomeController</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>HomeController</servlet-name>
+    <url-pattern>/HomeController</url-pattern>
+  </servlet-mapping>
+  <servlet>
+    <description></description>
+    <display-name>MainServiceImpl</display-name>
+    <servlet-name>MainServiceImpl</servlet-name>
+    <servlet-class>com.myprj.myapp.service.MainServiceImpl</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>MainServiceImpl</servlet-name>
+    <url-pattern>/MainServiceImpl</url-pattern>
+  </servlet-mapping>
 </web-app>

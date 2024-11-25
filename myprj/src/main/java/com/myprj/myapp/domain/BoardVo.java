@@ -1,23 +1,19 @@
 package com.myprj.myapp.domain;
 
 public class BoardVo {
-
 	private int bidx;
-	private int originbidx;
-	private int depth;
-	private int level_;
-	private String subject;
+	private String title;
+	private String summary;
 	private String contents;
-	private String writer;
-	private int recom;
-	private int viewcnt;
-	private String filename;
-	private String writeday;
-	private String delyn;
+	private String thumbnail;
+	private String date;
+	private String modify;
+	private int view;
 	private String ip;
+	private String delyn;
 	private int midx;
-	private String modifyday;
-	private String password;
+	private String boardcode;
+	private int period;
 	private String uploadedFilename;  // 이것을 DB에 저장함
 	
 	public int getBidx() {
@@ -26,29 +22,17 @@ public class BoardVo {
 	public void setBidx(int bidx) {
 		this.bidx = bidx;
 	}
-	public int getOriginbidx() {
-		return originbidx;
+	public String getTitle() {
+		return title;
 	}
-	public void setOriginbidx(int originbidx) {
-		this.originbidx = originbidx;
+	public void setTitle(String title) {
+		this.title = title;
 	}
-	public int getDepth() {
-		return depth;
+	public String getSummary() {
+		return summary;
 	}
-	public void setDepth(int depth) {
-		this.depth = depth;
-	}
-	public int getLevel_() {
-		return level_;
-	}
-	public void setLevel_(int level_) {
-		this.level_ = level_;
-	}
-	public String getSubject() {
-		return subject;
-	}
-	public void setSubject(String subject) {
-		this.subject = subject;
+	public void setSummary(String summary) {
+		this.summary = summary;
 	}
 	public String getContents() {
 		return contents;
@@ -56,41 +40,29 @@ public class BoardVo {
 	public void setContents(String contents) {
 		this.contents = contents;
 	}
-	public String getWriter() {
-		return writer;
+	public String getThumbnail() {
+		return thumbnail;
 	}
-	public void setWriter(String writer) {
-		this.writer = writer;
+	public void setThumbnail(String thumbnail) {
+		this.thumbnail = thumbnail;
 	}
-	public int getRecom() {
-		return recom;
+	public String getDate() {
+		return date;
 	}
-	public void setRecom(int recom) {
-		this.recom = recom;
+	public void setDate(String date) {
+		this.date = date;
 	}
-	public int getViewcnt() {
-		return viewcnt;
+	public String getModify() {
+		return modify;
 	}
-	public void setViewcnt(int viewcnt) {
-		this.viewcnt = viewcnt;
+	public void setModify(String modify) {
+		this.modify = modify;
 	}
-	public String getFilename() {
-		return filename;
+	public int getView() {
+		return view;
 	}
-	public void setFilename(String filename) {
-		this.filename = filename;
-	}
-	public String getWriteday() {
-		return writeday;
-	}
-	public void setWriteday(String writeday) {
-		this.writeday = writeday;
-	}
-	public String getDelyn() {
-		return delyn;
-	}
-	public void setDelyn(String delyn) {
-		this.delyn = delyn;
+	public void setView(int view) {
+		this.view = view;
 	}
 	public String getIp() {
 		return ip;
@@ -98,23 +70,29 @@ public class BoardVo {
 	public void setIp(String ip) {
 		this.ip = ip;
 	}
+	public String getDelyn() {
+		return delyn;
+	}
+	public void setDelyn(String delyn) {
+		this.delyn = delyn;
+	}
 	public int getMidx() {
 		return midx;
 	}
 	public void setMidx(int midx) {
 		this.midx = midx;
 	}
-	public String getModifyday() {
-		return modifyday;
+	public String getBoardcode() {
+		return boardcode;
 	}
-	public void setModifyday(String modifyday) {
-		this.modifyday = modifyday;
+	public void setBoardcode(String boardcode) {
+		this.boardcode = boardcode;
 	}
-	public String getPassword() {
-		return password;
+	public int getPeriod() {
+		return period;
 	}
-	public void setPassword(String password) {
-		this.password = password;
+	public void setPeriod(int period) {
+		this.period = period;
 	}
 	public String getUploadedFilename() {
 		return uploadedFilename;
@@ -122,4 +100,5 @@ public class BoardVo {
 	public void setUploadedFilename(String uploadedFilename) {
 		this.uploadedFilename = uploadedFilename;
 	}
+	
 }

@@ -7,9 +7,9 @@ import com.myprj.myapp.domain.SearchCriteria;
 
 public interface BoardService {
 
-	public ArrayList<BoardVo> boardSelectAll(SearchCriteria scri);
+	public ArrayList<BoardVo> boardSelectAll(SearchCriteria scri, String boardcode, int period);
 	
-	public int boardTotalCount(SearchCriteria scri);
+	public int boardTotalCount(SearchCriteria scri, String boardcode, int period);
 	
 	public int boardInsert(BoardVo bv);
 
@@ -24,5 +24,7 @@ public interface BoardService {
 	public int boardUpdate(BoardVo bv);
 	
 	public int boardReply(BoardVo bv);
+	
+	public ArrayList<BoardVo> boardSelect(String boardcode, int number);
 	
 }

@@ -20,6 +20,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -53,22 +54,23 @@ public class BoardController {
 	@Autowired(required=false)
 	private UserIp userip;
 	
-	@RequestMapping(value="boardList.aws")
+	@RequestMapping(value="/{boardcode}/{period}/boardList.do")
 	public String boardList(
-			SearchCriteria scri,  // SearchCriteria는 자동으로 요청 파라미터에서 바인딩됨
-			Model model
-			) {
+			@PathVariable("boardcode") String boardcode,
+			@PathVariable("period") int period,
+			SearchCriteria scri,
+			Model model) {
 		
 		logger.info("boardList들어옴");
 		
 		pm.setScri(scri);  // <-- PageMaker에 SearhCriteria 담아서 가지고 다닌다
 		
 		// 페이징 처리하기 위한 전체 데이터 갯수 가져오기
-		int cnt = boardService.boardTotalCount(scri);
+		int cnt = boardService.boardTotalCount(scri, boardcode, period);
 		
 		pm.setTotalCount(cnt);  // <-- PageMaker에 전체게시물수를 담아서 페이지 계산
 		
-		ArrayList<BoardVo> blist = boardService.boardSelectAll(scri);
+		ArrayList<BoardVo> blist = boardService.boardSelectAll(scri, boardcode, period);
 		model.addAttribute("blist", blist);	 // 화면까지 가지고 가기위해 model 객체에 담는다(redirect 사용 안하므로 Modele을 사용)
 		model.addAttribute("pm", pm);  // forward 방식으로 넘기기 때문에 공유가 가능하다
 		

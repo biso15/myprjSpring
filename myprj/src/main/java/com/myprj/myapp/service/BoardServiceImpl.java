@@ -27,13 +27,15 @@ public class BoardServiceImpl implements BoardService {
 	}
 	
 	@Override
-	public ArrayList<BoardVo> boardSelectAll(SearchCriteria scri) {
+	public ArrayList<BoardVo> boardSelectAll(SearchCriteria scri, String boardcode, int period) {
 		
 		HashMap<String,Object> hm = new HashMap<String,Object>();  // HashMap은 ArrayList와 비슷하지만 "이름: 값"의 형식을 가지고 있다. mybatis에서 권장함
 		hm.put("startPageNum", (scri.getPage() - 1) * scri.getPerPageNum());
 		hm.put("perPageNum", scri.getPerPageNum());
 		hm.put("searchType", scri.getSearchType());
 		hm.put("keyword", scri.getKeyword());
+		hm.put("boardcode", boardcode);
+		hm.put("period", period);
 		
 		ArrayList<BoardVo> blist = bm.boardSelectAll(hm);
 		
@@ -41,9 +43,14 @@ public class BoardServiceImpl implements BoardService {
 	}
 
 	@Override
-	public int boardTotalCount(SearchCriteria scri) {
+	public int boardTotalCount(SearchCriteria scri, String boardcode, int period) {
 		
-		int cnt = bm.boardTotalCount(scri);
+		HashMap<String,Object> hm = new HashMap<String,Object>();
+		hm.put("scri", scri);
+		hm.put("boardcode", boardcode);
+		hm.put("period", period);
+		
+		int cnt = bm.boardTotalCount(hm);
 		
 		return cnt;
 	}
@@ -121,4 +128,19 @@ public class BoardServiceImpl implements BoardService {
 		
 		return maxBidx;
 	}
+	
+	
+	
+	
+	@Override
+	public ArrayList<BoardVo> boardSelect(String boardcode, int number) {
+		
+		HashMap<String,Object> hm = new HashMap<String,Object>();
+		hm.put("boardcode", boardcode);
+		hm.put("number", number);
+		
+		ArrayList<BoardVo> blist = bm.boardSelect(hm);
+		
+		return blist;
+	};
 }
