@@ -29,21 +29,27 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.myprj.myapp.domain.BoardVo;
+import com.myprj.myapp.domain.CalendarVo;
 import com.myprj.myapp.domain.PageMaker;
 import com.myprj.myapp.domain.SearchCriteria;
 import com.myprj.myapp.service.BoardService;
+import com.myprj.myapp.service.CalendarService;
+import com.myprj.myapp.service.MemberService;
 import com.myprj.myapp.util.MediaUtils;
 import com.myprj.myapp.util.UploadFileUtiles;
 import com.myprj.myapp.util.UserIp;
 
 @Controller  // Controller 객체를 만들어줘
-@RequestMapping(value="/board/")  // 중복된 주소는 위쪽에서 한번에 처리
+@RequestMapping(value="/board")  // 중복된 주소는 위쪽에서 한번에 처리
 public class BoardController {
 	
 	private static final Logger logger = LoggerFactory.getLogger(BoardController.class);
 	
 	@Autowired(required=false)  // @Autowired : 타입이 같은 객체를 찾아서 주입. required=false : 만약 주입 못받을 경우, null로 지정
 	private BoardService boardService;
+		
+	@Autowired(required=false)
+	private CalendarService calendarService;
 	
 	@Autowired(required=false)
 	private PageMaker pm;  // @Component 어노테이션 사용 안할 경우, private PageMaker pm = new PageMaker(); 이렇게 사용하면 되는듯
@@ -70,11 +76,34 @@ public class BoardController {
 		
 		pm.setTotalCount(cnt);  // <-- PageMaker에 전체게시물수를 담아서 페이지 계산
 		
+		String menu = "";
+		String path = "";
+		if(boardcode.equals("travel")) {
+			if(period == 1) {
+				menu = "당일치기";
+			} else if(period == 2) {
+				menu = "1박2일";
+			} else if(period == 3) {
+				menu = "2박3일";
+			} else if(period == 4) {
+				menu = "3박4일";
+			}
+			path = "WEB-INF/board/travelList";
+		} else if(boardcode.equals("free")) {
+			menu = "자유게시판";
+			path = "WEB-INF/board/freeList";
+		} else if(boardcode.equals("notice")){
+			menu = "공지사항";
+			path = "WEB-INF/board/noticeList";
+		}
+		
 		ArrayList<BoardVo> blist = boardService.boardSelectAll(scri, boardcode, period);
 		model.addAttribute("blist", blist);	 // 화면까지 가지고 가기위해 model 객체에 담는다(redirect 사용 안하므로 Modele을 사용)
 		model.addAttribute("pm", pm);  // forward 방식으로 넘기기 때문에 공유가 가능하다
+		model.addAttribute("period", period);
+		model.addAttribute("menu", menu);
 		
-		return "WEB-INF/board/boardList";
+		return path;
 	}
 	
 	@RequestMapping(value="boardWrite.aws")
@@ -124,19 +153,57 @@ public class BoardController {
 		return path;
 	}
 	
-	@RequestMapping(value="boardContents.aws")
-	public String boardContents(@RequestParam("bidx") int bidx,	Model model) {
+	@RequestMapping(value="/{bidx}/travelContents.do")
+	public String travelContents(@PathVariable("bidx") int bidx, Model model) {
 		
-		logger.info("boardContents들어옴");
+		logger.info("travelContents들어옴");
 		
 		boardService.boardViewCntUpdate(bidx);  // 조회수 업데이트 하기
 		BoardVo bv = boardService.boardSelectOne(bidx);  // 해당되는 bidx의 게시물 데이터 가져옴
-		
+				
+		String menu = "";		
+		if(bv.getPeriod() == 1) {
+			menu = "당일치기";
+		} else if(bv.getPeriod() == 2) {
+			menu = "1박2일";
+		} else if(bv.getPeriod() == 3) {
+			menu = "2박3일";
+		} else if(bv.getPeriod() == 4) {
+			menu = "3박4일";
+		}
+
 		model.addAttribute("bv", bv);
+		model.addAttribute("menu", menu);
 		
-		String path = "WEB-INF/board/boardContents";
+		return "WEB-INF/board/travelContents";
+	}
+	
+	@RequestMapping(value="/{bidx}/travelReservation.do")
+	public String travelReservation(
+			@PathVariable("bidx") int bidx,
+			Model model) {
+
+		logger.info("travelReservation들어옴");
 		
-		return path;			
+		BoardVo bv = boardService.boardSelectOne(bidx);  // 해당되는 bidx의 게시물 데이터 가져옴
+		ArrayList<CalendarVo> clist = calendarService.calendarSelectAll(bidx);
+		
+		String menu = "";
+		if(bv.getPeriod() == 1) {
+			menu = "당일치기";
+		} else if(bv.getPeriod() == 2) {
+			menu = "1박2일";
+		} else if(bv.getPeriod() == 3) {
+			menu = "2박3일";
+		} else if(bv.getPeriod() == 4) {
+			menu = "3박4일";
+		}
+
+		model.addAttribute("bv", bv);
+		model.addAttribute("clist", clist);
+		model.addAttribute("menu", menu);
+		
+		return "WEB-INF/board/travelReservation";
 	}
 	
 	// 파일을 보여줄 가상 경로에 파일 옮기기
