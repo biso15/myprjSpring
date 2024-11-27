@@ -48,9 +48,9 @@
     <!-- 검색영역 -->
     <div class="d-flex justify-content-between">
       <c:if test="${sessionScope.admin.equals('Y')}">
-      <a herf="${pageContext.request.contextPath}/board/travel/${requestScope.period}/boardWrite.do" class="btn btn-outline-primary">글쓰기</a>
+      <a herf="${pageContext.request.contextPath}/board/${requestScope.boardcode}/${requestScope.period}/boardWrite.do" class="btn btn-outline-primary">글쓰기</a>
       </c:if>
-      <form class="d-flex w-35" role="search" name="frm" action="${pageContext.request.contextPath}/board/travel/1/boardList.do" method="get">
+      <form class="d-flex w-35" role="search" name="frm" action="${pageContext.request.contextPath}/board/${requestScope.boardcode}/${requestScope.period}/boardList.do" method="get">
         <select class="form-select me-2" name="searchType">
           <option value="title" selected>제목</option>
           <option value="summary">부제목</option>
@@ -67,7 +67,7 @@
     <div class="album py-5">
       <div class="row row-cols-md-4 g-3">
         <c:forEach items="${requestScope.blist}" var="bv" varStatus="status">
-        <a class="col" href="${pageContext.request.contextPath}/board/${bv.bidx}/travelContents.do">
+        <a class="col" href="${pageContext.request.contextPath}/board/${bv.bidx}/boardContents.do">
           <div class="card shadow-sm">
             <img src="${pageContext.request.contextPath}/board/displayFile.aws?fileName=${requestScope.bv.filename}" alt="thumbnail">
             <div class="card-body">

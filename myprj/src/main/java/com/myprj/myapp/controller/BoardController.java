@@ -1,12 +1,17 @@
 package com.myprj.myapp.controller;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.io.IOUtils;
@@ -21,11 +26,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.myprj.myapp.domain.BoardVo;
@@ -38,6 +46,16 @@ import com.myprj.myapp.service.MemberService;
 import com.myprj.myapp.util.MediaUtils;
 import com.myprj.myapp.util.UploadFileUtiles;
 import com.myprj.myapp.util.UserIp;
+
+
+
+import org.springframework.beans.factory.annotation.Value;
+
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
+
 
 @Controller  // Controller 객체를 만들어줘
 @RequestMapping(value="/board")  // 중복된 주소는 위쪽에서 한번에 처리
@@ -91,35 +109,65 @@ public class BoardController {
 			path = "WEB-INF/board/travelList";
 		} else if(boardcode.equals("free")) {
 			menu = "자유게시판";
-			path = "WEB-INF/board/freeList";
+			path = "WEB-INF/board/boardList";
 		} else if(boardcode.equals("notice")){
 			menu = "공지사항";
-			path = "WEB-INF/board/noticeList";
+			path = "WEB-INF/board/boardList";
 		}
 		
 		ArrayList<BoardVo> blist = boardService.boardSelectAll(scri, boardcode, period);
 		model.addAttribute("blist", blist);	 // 화면까지 가지고 가기위해 model 객체에 담는다(redirect 사용 안하므로 Modele을 사용)
 		model.addAttribute("pm", pm);  // forward 방식으로 넘기기 때문에 공유가 가능하다
-		model.addAttribute("period", period);
 		model.addAttribute("menu", menu);
+		model.addAttribute("boardcode", boardcode);
+		model.addAttribute("period", period);
 		
 		return path;
 	}
 	
-	@RequestMapping(value="boardWrite.aws")
-	public String boardWrite() {
+	@RequestMapping(value="/{boardcode}/{period}/boardWrite.do")
+	public String boardWrite(
+			@PathVariable("boardcode") String boardcode,
+			@PathVariable("period") int period,
+			Model model) {
 		
 		logger.info("boardWrite들어옴");
+
+		String menu = "";
+		String path = "";
+		if(boardcode.equals("travel")) {
+			if(period == 1) {
+				menu = "당일치기";
+			} else if(period == 2) {
+				menu = "1박2일";
+			} else if(period == 3) {
+				menu = "2박3일";
+			} else if(period == 4) {
+				menu = "3박4일";
+			}
+			path = "WEB-INF/board/travelWrite";
+		} else if(boardcode.equals("free")) {
+			menu = "자유게시판";
+			path = "WEB-INF/board/freeWrite";
+		} else if(boardcode.equals("notice")){
+			menu = "공지사항";
+			path = "WEB-INF/board/noticeWrite";
+		}
+
+		model.addAttribute("menu", menu);
+		model.addAttribute("boardcode", boardcode);
+		model.addAttribute("period", period);
 		
-		return "WEB-INF/board/boardWrite";
+		return path;
 	}
 
-	@RequestMapping(value="boardWriteAction.aws", method=RequestMethod.POST)
+	@RequestMapping(value="/${boardcode}/${period}/boardWriteAction.do", method=RequestMethod.POST)
 	public String boardWriteAction(
 			BoardVo bv,
 			@RequestParam("attachfile") MultipartFile filename,  // input의 name 이름이 BoardVo에 있는 프로퍼티 이름과 동일하면 BoardVo로 값이 넘어가서 @RequestParam으로 받을 수 없으므로, input의 name을 filename이 아닌 attachfile으로 한다.
 			HttpServletRequest request,
-			RedirectAttributes rttr
+			RedirectAttributes rttr,
+			@RequestPart(name = "posterImages", required = false) MultipartFile uploadPosterImages
 			) throws Exception {
 		
 		logger.info("boardWriteAction들어옴");
@@ -129,11 +177,11 @@ public class BoardController {
 		String uploadedFileName = "";
 		
 		if(!file.getOriginalFilename().equals("")) {			
-			uploadedFileName = UploadFileUtiles.uploadFile(uploadPath, file.getOriginalFilename(), file.getBytes());  // getOriginalFilename 대.소문자 주의
+			uploadedFileName = UploadFileUtiles.uploadFile(uploadPath, file.getOriginalFilename(), file.getBytes());
 		}
 		
 		String midx = request.getSession().getAttribute("midx").toString();  // HttpSession은 HttpServletRequest 안에 있음
-		int midx_int = Integer.parseInt(midx);  // session.getAttribute()가 String 타입일 가능성이 더 높으므로 (int)session.getAttribute("midx")로 바로 형변환 하지 않고 String으로 변환 후 int로 변환한다.
+		int midx_int = Integer.parseInt(midx);
 		String ip = userip.getUserIp(request);
 		
 		bv.setUploadedFilename(uploadedFileName);
@@ -145,37 +193,147 @@ public class BoardController {
 		String path = "";
 		if(value == 2) {
 			rttr.addFlashAttribute("msg", "글쓰기 성공");
-			path = "redirect:/board/boardList.aws";  // redirect는 새로운 주소로 보내기 때문에 .aws도 붙여줘야 함. 주소 앞에 request.getContextPath()도 붙여야 하지만 서버에서 지원해주므로 생략
+			path = "redirect:/board/travelList.do";
 		} else {
 			rttr.addFlashAttribute("msg", "입력이 잘못되었습니다.");
-			path = "redirect:/board/boardWrite.aws";
+			path = "redirect:/board/travelWrite.do";
 		}
+		
 		return path;
 	}
 	
-	@RequestMapping(value="/{bidx}/travelContents.do")
-	public String travelContents(@PathVariable("bidx") int bidx, Model model) {
+	@PostMapping("/imagePreview.do")
+    @ResponseBody
+    public String handleFileUpload(@RequestParam("upload") MultipartFile file) throws IOException {
+        // 업로드된 파일을 지정된 디렉토리에 저장
+        if (file.isEmpty()) {
+            return "{\"error\":\"No file uploaded\"}";
+        }
+
+        // 파일 이름 생성 (UUID 또는 원래 이름 사용 가능)
+        String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
+        String uploadDir = "D:\\dev\\myprj\\myprjSpring\\myprj\\src\\main\\webapp\\resources\\ckeditor5\\imagePreview\\";
+        Path path = Paths.get(uploadDir, fileName);
+
+        // 파일을 디스크에 저장
+        Files.createDirectories(path.getParent());  // 디렉토리 생성
+        Files.write(path, file.getBytes());  // 파일 쓰기
+
+        // 클라이언트로 URL 반환 (업로드된 파일의 상대 경로)
+        return "{\"url\":\"/uploads/" + fileName + "\"}";
+    }
+	
+	
+//	@RequestMapping(value="/imagePreview.do", method=RequestMethod.POST)
+//	public ResponseEntity<Map<String, Object>> imagePreview(@RequestParam("upload") MultipartFile upload) {
+//		
+//		System.out.println("imagePreview 들어옴");
+//		
+//		// 파일 저장 디렉토리. 실제경로
+//		String uploadDirectory = "D:\\dev\\myprj\\myprjSpring\\myprj\\src\\main\\webapp\\resources\\ckeditor5\\imagePreview\\";
+//		File directory = new File(uploadDirectory);
+//		
+//		// 디렉토리가 존재하지 않으면 생성
+//		if (!directory.exists()) {
+//			directory.mkdirs();  // 디렉토리 생성
+//		}
+//		
+//	    String fileName = UUID.randomUUID().toString() + "_" + upload.getOriginalFilename();  // 고유한 파일 이름 생성
+//	    File file  = new File(directory, fileName);
+//
+//	    try {
+//	        // 파일을 서버에 저장
+//	        upload.transferTo(file);
+//
+//	        // 업로드된 파일의 URL을 반환
+//	        String fileUrl = "http://localhost:80/myapp/resources/ckeditor5/imagePreview/" + fileName;  // 상대 경로 또는 절대 경로로 반환
+//	        
+//	        Map<String, Object> response = new HashMap<>();
+//	        response.put("uploaded", true); // 업로드 성공 여부
+//	        response.put("url", fileUrl);
+//	        
+//	        return ResponseEntity.ok(response);
+//	        
+//	    } catch (IOException e) {
+//	        e.printStackTrace();
+//	        
+//	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+//	    }		 
+//	}
+	
+
+//	@RequestMapping(value="boardWriteAction.aws", method=RequestMethod.POST)
+//	public String boardWriteAction(
+//			BoardVo bv,
+//			@RequestParam("attachfile") MultipartFile filename,  // input의 name 이름이 BoardVo에 있는 프로퍼티 이름과 동일하면 BoardVo로 값이 넘어가서 @RequestParam으로 받을 수 없으므로, input의 name을 filename이 아닌 attachfile으로 한다.
+//			HttpServletRequest request,
+//			RedirectAttributes rttr
+//			) throws Exception {
+//		
+//		logger.info("boardWriteAction들어옴");
+//		
+//		// 파일첨부
+//		MultipartFile file = filename;
+//		String uploadedFileName = "";
+//		
+//		if(!file.getOriginalFilename().equals("")) {			
+//			uploadedFileName = UploadFileUtiles.uploadFile(uploadPath, file.getOriginalFilename(), file.getBytes());  // getOriginalFilename 대.소문자 주의
+//		}
+//		
+//		String midx = request.getSession().getAttribute("midx").toString();  // HttpSession은 HttpServletRequest 안에 있음
+//		int midx_int = Integer.parseInt(midx);  // session.getAttribute()가 String 타입일 가능성이 더 높으므로 (int)session.getAttribute("midx")로 바로 형변환 하지 않고 String으로 변환 후 int로 변환한다.
+//		String ip = userip.getUserIp(request);
+//		
+//		bv.setUploadedFilename(uploadedFileName);
+//		bv.setMidx(midx_int);
+//		bv.setIp(ip);
+//		
+//		int value = boardService.boardInsert(bv);
+//		
+//		String path = "";
+//		if(value == 2) {
+//			rttr.addFlashAttribute("msg", "글쓰기 성공");
+//			path = "redirect:/board/boardList.aws";  // redirect는 새로운 주소로 보내기 때문에 .aws도 붙여줘야 함. 주소 앞에 request.getContextPath()도 붙여야 하지만 서버에서 지원해주므로 생략
+//		} else {
+//			rttr.addFlashAttribute("msg", "입력이 잘못되었습니다.");
+//			path = "redirect:/board/boardWrite.aws";
+//		}
+//		return path;
+//	}
+	
+	@RequestMapping(value="/{bidx}/boardContents.do")
+	public String boardContents(@PathVariable("bidx") int bidx, Model model) {
 		
-		logger.info("travelContents들어옴");
+		logger.info("boardContents들어옴");
 		
 		boardService.boardViewCntUpdate(bidx);  // 조회수 업데이트 하기
 		BoardVo bv = boardService.boardSelectOne(bidx);  // 해당되는 bidx의 게시물 데이터 가져옴
-				
-		String menu = "";		
-		if(bv.getPeriod() == 1) {
-			menu = "당일치기";
-		} else if(bv.getPeriod() == 2) {
-			menu = "1박2일";
-		} else if(bv.getPeriod() == 3) {
-			menu = "2박3일";
-		} else if(bv.getPeriod() == 4) {
-			menu = "3박4일";
+		
+		String menu = "";
+		String path = "";
+		if(bv.getBoardcode().equals("travel")) {
+			if(bv.getPeriod() == 1) {
+				menu = "당일치기";
+			} else if(bv.getPeriod() == 2) {
+				menu = "1박2일";
+			} else if(bv.getPeriod() == 3) {
+				menu = "2박3일";
+			} else if(bv.getPeriod() == 4) {
+				menu = "3박4일";
+			}
+			path = "WEB-INF/board/travelContents";
+		} else if(bv.getBoardcode().equals("free")) {
+			menu = "자유게시판";
+			path = "WEB-INF/board/freeContents";
+		} else if(bv.getBoardcode().equals("notice")){
+			menu = "공지사항";
+			path = "WEB-INF/board/noticeContents";
 		}
-
+		
 		model.addAttribute("bv", bv);
 		model.addAttribute("menu", menu);
 		
-		return "WEB-INF/board/travelContents";
+		return path;
 	}
 	
 	@RequestMapping(value="/{bidx}/travelReservation.do")
@@ -263,6 +421,10 @@ public class BoardController {
 				
 		return entity;
 	}
+	
+	
+	
+	
 
 	@ResponseBody
 	@RequestMapping(value="boardRecom.aws")

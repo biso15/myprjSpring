@@ -29,7 +29,7 @@
       <div class="slide">
       	<c:forEach items="${requestScope.tlist}" var="bv" varStatus="status">	
       	<div class="px-2">
-          <a href="${pageContext.request.contextPath}/board/${bv.bidx}/travelContents.do">
+          <a href="${pageContext.request.contextPath}/board/${bv.bidx}/boardContents.do">
             <div class="card shadow-sm">
               <img src="${pageContext.request.contextPath}/resources/images/travel.jpg" alt="thumbnail">
               <div class="card-body">

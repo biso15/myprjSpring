@@ -1,24 +1,31 @@
 @charset "utf-8";
 
-html, body, .container { height: 100%; }
 body .container { min-width: 1200px; }
+html, body, .container { height: 100%; }
 body .h3, body h3 { font-size: 1.75rem; }
+textarea { resize: none; }
+
 .pr-4 { padding-right: 1.5rem; }
 .pl-4 { padding-left: 1.5rem; }
 .w-35 { width: 35%; }
-.border-top-dashed { border-top: 1px dashed var(--bs-card-border-color); }
-.search { width: calc( 100% - 58px - .5rem)!important; }
-.detail>.card, .mypage>.card, .join>.card, .write>.card { padding: 2rem; }
+
 .ellipsis { width: 100%; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; }
 .ellipsis2 { -webkit-line-clamp: 2; }
 .ellipsis3 { -webkit-line-clamp: 3; }
+.btn-comment { line-height: 3rem; }
+.text-right { text-align: right; }
+.border-top-dashed { border-top: 1px dashed var(--bs-card-border-color); }
+.border-left { border-left: var(--bs-border-width) var(--bs-border-style) var(--bs-border-color) !important; }
+
+.search { width: calc( 100% - 58px - .5rem)!important; }
+.detail>.card, .mypage>.card, .join>.card, .write>.card { padding: 2rem; }
 
 /* travle List */
 .album .card { height: 100%; }
 .album .row-cols-md-4>* { width: 25%; }
 .album .col, .main a { text-decoration: none; }
 
-/* breadcrumb */
+/* nav */
 .breadcrumb-chevron { --bs-breadcrumb-divider: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%236c757d'%3E%3Cpath fill-rule='evenodd' d='M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E");
     gap: .5rem; }
 .breadcrumb-chevron .breadcrumb-item { display: flex; gap: inherit; align-items: center; padding-left: 0;
@@ -97,3 +104,6 @@ body .h3, body h3 { font-size: 1.75rem; }
 .main .slick-next { right: 0; }
 .main .slick-prev:before, .main .slick-next:before { color: var(--bs-body-color); font-size: 1.5rem; }
 .card img { display: block; width: 100%; height: auto; }
+
+/* boardDetails */
+.comment { flex: 1 1 0; }

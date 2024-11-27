@@ -43,15 +43,16 @@
 
     <!-- 검색영역 -->
     <c:choose>
-    <c:when test="${sessionScope.admin.equals('N')}">			
+    <c:when test="${sessionScope.admin.equals('Y')}">
     <div class="d-flex justify-content-between">
-      <a herf="${pageContext.request.contextPath}/board/travel/${requestScope.period}/boardWrite.do" class="btn btn-outline-primary">글쓰기</a>
+      <a href="${pageContext.request.contextPath}/board/${requestScope.boardcode}/${requestScope.period}/boardWrite.do" class="btn btn-outline-primary">글쓰기</a>
     </c:when>
     <c:otherwise>
     <div class="d-flex justify-content-end">
     </c:otherwise>
     </c:choose>
-      <form class="d-flex w-35" role="search" name="frm" action="${pageContext.request.contextPath}/board/travel/${requestScope.period}/boardList.do" method="get">
+      <a href="${pageContext.request.contextPath}/board/${requestScope.boardcode}/${requestScope.period}/boardWrite.do" class="btn btn-outline-primary">글쓰기</a>
+      <form class="d-flex w-35" role="search" name="frm" action="${pageContext.request.contextPath}/board/${requestScope.boardcode}/${requestScope.period}/boardList.do" method="get">
         <select class="form-select me-2" name="searchType">
           <option value="title" selected>제목</option>
           <option value="summary">부제목</option>
@@ -68,7 +69,7 @@
     <div class="album py-5">
       <div class="row row-cols-md-4 g-3">
         <c:forEach items="${requestScope.blist}" var="bv" varStatus="status">
-        <a class="col" href="${pageContext.request.contextPath}/board/${bv.bidx}/travelContents.do">
+        <a class="col" href="${pageContext.request.contextPath}/board/${bv.bidx}/boardContents.do">
           <div class="card shadow-sm">
             <img src="${pageContext.request.contextPath}/board/displayFile.aws?fileName=${requestScope.bv.filename}" alt="thumbnail">
             <div class="card-body">
@@ -92,7 +93,7 @@
 		</c:if>
 		
         <c:forEach var="i" begin="${requestScope.pm.startPage}" end="${requestScope.pm.endPage}" step="1">
-        <li class="page-item"><a class="page-link <c:if test="${i == requestScope.pm.scri.page}"> active</c:if>" href="${pageContext.request.contextPath}/board/travel/${requestScope.period}/boardList.do?page=${i}&${queryParam}">${i}</a></li>
+        <li class="page-item"><a class="page-link <c:if test="${i == requestScope.pm.scri.page}"> active</c:if>" href="${pageContext.request.contextPath}/board/${requestScope.boardcode}/${requestScope.period}/boardList.do?page=${i}&${queryParam}">${i}</a></li>
         </c:forEach>
         
         <c:if test="${requestScope.pm.next == true && requestScope.pm.endPage > 0}">
