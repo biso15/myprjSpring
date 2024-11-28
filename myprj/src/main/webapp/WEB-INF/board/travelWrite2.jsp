@@ -13,7 +13,7 @@
   <title>개인프로젝트</title>
 
   <!-- ck editor -->
-  <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/ckeditor5/style.css">
+  <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/ckeditor5Builder/ckeditor5/style.css">
   <link rel="stylesheet" href="https://cdn.ckeditor.com/ckeditor5/43.3.1/ckeditor5.css">
 
   <!-- 캘린더 -->
@@ -147,7 +147,7 @@
   	import {ClassicEditor, SimpleUploadAdapter} from 'https://cdn.ckeditor.com/ckeditor5/43.3.1/ckeditor5.js';  
   </script>
   
-  <script type="module" src="${pageContext.request.contextPath}/resources/ckeditor5/main.js"></script>
+  <script type="module" src="${pageContext.request.contextPath}/resources/ckeditor5Builder/ckeditor5/main.js"></script>
 
 </body>
 </html>

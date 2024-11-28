@@ -107,3 +107,6 @@ textarea { resize: none; }
 
 /* boardDetails */
 .comment { flex: 1 1 0; }
+
+/* editor */
+.editor-container_document-editor .editor-container__editor .ck.ck-editor__editable { max-width: 100%; }

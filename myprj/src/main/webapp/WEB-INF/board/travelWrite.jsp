@@ -10,12 +10,18 @@
   <meta name="description" content="">
   <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
   <meta name="generator" content="Hugo 0.122.0">
+  <meta name="robots" content="noindex, nofollow">
   <title>개인프로젝트</title>
 
   <!-- ck editor -->
-  <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/ckeditor5/style.css">
-  <link rel="stylesheet" href="https://cdn.ckeditor.com/ckeditor5/43.3.1/ckeditor5.css">
-    <script src="https://cdn.ckeditor.com/ckeditor5/36.0.1/classic/ckeditor.js"></script>
+  <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/ckeditor5Builder/style.css">
+  <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/ckeditor5Builder/ckeditor5/ckeditor5.css">
+  
+<!-- CKEditor5를 로드하는 스크립트 -->
+<!-- <script src="https://cdn.ckeditor.com/ckeditor5/43.3.1/ckeditor5.js"></script> -->
+
+<!-- 필요한 경우 추가적인 CKEditor5 모듈을 로드하려면 추가 -->
+<!-- <script src="https://cdn.ckeditor.com/ckeditor5/43.3.1/build/classic/ckeditor.js"></script> -->
 
   <!-- 캘린더 -->
   <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js'></script>
@@ -90,9 +96,14 @@
             <label class="form-label" for="thumbnail">썸네일</label>
             <input type="file" name="attachfile" class="form-control" id="thumbnail" required="">
           </div>
-          <div> 
-            <div id="editor"></div>
-          </div>
+		  <div class="main-container">
+			<div class="editor-container editor-container_document-editor" id="editor-container">
+				<div class="editor-container__toolbar" id="editor-toolbar"></div>
+				<div class="editor-container__editor-wrapper">
+					<div class="editor-container__editor"><div id="editor"></div></div>
+				</div>
+			</div>
+		  </div>
         </div>
       </div>
       
@@ -144,6 +155,8 @@
   }
   </script>
   
+  
+  
   <script type="module">
   	import {ClassicEditor, SimpleUploadAdapter} from 'https://cdn.ckeditor.com/ckeditor5/43.3.1/ckeditor5.js';  
   </script>
@@ -151,66 +164,25 @@
   <script type="module" src="${pageContext.request.contextPath}/resources/ckeditor5/main.js"></script>
  --%>
  
- <script>
-        // 이미지 업로드 함수 (서버로 파일을 전송하는 함수)
-        const yourUploadFunction = async (file) => {
-            const formData = new FormData();
-            formData.append('upload', file);
-
-            try {
-                const response = await fetch('http://localhost:8080/imagePreview.do', {  // 서버 경로로 수정
-                    method: 'POST',
-                    body: formData,
-                });
-
-                if (!response.ok) {
-                    throw new Error('Upload failed');
-                }
-
-                const data = await response.json();
-                return {
-                    default: data.url  // 서버에서 반환된 URL
-                };
-            } catch (error) {
-                console.error('Error uploading file:', error);
-                throw error;  // 에러를 다시 던져서 CKEditor에서 처리할 수 있도록 함
-            }
-        };
-
-        // CKEditor 설정
-        ClassicEditor.create(document.querySelector('#editor'), {
-            toolbar: [
-                'undo', 'redo', '|', 'insertImage', 'bold', 'italic', 'link'
-            ],
-            image: {
-                toolbar: [
-                    'imageStyle:inline', 'imageStyle:wrapText', 'imageStyle:breakText',
-                    '|', 'resizeImage'
-                ],
-            },
-        })
-        .then(editor => {
-            // 이미지 업로드를 위한 업로드 어댑터 설정
-            editor.plugins.get('FileRepository').createUploadAdapter = (loader) => {
-                return {
-                    upload: async () => {
-                        const response = await yourUploadFunction(loader.file);
-                        const url = response.default;  // 서버에서 반환된 URL
-                        return {
-                            default: url  // 이 URL을 'default'로 반환하여 에디터에 반영
-                        };
-                    },
-                    abort: () => {
-                        console.log('Upload aborted');
-                    }
-                };
-            };
-        })
-        .catch(error => {
-            console.error('Editor initialization error:', error);
-        });
-    </script>
-
+ 
+<script type="importmap">
+		{
+			"imports": {
+				"ckeditor5": "${pageContext.request.contextPath}/resources/ckeditor5Builder/ckeditor5/ckeditor5.js",
+				"ckeditor5/": "${pageContext.request.contextPath}/resources/ckeditor5Builder/ckeditor5/"
+			}
+		}
+		</script>
+		
+	<script type="module" src="${pageContext.request.contextPath}/resources/ckeditor5Builder/main.js"></script>
+	<!-- A friendly reminder to run on a server, remove this during the integration. -->
+	<script>
+		window.onload = function() {
+			if ( window.location.protocol === "file:" ) {
+				alert( "This sample requires an HTTP server. Please serve this file with a web server." );
+			}
+		};
+	</script>
 
 </body>
 </html>

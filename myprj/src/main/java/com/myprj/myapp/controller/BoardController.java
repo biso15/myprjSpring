@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -25,6 +26,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -32,6 +34,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -201,65 +204,50 @@ public class BoardController {
 		
 		return path;
 	}
-	
-	@PostMapping("/imagePreview.do")
-    @ResponseBody
-    public String handleFileUpload(@RequestParam("upload") MultipartFile file) throws IOException {
-        // 업로드된 파일을 지정된 디렉토리에 저장
-        if (file.isEmpty()) {
-            return "{\"error\":\"No file uploaded\"}";
-        }
 
-        // 파일 이름 생성 (UUID 또는 원래 이름 사용 가능)
-        String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
-        String uploadDir = "D:\\dev\\myprj\\myprjSpring\\myprj\\src\\main\\webapp\\resources\\ckeditor5\\imagePreview\\";
-        Path path = Paths.get(uploadDir, fileName);
-
-        // 파일을 디스크에 저장
-        Files.createDirectories(path.getParent());  // 디렉토리 생성
-        Files.write(path, file.getBytes());  // 파일 쓰기
-
-        // 클라이언트로 URL 반환 (업로드된 파일의 상대 경로)
-        return "{\"url\":\"/uploads/" + fileName + "\"}";
-    }
 	
 	
-//	@RequestMapping(value="/imagePreview.do", method=RequestMethod.POST)
-//	public ResponseEntity<Map<String, Object>> imagePreview(@RequestParam("upload") MultipartFile upload) {
-//		
-//		System.out.println("imagePreview 들어옴");
-//		
-//		// 파일 저장 디렉토리. 실제경로
-//		String uploadDirectory = "D:\\dev\\myprj\\myprjSpring\\myprj\\src\\main\\webapp\\resources\\ckeditor5\\imagePreview\\";
-//		File directory = new File(uploadDirectory);
-//		
-//		// 디렉토리가 존재하지 않으면 생성
-//		if (!directory.exists()) {
-//			directory.mkdirs();  // 디렉토리 생성
-//		}
-//		
-//	    String fileName = UUID.randomUUID().toString() + "_" + upload.getOriginalFilename();  // 고유한 파일 이름 생성
-//	    File file  = new File(directory, fileName);
-//
-//	    try {
-//	        // 파일을 서버에 저장
-//	        upload.transferTo(file);
-//
-//	        // 업로드된 파일의 URL을 반환
-//	        String fileUrl = "http://localhost:80/myapp/resources/ckeditor5/imagePreview/" + fileName;  // 상대 경로 또는 절대 경로로 반환
-//	        
-//	        Map<String, Object> response = new HashMap<>();
-//	        response.put("uploaded", true); // 업로드 성공 여부
-//	        response.put("url", fileUrl);
-//	        
-//	        return ResponseEntity.ok(response);
-//	        
-//	    } catch (IOException e) {
-//	        e.printStackTrace();
-//	        
-//	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-//	    }		 
-//	}
+	
+	
+	
+	@RequestMapping(value="/imagePreview.do", method=RequestMethod.POST)
+	public ResponseEntity<Map<String, String>> imagePreview(@RequestParam("upload") MultipartFile upload, HttpServletRequest request) {
+		
+		System.out.println("imagePreview 들어옴");
+		
+		// 파일 저장 디렉토리. 실제경로
+		String uploadDirectory = "D:\\dev\\myprj\\myprjSpring\\myprj\\src\\main\\webapp\\resources\\ckeditor5Builder\\ckeditor5\\imagePreview\\";
+		File directory = new File(uploadDirectory);
+		
+		// 디렉토리가 존재하지 않으면 생성
+		if (!directory.exists()) {
+			directory.mkdirs();  // 디렉토리 생성
+		}
+		
+	    String fileName = UUID.randomUUID().toString() + "_" + upload.getOriginalFilename();  // 고유한 파일 이름 생성
+	    File file  = new File(directory, fileName);
+
+	    try {
+	        // 파일을 서버에 저장
+	        upload.transferTo(file);
+	        
+	        // 업로드된 파일의 URL을 반환
+	        String fileUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + 
+	                "/board/displayFile.do?fileName=" + fileName;  // 상대 경로 또는 절대 경로로 반환
+	        
+	        // Map<String, Object> response = new HashMap<>();
+	        // response.put("uploaded", true); // 업로드 성공 여부
+	        // response.put("url", fileUrl);
+
+	        Map<String, String> response = Map.of("url", fileUrl);       
+	        return ResponseEntity.ok(response); // JSON 형식으로 반환
+	        
+	    } catch (IOException e) {
+	        e.printStackTrace();
+	        
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+	    }		 
+	}
 	
 
 //	@RequestMapping(value="boardWriteAction.aws", method=RequestMethod.POST)
@@ -364,15 +352,15 @@ public class BoardController {
 		return "WEB-INF/board/travelReservation";
 	}
 	
-	// 파일을 보여줄 가상 경로에 파일 옮기기
-	@RequestMapping(value="/displayFile.aws", method=RequestMethod.GET)  // 가상경로와 매핑이 되어야 함
+	
+	@RequestMapping(value="/displayFile.do", method=RequestMethod.GET)  // 가상경로와 매핑이 되어야 함
 	public ResponseEntity<byte[]> displayFile(
 			@RequestParam("fileName") String fileName,
 			@RequestParam(value="down", defaultValue="0") int down  // 다운 받을지, 화면에서 보여줄지 선택
 			) {
-
-		logger.info("displayFile들어옴");
 		
+		logger.info("displayFile들어옴");
+	
 		ResponseEntity<byte[]> entity = null;  // ResponseEntity : Collection처럼 객체를 담는다.
 		InputStream in = null;
 		
@@ -382,8 +370,9 @@ public class BoardController {
 			
 			HttpHeaders headers = new HttpHeaders();		
 			 
+			String uploadPath = "D:\\dev\\myprj\\myprjSpring\\myprj\\src\\main\\webapp\\resources\\ckeditor5Builder\\ckeditor5\\imagePreview\\";
 			in = new FileInputStream(uploadPath+fileName);  // 파일 읽기
-						
+		
 			if(mType != null){  // 파일의 타입이 JPG, GIF, PNG 중 하나일 경우
 				
 				if (down==1) {  // 다운을 받는다
@@ -421,6 +410,66 @@ public class BoardController {
 				
 		return entity;
 	}
+	
+	
+	
+//	// 파일을 보여줄 가상 경로에 파일 옮기기
+//	@RequestMapping(value="/displayFile.aws", method=RequestMethod.GET)  // 가상경로와 매핑이 되어야 함
+//	public ResponseEntity<byte[]> displayFile(
+//			@RequestParam("fileName") String fileName,
+//			@RequestParam(value="down", defaultValue="0") int down  // 다운 받을지, 화면에서 보여줄지 선택
+//			) {
+//
+//		logger.info("displayFile들어옴");
+//		
+//		ResponseEntity<byte[]> entity = null;  // ResponseEntity : Collection처럼 객체를 담는다.
+//		InputStream in = null;
+//		
+//		try{
+//			String formatName = fileName.substring(fileName.lastIndexOf(".")+1);  // 파일의 확장자를 꺼냄
+//			MediaType mType = MediaUtils.getMediaType(formatName);  // MediaUtils에 확장자를 넣어서 파일의 타입을 알아냄
+//			
+//			HttpHeaders headers = new HttpHeaders();		
+//			 
+//			in = new FileInputStream(uploadPath+fileName);  // 파일 읽기
+//						
+//			if(mType != null){  // 파일의 타입이 JPG, GIF, PNG 중 하나일 경우
+//				
+//				if (down==1) {  // 다운을 받는다
+//					fileName = fileName.substring(fileName.indexOf("_")+1);
+//					headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+//					headers.add("Content-Disposition", "attachment; filename=\""+
+//							new String(fileName.getBytes("UTF-8"),"ISO-8859-1")+"\"");	
+//					
+//				}else {  // 다운받지 않고 타입을 저장
+//					headers.setContentType(mType);	
+//				}
+//				
+//			}else{  // 미리보기 하지 않고 다운을 받는다.
+//				
+//				fileName = fileName.substring(fileName.indexOf("_")+1);
+//				headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+//				headers.add("Content-Disposition", "attachment; filename=\""+
+//						new String(fileName.getBytes("UTF-8"),"ISO-8859-1")+"\"");				
+//			}
+//			
+//			entity = new ResponseEntity<byte[]>(IOUtils.toByteArray(in), headers, HttpStatus.CREATED);  // 생성자의 매개변수에 값을 받아서 생성
+//			
+//		}catch(Exception e){
+//			e.printStackTrace();
+//			entity = new ResponseEntity<byte[]>(HttpStatus.BAD_REQUEST);
+//			
+//		}finally{
+//			try {
+//				in.close();
+//			} catch (IOException e) {
+//				
+//				e.printStackTrace();
+//			}
+//		}
+//				
+//		return entity;
+//	}
 	
 	
 	
