@@ -23,11 +23,12 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 			// 로그인 페이지로 보낸다
 			saveUrl(request);  // 이동할 경로를 저장한다
 			
-			response.sendRedirect(request.getContextPath() + "/member/memberLogin.aws");
+			response.sendRedirect(request.getContextPath() + "/member/memberLogin.do");
 			
 			return false;
 			
 		} else {
+			
 			return true;
 		}
 		

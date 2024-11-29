@@ -40,10 +40,10 @@
         </ol>
       </nav>
     </div>
-
+    
     <!-- 검색영역 -->
     <c:choose>
-    <c:when test="${sessionScope.admin.equals('Y')}">
+    <c:when test="${sessionScope.adminyn.equals('Y')}">
     <div class="d-flex justify-content-between">
       <a href="${pageContext.request.contextPath}/board/${requestScope.boardcode}/${requestScope.period}/boardWrite.do" class="btn btn-outline-primary">글쓰기</a>
     </c:when>
@@ -51,7 +51,6 @@
     <div class="d-flex justify-content-end">
     </c:otherwise>
     </c:choose>
-      <a href="${pageContext.request.contextPath}/board/${requestScope.boardcode}/${requestScope.period}/boardWrite.do" class="btn btn-outline-primary">글쓰기</a>
       <form class="d-flex w-35" role="search" name="frm" action="${pageContext.request.contextPath}/board/${requestScope.boardcode}/${requestScope.period}/boardList.do" method="get">
         <select class="form-select me-2" name="searchType">
           <option value="title" selected>제목</option>
@@ -70,8 +69,10 @@
       <div class="row row-cols-md-4 g-3">
         <c:forEach items="${requestScope.blist}" var="bv" varStatus="status">
         <a class="col" href="${pageContext.request.contextPath}/board/${bv.bidx}/boardContents.do">
-          <div class="card shadow-sm">
-            <img src="${pageContext.request.contextPath}/board/displayFile.aws?fileName=${requestScope.bv.filename}" alt="thumbnail">
+          <div class="card shadow-sm flex-column justify-content-between">
+            <div>
+ 	           <img src="${pageContext.request.contextPath}/board/displayFile.do?fileName=${bv.thumbnail}&type=thumbnail" alt="thumbnail">
+ 	        </div>
             <div class="card-body">
               <p class="card-text ellipsis">${bv.title}</p>
               <small class="text-body-secondary ellipsis ellipsis3">${bv.summary}</small>

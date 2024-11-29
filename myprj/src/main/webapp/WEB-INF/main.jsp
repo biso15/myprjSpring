@@ -18,6 +18,15 @@
   <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css" />
   <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick-theme.css" />
 
+  <script>
+	// 메세지
+	const msg = "${requestScope.msg}";
+	if (msg != null && msg != "") {
+	  alert(msg);
+	}
+	console.log(msg);
+  </script>
+	
     <%@ include file="header.jsp" %>
 
     <div class="main pb-5 pt-4">
@@ -31,7 +40,7 @@
       	<div class="px-2">
           <a href="${pageContext.request.contextPath}/board/${bv.bidx}/boardContents.do">
             <div class="card shadow-sm">
-              <img src="${pageContext.request.contextPath}/resources/images/travel.jpg" alt="thumbnail">
+              <img src="${pageContext.request.contextPath}/board/displayFile.do?fileName=${bv.thumbnail}&type=thumbnail" alt="thumbnail">
               <div class="card-body">
                 <p class="card-text ellipsis fw-bold">${bv.title}</p>
                 <small class="text-body-secondary ellipsis ellipsis3">${bv.summary}</small>

@@ -43,7 +43,7 @@
         </svg>
         <ol class="breadcrumb breadcrumb-chevron p-3 justify-content-end">
           <li class="breadcrumb-item">
-            <a class="link-body-emphasis" href="#">
+            <a class="link-body-emphasis" href="${pageContext.request.contextPath}">
               <svg class="bi" width="16" height="16"><use xlink:href="#house-door-fill"></use></svg>
               <span class="visually-hidden">Home</span>
             </a>

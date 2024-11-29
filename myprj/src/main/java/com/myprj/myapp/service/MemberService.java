@@ -9,9 +9,9 @@ public interface MemberService {
 		
 	public int memberInsert(MemberVo mv);
 
-	public int memberIdCheck(String memberId);
+	public int memberIdCheck(String id);
 	
-	public MemberVo memberLoginCheck(String memberId);
+	public MemberVo memberLogin(String memberId);
 	
 	public ArrayList<MemberVo> memberSelectAll();
 	

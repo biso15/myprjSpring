@@ -3,18 +3,16 @@ package com.myprj.myapp.domain;
 public class MemberVo {
 
 	private int midx;
-	private String memberid;
-	private String memberpwd;
-	private String membername;
-	private String membergender;
-	private String memberbirth;
-	private String memberaddr;
-	private String memberphone;
-	private String memberemail;
-	private String memberhobby;
+	private String id;
+	private String password;
+	private String birthday;
+	private String name;
+	private String phone;
+	private String email;
+	private String date;
 	private String delyn;
-	private String writeday;
-	private String memberip;	
+	private String admin;
+	private String ip;
 	
 	public int getMidx() {
 		return midx;
@@ -22,59 +20,47 @@ public class MemberVo {
 	public void setMidx(int midx) {
 		this.midx = midx;
 	}
-	public String getMemberid() {
-		return memberid;
+	public String getId() {
+		return id;
 	}
-	public void setMemberid(String memberid) {
-		this.memberid = memberid;
+	public void setId(String id) {
+		this.id = id;
 	}
-	public String getMemberpwd() {
-		return memberpwd;
+	public String getPassword() {
+		return password;
 	}
-	public void setMemberpwd(String memberpwd) {
-		this.memberpwd = memberpwd;
+	public void setPassword(String password) {
+		this.password = password;
 	}
-	public String getMembername() {
-		return membername;
+	public String getBirthday() {
+		return birthday;
 	}
-	public void setMembername(String membername) {
-		this.membername = membername;
+	public void setBirthday(String birthday) {
+		this.birthday = birthday;
 	}
-	public String getMembergender() {
-		return membergender;
+	public String getName() {
+		return name;
 	}
-	public void setMembergender(String membergender) {
-		this.membergender = membergender;
+	public void setName(String name) {
+		this.name = name;
 	}
-	public String getMemberbirth() {
-		return memberbirth;
+	public String getPhone() {
+		return phone;
 	}
-	public void setMemberbirth(String memberbirth) {
-		this.memberbirth = memberbirth;
+	public void setPhone(String phone) {
+		this.phone = phone;
 	}
-	public String getMemberaddr() {
-		return memberaddr;
+	public String getEmail() {
+		return email;
 	}
-	public void setMemberaddr(String memberaddr) {
-		this.memberaddr = memberaddr;
+	public void setEmail(String email) {
+		this.email = email;
 	}
-	public String getMemberphone() {
-		return memberphone;
+	public String getDate() {
+		return date;
 	}
-	public void setMemberphone(String memberphone) {
-		this.memberphone = memberphone;
-	}
-	public String getMemberemail() {
-		return memberemail;
-	}
-	public void setMemberemail(String memberemail) {
-		this.memberemail = memberemail;
-	}
-	public String getMemberhobby() {
-		return memberhobby;
-	}
-	public void setMemberhobby(String memberhobby) {
-		this.memberhobby = memberhobby;
+	public void setDate(String date) {
+		this.date = date;
 	}
 	public String getDelyn() {
 		return delyn;
@@ -82,17 +68,16 @@ public class MemberVo {
 	public void setDelyn(String delyn) {
 		this.delyn = delyn;
 	}
-	public String getWriteday() {
-		return writeday;
+	public String getAdmin() {
+		return admin;
 	}
-	public void setWriteday(String writeday) {
-		this.writeday = writeday;
+	public void setAdmin(String admin) {
+		this.admin = admin;
 	}
-	public String getMemberip() {
-		return memberip;
+	public String getIp() {
+		return ip;
 	}
-	public void setMemberip(String memberip) {
-		this.memberip = memberip;
-	}
+	public void setIp(String ip) {
+		this.ip = ip;
+	}	
 }
-

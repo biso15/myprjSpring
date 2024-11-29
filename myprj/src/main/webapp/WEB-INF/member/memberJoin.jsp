@@ -1,11 +1,18 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-<!DOCTYPE HTML>
-<HTML>
- <HEAD>
-  <TITLE> 회원가입 </TITLE>
-  <link href="/resources/css/style.css" type="text/css" rel="stylesheet">
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+
+<!doctype html>
+<html lang="ko" data-bs-theme="auto">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="">
+  <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
+  <meta name="generator" content="Hugo 0.122.0">
+  <title>개인프로젝트</title>
   <script src="https://code.jquery.com/jquery-latest.min.js"></script>  <!-- CDN주소 -->
+    
   <script>
   
   const email = /[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[0-9a-zA-Z]$/i;  
@@ -15,60 +22,10 @@
 	  // 유효성 검사하기
 	   let fm = document.frm;
 	  
-	   if (fm.memberid.value == "") {
-		  alert("아이디를 입력해주세요");
-		  fm.memberid.focus();
-		  return;
-	  } else if ($("#btn").val() == "N") {
-		  alert("아이디를 중복체크를 해주세요");
-		  fm.memberid.focus();
-		  return;
-	  } else if (fm.memberpwd.value == "") {
-		  alert("비밀번호를 입력해주세요");
-		  fm.memberpwd.focus();
-		  return;
-	  } else if (fm.memberpwd2.value == "") {
-		  alert("비밀번호2를 입력해주세요");
-		  fm.memberpwd2.focus();
-		  return;
-	  } else if (fm.memberpwd.value != fm.memberpwd2.value) {
-		  alert("비밀번호가 일치하지 않습니다");
-		  fm.memberpwd.value = "";
-		  fm.memberpwd2.value = "";
-		  fm.memberpwd.focus();
-		  return;
-	  } else if (fm.membername.value == "") {
-		  alert("이름을 입력해주세요");
-		  fm.membername.focus();
-		  return;
-	  } else if (fm.membermail.value == "") {
-		  alert("이메일을 입력해주세요");
-		  fm.membermail.focus();
-		  return;
-	  } else if (email.test(fm.membermail.value) == false) {
-		  alert("이메일 형식이 올바르지 않습니다");
-		  fm.membermail.value = "";
-		  fm.membermail.focus();
-		  return;
-	  } else if (fm.memberphon.value == "") {
-		  alert("연락처를 입력해주세요");
-		  fm.memberphon.focus();
-		  return;
-	  } else if (fm.memberbirth.value == "") {
-		  alert("생년월일을 입력해주세요");
-		  fm.memberbirth.focus();
-		  return;
-	  } else if (hobbyCheck() == false) {
-		  alert("취미를 한개 이상 선택해주세요");
-		  return;
-	  }
-	  
 	  let ans = confirm("저장하시겠습니까?");
 	  
 	  if (ans == true) {
-		  
-		  // 가상주소 형식은 /기능/세부기능.aws
-		  fm.action="<%=request.getContextPath() %>/member/memberJoinAction.aws";
+		  fm.action="<%=request.getContextPath() %>/member/memberJoinAction.do";
 		  fm.method="post";
 		  fm.submit();
 	  }	  
@@ -76,33 +33,20 @@
 	  return;
   }
   
-  function hobbyCheck() {
-	  let arr = document.frm.memberhobby;
-	  let flag = false;  // 체크유무 초기값 false 선언
-	  
-	  for (let i = 0; i < arr.length; i++) {
-		  if (arr[i].checked == true) {
-			  flag = true;
-			  break;
-		  }
-	  }
-	  return flag;
-  }
-
 	$(document).ready(function() {
 	  $("#btn").click(function() {
 		  // alert("중복체크버튼 클릭");
-		  let memberId = $("#memberid").val();
-		  if (memberId == "") {
+		  let id = $("#id").val();
+		  if (id == "") {
 			  alert("아이디를 입력해주세요");
 			  return;
 		  }
 		  
 		  $.ajax({
 			  type: "post",  // 전송방식
-			  url: "<%=request.getContextPath()%>/member/memberIdCheck.aws",
+			  url: "<%=request.getContextPath()%>/member/memberIdCheck.do",
 			  dataType: "json",  // 받는 형식. json 타입은 문서에서 {"key값": "value값", "key값" : "value값"} 형식으로 구성
-			  data: {"memberId": memberId},
+			  data: {"id": id},
 			  success: function(result) {  // 결과가 넘어와서 성공했을 때 받는 영역
 				  // alert("전송성공 테스트");
 				  if (result.cnt == 0) {
@@ -110,7 +54,7 @@
 					  $("#btn").val("Y");
 				  } else {
 					  alert("사용할 수 없는 아이디입니다.");
-					  $("#memberid").val("");  // 입력한 아이디 지우기
+					  $("#id").val("");  // 입력한 아이디 지우기
 				  }
 			  },
 			  error: function(xhr, status, error) {  // 결과가 실패했을 때 받는 영역
@@ -123,86 +67,76 @@
 	  })
   })
   </script>
- </HEAD>
+  
+ <%@ include file="/WEB-INF/header.jsp" %>
+ 
+   <div class="d-flex align-items-center justify-content-between mb-4">
+ 	<h2>회원가입</h2>
+      <!-- 네비게이션 -->
+      <nav aria-label="breadcrumb">
+        <svg xmlns="http://www.w3.org/2000/svg" class="d-none">
+          <symbol id="house-door-fill" viewBox="0 0 16 16">
+            <path d="M6.5 14.5v-3.505c0-.245.25-.495.5-.495h2c.25 0 .5.25.5.5v3.5a.5.5 0 0 0 .5.5h4a.5.5 0 0 0 .5-.5v-7a.5.5 0 0 0-.146-.354L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.354 1.146a.5.5 0 0 0-.708 0l-6 6A.5.5 0 0 0 1.5 7.5v7a.5.5 0 0 0 .5.5h4a.5.5 0 0 0 .5-.5z"/>
+          </symbol>
+        </svg>
+        <ol class="breadcrumb breadcrumb-chevron p-3 justify-content-end">
+          <li class="breadcrumb-item">
+            <a class="link-body-emphasis" href="#">
+              <svg class="bi" width="16" height="16"><use xlink:href="#house-door-fill"></use></svg>
+              <span class="visually-hidden">Home</span>
+            </a>
+          </li>
+          <!-- <li class="breadcrumb-item">
+            <a class="link-body-emphasis fw-semibold text-decoration-none" href="#">Library</a>
+          </li> -->
+          <li class="breadcrumb-item active" aria-current="page">회원가입</li>
+        </ol>
+      </nav>
+    </div>
 
- <BODY>
-	<header><a href="./memberJoin.jsp" style="text-decoration:none;">회원가입 페이지</a></header>
-	<nav> <a href="./memberLogin.jsp" style="text-decoration:none;">회원 로그인 가기</a></nav>
-	<article>
-		<form name="frm">
-			<table>
-				<tr>
-					<th class="idcolor">아이디</th>
-					<td>
-						<input type="text" id="memberid" name="memberid" style="width:200px" maxlength="30" value="" placeholder="아이디를 입력하세요">
-						<button type="button" id="btn" name="btn" value="N">아이디 중복체크</button>
-					</td>
-				</tr>
-				<tr>
-					<th class="idcolor">비밀번호</th>
-					<td><input type="password" name="memberpwd" style="width:200px" maxlength="30"></td>
-				</tr>
-				<tr>
-					<th>비밀번호확인</th>
-					<td><input type="password" name="memberpwd2" style="width:200px" maxlength="30"></td>
-				</tr>
-				<tr>
-					<th id="name">이름</th>
-					<td><input type="text" name="membername" style="width:300px" maxlength="30"></td>
-				</tr>
-				<tr>
-					<th>이메일</th>
-					<td><input type="email" name="membermail" style="width:300px" maxlength="30"></td>
-				</tr>
-				<tr>
-					<th>연락처</th>
-					<td><input type="number" name="memberphon" style="width:300px" maxlength="30"></td>
-				</tr>
-				<tr>
-					<th>주소</th>
-					<td>
-						<select name="memberaddress" style="width:100px;">
-							<option value="서울">서울</option>
-							<option value="대전" selected>대전</option>
-							<option value="부산">부산</option>
-							<option value="인천">인천</option>
-						</select>
-					</td>
-				</tr>
-				<tr>
-					<th>성별</th>
-					<td>
-						<input type="radio" name="membergender" id="radio1" value="M"><label for="radio1"> 남성</label>
-						<input type="radio" name="membergender" id="radio2" value="F" checked><label for="radio2"> 여성</label>
-					</td>
-				</tr>
-				<tr>
-					<th>생년월일</th>
-					<td><input type="number" name="memberbirth" style="width:100px" maxlength="8"> 예)20240101</td>
-				</tr>
-				<tr>
-					<th>취미</th>
-					<td>
-						<input type="checkbox" name="memberhobby" id="check1" value="야구"><label for="check1"></label> 야구
-						<input type="checkbox" name="memberhobby" id="check2" value="축구"><label for="check2"></label> 축구
-						<input type="checkbox" name="memberhobby" id="check3" value="농구"><label for="check3"></label> 농구
-					</td>
-				</tr>
-				<tr>
-					<td colspan="2" style="text-align: center">
-						<button type="button" onclick="check();">
-							<img src="https://cdn.pixabay.com/photo/2024/03/12/09/28/ai-generated-8628373_1280.png" width="30px" height="20px">
-						</button>
-					
-<!-- 						<input type="submit" name="btn" value="회원정보 저장하기">
-						<input type="reset" name="btn" value="초기화"> -->
-					</td>
-				</tr>
-			</table>
-		</form>
-	</article>
-	<footer>
-	made by jh.
-	</footer>
+    <!-- 컨텐츠 -->
+    <form class="join pb-5" name="frm">
+      <div class="card mb-3">
+        <div class="row">
+          <div class="mb-3 col-4">
+            <label for="id" class="form-label">아이디</label>
+            <input type="text" class="form-control" id="id" name="id" placeholder="" value="" required="">
+            <button type="button" id="btn" name="btn" value="N">중복체크</button>
+          </div>
+          <div class="mb-3 col-4">
+            <label for="password" class="form-label">비밀번호</label>
+            <input type="password" class="form-control" id="password" name="password" placeholder="" value="" required="">
+          </div>
+          <div class="mb-3 col-4">
+            <label for="passwordcheck" class="form-label">비밀번호 확인</label>
+            <input type="password" class="form-control" id="passwordcheck" placeholder="" value="" required="">
+          </div>
+
+          <div class="mb-3 col-4">
+            <label for="name" class="form-label">이름</label>
+            <input type="text" class="form-control" id="name" name="name" placeholder="" value="" required="">
+          </div>          
+          <div class="mb-3 col-4">
+            <label for="birthday" class="form-label">생년월일</label>
+            <input type="date" class="form-control" id="birthday" name="birthday" placeholder="" value="" required="">
+          </div>
+          <div class="mb-3 col-4">
+            <label for="phone" class="form-label">연락처</label>
+            <input type="tel" class="form-control" id="phone" name="phone" placeholder="" value="" required="">
+          </div>
+
+          <div class="mb-3 col-4">
+            <label for="email" class="form-label">이메일</label>
+            <input type="email" class="form-control" id="email" name="email" placeholder="" value="" required="">
+          </div>
+        </div>
+      </div>
+
+      <div class="text-center">
+        <button class="btn btn-primary mb-3" type="button"  onclick="check();">회원가입</button>
+      </div>
+    </form>
+        
+    <%@ include file="/WEB-INF/footer.jsp" %>
  </BODY>
 </HTML>

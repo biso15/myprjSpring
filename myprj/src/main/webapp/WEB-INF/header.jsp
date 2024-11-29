@@ -30,12 +30,12 @@
 
       <ul class="nav">
       	<c:if test="${empty sessionScope.midx}">
-        <li class="nav-item"><a href="#" class="nav-link link-body-emphasis px-2">로그인</a></li>
-        <li class="nav-item"><a href="#" class="nav-link link-body-emphasis px-2">회원가입</a></li>
+        <li class="nav-item"><a href="${pageContext.request.contextPath}/member/memberLogin.do" class="nav-link link-body-emphasis px-2">로그인</a></li>
+        <li class="nav-item"><a href="${pageContext.request.contextPath}/member/memberJoin.do" class="nav-link link-body-emphasis px-2">회원가입</a></li>
         </c:if>
         <c:if test="${!empty sessionScope.midx}">
-        <li class="nav-item"><a href="#" class="nav-link link-body-emphasis px-2">마이페이지</a></li>
-        <li class="nav-item"><a href="#" class="nav-link link-body-emphasis px-2">로그아웃</a></li>
+        <li class="nav-item"><a href="${pageContext.request.contextPath}/member/memberMypage.do" class="nav-link link-body-emphasis px-2">마이페이지</a></li>
+        <li class="nav-item"><a href="${pageContext.request.contextPath}/member/memberLogout.do" class="nav-link link-body-emphasis px-2">로그아웃</a></li>
         </c:if>
       </ul>
 

@@ -46,7 +46,8 @@
       </div>
 
       <div class="text-center">
-        <a href="${pageContext.request.contextPath}/board/${requestScope.bv.bidx}/travelReservation.do" class="btn btn-primary mb-3">예약하기</a>
+        <a href="${pageContext.request.contextPath}/board/${requestScope.bv.bidx}/boardModify.do" class="btn btn-primary mb-3">수정</a>
+        <a href="${pageContext.request.contextPath}/board/${requestScope.bv.bidx}/travelReservation.do" class="btn btn-primary mb-3">예약</a>
       </div>
     </div>
 

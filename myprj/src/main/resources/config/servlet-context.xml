@@ -34,18 +34,17 @@
 		
 		
 	<!-- 인터셉트 -->
-	<beans:bean id="loginInterceptor" class="com.myprj.myapp.interceptor.LoginInterceptor" />  <!-- id : 객체 이름, class : 객체 경로 -->
+	<!-- <beans:bean id="loginInterceptor" class="com.myprj.myapp.interceptor.LoginInterceptor" />  id : 객체 이름, class : 객체 경로
 	<beans:bean id="authInterceptor" class="com.myprj.myapp.interceptor.AuthInterceptor" />
 	<interceptors>
-		<!-- 로그인 인터셉트 -->
+		로그인 인터셉트
 		<interceptor>
 			<mapping path="/member/memberLoginAction.do" />
 			<beans:ref bean="loginInterceptor" />
 		</interceptor>
 		
-		<!-- 로그인 인증 인터셉트 -->
+		로그인 인증 인터셉트
 		<interceptor>
-			<mapping path="/member/memberList.do" />
 			<mapping path="/board/boardWrite.do" />
 			<mapping path="/board/boardWriteAction.do" />
 			<mapping path="/board/boardDelete.do" />
@@ -57,7 +56,7 @@
 			<beans:ref bean="authInterceptor" />
 		</interceptor>
 	</interceptors>
-	
+	 -->
 	
 	<!-- 적용 범위 지정 -->
 	<context:component-scan base-package="com.myprj.myapp.controller" />	

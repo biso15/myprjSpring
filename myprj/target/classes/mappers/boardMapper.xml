@@ -29,12 +29,8 @@
 	</select>
 	
   	<insert id="boardInsert" parameterType="bv">
-		insert into board(originbidx, depth, level_, title, contents, writer, password, midx, filename, ip)
-		values(null, 0, 0, #{title}, #{contents}, #{writer}, #{password}, #{midx}, #{uploadedFilename}, #{ip})
-		
-		<selectKey keyProperty="bidx" resultType="int" order="AFTER">  <!-- order : AFTER와 BEFORE가 있다. insert문의 전에 실행할지 후에 실행할지를 정함 -->
-			select max(bidx) as maxbidx from board
-	  	</selectKey>
+  		INSERT INTO BOARD(title, summary, contents, thumbnail, ip, midx, boardcode, period) 
+		VALUES(#{title}, #{summary}, #{contents}, #{uploadedFilename}, #{ip}, #{midx}, #{boardcode}, #{period})
 	</insert>
 	
 	<update id="boardOriginbidxUpadte" parameterType="int">

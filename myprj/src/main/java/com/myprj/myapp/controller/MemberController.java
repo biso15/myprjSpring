@@ -17,39 +17,36 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.myprj.myapp.domain.BoardVo;
 import com.myprj.myapp.domain.MemberVo;
 import com.myprj.myapp.service.MemberService;
 
-@Controller  // Controller °´Ã¼¸¦ ¸¸µé¾îÁà
-@RequestMapping(value="/member/")  // Áßº¹µÈ ÁÖ¼Ò´Â À§ÂÊ¿¡¼­ ÇÑ¹ø¿¡ Ã³¸®
+@Controller  // Controller ê°ì²´ë¥¼ ë§Œë“¤ì–´ì¤˜
+@RequestMapping(value="/member")  // ì¤‘ë³µëœ ì£¼ì†ŒëŠ” ìœ„ìª½ì—ì„œ í•œë²ˆì— ì²˜ë¦¬
 public class MemberController {
 	
-	private static final Logger logger = LoggerFactory.getLogger(MemberController.class);  // µğ¹ö±ëÄÚµåÃ³·³ »ç¿ëÇÏ¸ç, javaÀÇ System.out.println();°ú ºñ½ÁÇÏÁö¸¸ ¸®¼Ò½º¸¦ ´ú ¼ÒºñÇÑ´Ù.
+	private static final Logger logger = LoggerFactory.getLogger(MemberController.class);
 	
-	// @Autowired  // ¼­¹ö¿¡ ¿äÃ»
-		
 	@Autowired
-	private MemberService memberService;  // Interface¿¡¼­ ÁÖÀÔ¹Ş¾Æ¾ß implements ÇÑ class¸íÀÌ º¯°æµÇ¾îµµ ¼öÁ¤ÇÏÁö ¾Ê¾Æµµ µÊ	
+	private MemberService memberService;
 	
-	@Autowired  // @Autowired¸¦ °¢°¢ ºÙ¿©Áà¾ß ÇÔ
-	private BCryptPasswordEncoder bCryptPasswordEncoder;  //  ºñ¹Ğ¹øÈ£ ¾ÏÈ£È­
+	@Autowired
+	private BCryptPasswordEncoder bCryptPasswordEncoder;
 	
-	@RequestMapping(value="memberJoin.aws", method=RequestMethod.GET)  // ";" ¾øÀ½ ÁÖÀÇ
+	@RequestMapping(value="memberJoin.do", method=RequestMethod.GET)
 	public String memberJoin() {
 		
-		logger.info("memberJoinµé¾î¿È");  // INFO : com.myprj.myapp.controller.MemberController - memberJoinµé¾î¿È
-		
-		// logger.info("tt°ªÀº " + tt.test());
+		logger.info("memberJoinë“¤ì–´ì˜´");
 		
 		return "WEB-INF/member/memberJoin";
 	}
 	
-	@RequestMapping(value="memberJoinAction.aws", method=RequestMethod.POST)
-	public String memberJoinAction(MemberVo mv) {  // <jsp:useBean id = "mv" class="Vo.MemberVo" scope = "page" /> ÀÌ°Í°ú °°´Ù. form ÅÂ±× ³»ºÎÀÇ name°ú classÀÇ º¯¼ö¸íÀÌ °°À¸¸é getParameter ´ëÃ¼ °¡´É
+	@RequestMapping(value="/memberJoinAction.aws", method=RequestMethod.POST)
+	public String memberJoinAction(MemberVo mv) {  // <jsp:useBean id = "mv" class="Vo.MemberVo" scope = "page" /> ì´ê²ƒê³¼ ê°™ë‹¤. form íƒœê·¸ ë‚´ë¶€ì˜ nameê³¼ classì˜ ë³€ìˆ˜ëª…ì´ ê°™ìœ¼ë©´ getParameter ëŒ€ì²´ ê°€ëŠ¥
 
-		logger.info("memberJoinActionµé¾î¿È");
+		logger.info("memberJoinActionë“¤ì–´ì˜´");
 
-		// ºñ¹Ğ¹øÈ£ ¾ÏÈ£È­
+		// ë¹„ë°€ë²ˆí˜¸ ì•”í˜¸í™”
 		String memberpwd_enc = bCryptPasswordEncoder.encode(mv.getMemberpwd());
 		mv.setMemberpwd(memberpwd_enc);
 		
@@ -66,76 +63,87 @@ public class MemberController {
 	}	
 	
 	
-	@RequestMapping(value="memberLogin.aws", method=RequestMethod.GET)
+	@RequestMapping(value="memberLogin.do", method=RequestMethod.GET)
 	public String memberLogin() {
 		
 		return "WEB-INF/member/memberLogin";
 	}
 	
-	@RequestMapping(value="memberLoginAction.aws", method=RequestMethod.POST)
+	@RequestMapping(value="memberLoginAction.do", method=RequestMethod.POST)
 	public String memberLoginAction(
-			@RequestParam("memberid") String memberId, 
-			@RequestParam("memberpwd") String memberPwd,
-			RedirectAttributes rttr,  // request.setAttribute("serverTime", formattedDate); ¿Í ºñ½Á
-			HttpSession session
+			MemberVo inputMv,
+			HttpSession session,
+			RedirectAttributes rttr
 		) {
 
-		logger.info("memberLoginActionµé¾î¿È");
+		logger.info("memberLoginActionë“¤ì–´ì˜´");
 		
-		MemberVo mv = memberService.memberLoginCheck(memberId);
-		
+		MemberVo mv = memberService.memberLogin(inputMv.getId());
+
 		String path = "";
 		
-		if(mv != null) {  // °´Ã¼°ªÀÌ ÀÖÀ¸¸é
+		if(mv != null) {  // id ìˆìŒ
+			logger.info("mv != null ì´ì•¼ ");
 			
-			// ÀúÀåµÈ ºñ¹Ğ¹øÈ£¸¦ °¡Á®¿Â´Ù
-			String reservedPwd = mv.getMemberpwd();
+			// ì €ì¥ëœ ë¹„ë°€ë²ˆí˜¸ë¥¼ ê°€ì ¸ì˜¨ë‹¤
+			String password = mv.getPassword();
 			
-			if(bCryptPasswordEncoder.matches(memberPwd, reservedPwd)) {  // ºñ¹Ğ¹øÈ£ ÀÏÄ¡
-				logger.info("ºñ¹Ğ¹øÈ£ ÀÏÄ¡");
-				rttr.addAttribute("midx", mv.getMidx());
-				rttr.addAttribute("memberId", mv.getMemberid());
-				rttr.addAttribute("memberName", mv.getMembername());
+			if(password.equals(inputMv.getPassword())) {
 				
-				if(session.getAttribute("saveUrl") != null) {
+			// if(bCryptPasswordEncoder.matches(password, inputMv.getId())) {  // ë¹„ë°€ë²ˆí˜¸ ì¼ì¹˜
+				logger.info("ë¹„ë°€ë²ˆí˜¸ ì¼ì¹˜");
+				
+				rttr.addAttribute("midx", mv.getMidx());
+				rttr.addAttribute("memberId", mv.getId());
+				rttr.addAttribute("memberName", mv.getName());
+				rttr.addAttribute("adminyn", mv.getAdmin());
+				
+				rttr.addFlashAttribute("msg", "ë‹˜ í™˜ì˜í•©ë‹ˆë‹¤ğŸ‰");
+				
+				if(session.getAttribute("saveUrl") != null) {  // ì´ë™í•  ìœ„ì¹˜ í™•ì¸ -> interceptor
 					path = "redirect:" + session.getAttribute("saveUrl").toString();
-				} else {					
+				} else {
 					path = "redirect:/";
 				}
 				
-			} else {  // ºñ¹Ğ¹øÈ£ ºÒÀÏÄ¡
+			} else {  // ë¹„ë°€ë²ˆí˜¸ ë¶ˆì¼ì¹˜
 				
-				rttr.addFlashAttribute("msg", "¾ÆÀÌµğ/ºñ¹Ğ¹øÈ£¸¦ È®ÀÎÇØÁÖ¼¼¿ä");  // addAttribute¿Í ´Ù¸£°Ô 1È¸¼ºÀÓ. »õ·Î°íÄ§½Ã »ç¶óÁø´Ù
+				rttr.addFlashAttribute("msg", "ì•„ì´ë””/ë¹„ë°€ë²ˆí˜¸ë¥¼ í™•ì¸í•´ì£¼ì„¸ìš”");  // addAttributeì™€ ë‹¤ë¥´ê²Œ 1íšŒì„±ì„. ìƒˆë¡œê³ ì¹¨ì‹œ ì‚¬ë¼ì§„ë‹¤
 				
-				path = "redirect:/member/memberLogin.aws";
+				path = "redirect:/member/memberLogin.do";
 			}			
 			
-		} else {  // °´Ã¼°ªÀÌ ¾øÀ¸¸é
+		} else {  // ê°ì²´ê°’ì´ ì—†ìœ¼ë©´
 
-			rttr.addFlashAttribute("msg", "ÇØ´çÇÏ´Â ¾ÆÀÌµğ°¡ ¾ø½À´Ï´Ù.");
+			rttr.addFlashAttribute("msg", "í•´ë‹¹í•˜ëŠ” ì•„ì´ë””ê°€ ì—†ìŠµë‹ˆë‹¤.");
 			
-			path = "redirect:/member/memberLogin.aws";
+			path = "redirect:/member/memberLogin.do";
 		}
 		
 		return path;
 		
-		// model.addAttribute("serverTime", formattedDate);
+		  
+	
+//				rttr.addFlashAttribute("msg", "ë‹˜ í™˜ì˜í•©ë‹ˆë‹¤ğŸ‰");
+//				return path;
+//			}
+//
+//			logger.info("ë¹„ë°€ë²ˆí˜¸ ë¶ˆì¼ì¹˜");
+//		}
+//		
+//		rttr.addFlashAttribute("msg", "ì•„ì´ë””/ë¹„ë°€ë²ˆí˜¸ë¥¼ í™•ì¸í•´ì£¼ì„¸ìš”");  // addAttributeì™€ ë‹¤ë¥´ê²Œ 1íšŒì„±ì„. ìƒˆë¡œê³ ì¹¨ì‹œ ì‚¬ë¼ì§„ë‹¤
+//					
+//		return "redirect:/member/memberLogin.do";
 		
 	}
 	
 	@ResponseBody
-	@RequestMapping(value="memberIdCheck.aws", method=RequestMethod.POST)
-	public JSONObject memberIdCheck(@RequestParam("memberId") String memberId) {  // ÀÚ¹ÙÀÇ String memberId = request.getParameter("memberId"); ´ëÃ¼
+	@RequestMapping(value="memberIdCheck.do", method=RequestMethod.POST)
+	public JSONObject memberIdCheck(@RequestParam("id") String id) {  // ìë°”ì˜ String memberId = request.getParameter("memberId"); ëŒ€ì²´
 
-		logger.info("memberIdCheckµé¾î¿È");
-		
-		// MemberDao md = new MemberDao();  // Spring¿¡¼­µµ JavaÃ³·³ POJO ¹æ½Äµµ Áö¿øÇÏÁö¸¸ service¸¦ »ç¿ëÇÒ°ÍÀÓ
-		// int cnt = md.memberIdCheck(memberId);
-		
-		int cnt = memberService.memberIdCheck(memberId);
-
-		// PrintWriter out = response.getWriter();  // ¶óÀÌºê·¯¸® »ç¿ëÇØ¼­ json ÆÄÀÏ ½±°Ô ¸¸µé°ÍÀÓ
-		// out.println("{\"cnt\":\""+cnt+"\"}");
+		logger.info("memberIdCheckë“¤ì–´ì˜´");
+				
+		int cnt = memberService.memberIdCheck(id);
 		
 		JSONObject obj = new JSONObject();
 		obj.put("cnt", cnt);
@@ -144,32 +152,18 @@ public class MemberController {
 		
 	}
 	
-	@RequestMapping(value="memberList.aws", method=RequestMethod.GET)
-	public String memberList(Model model) {  // modelÀº ÀÚµ¿À¸·Î »ı¼ºµÇ´Â °´Ã¼ÀÌ´Ù
+	@RequestMapping(value="memberLogout.do", method=RequestMethod.GET)
+	public String memberLogout(HttpSession session) {
 
-		logger.info("memberListµé¾î¿È");
-		
-		ArrayList<MemberVo> alist = memberService.memberSelectAll();
-		model.addAttribute("alist", alist);
-		
-		return "WEB-INF/member/memberList";
-		
-	}
-
-	
-	@RequestMapping(value="memberLogout.aws", method=RequestMethod.GET)
-	public String memberLogout(HttpSession session) {  // modelÀº ÀÚµ¿À¸·Î »ı¼ºµÇ´Â °´Ã¼ÀÌ´Ù
-
-		logger.info("memberLogoutµé¾î¿È");
+		logger.info("memberLogoutë“¤ì–´ì˜´");
 		
 		session.removeAttribute("midx");
-		session.removeAttribute("membername");
 		session.removeAttribute("memberId");
-		session.invalidate();
+		session.removeAttribute("memberName");
+		session.removeAttribute("adminyn");		
 		
 		return "redirect:/";
 		
-	}
-	
+	}	
 	
 }

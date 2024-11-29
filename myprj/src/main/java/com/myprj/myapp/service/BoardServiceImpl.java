@@ -60,10 +60,11 @@ public class BoardServiceImpl implements BoardService {
 	public int boardInsert(BoardVo bv) {
 		
 		int value = bm.boardInsert(bv);
-		int maxBidx = bv.getBidx();  // selectKey 결과값
-		int value2 = bm.boardOriginbidxUpadte(maxBidx);
+		// int maxBidx = bv.getBidx();  // selectKey 결과값
+		// int value2 = bm.boardOriginbidxUpadte(maxBidx);
 		
-		return value + value2;
+		// return value + value2;
+		return value;
 	}
 
 	@Override

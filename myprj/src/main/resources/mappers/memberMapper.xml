@@ -12,11 +12,11 @@
 	</insert>
 	
 	<select id="memberIdCheck" parameterType="String" resultType="int">  <!-- resultType은 Interger로 해야하지만 mybatis에서는 int로 사용할 수 있음 -->
-		select count(*) as cnt from member where delyn = 'N' and memberid = #{memberId}
+		select count(*) as cnt from member where delyn = 'N' and id = #{id}
 	</select>
 		
-	<select id="memberLoginCheck" parameterType="String" resultType="mv">  <!-- mybatis_config.xml에서 MemberVo의 별칭을 mv로 지정했음 -->
-		select * from member where memberid = #{memberId}
+	<select id="memberLogin" parameterType="String" resultType="mv">
+		SELECT * FROM MEMBER WHERE id = #{id}
 	</select>
 	
 	<select id="memberSelectAll" resultType="mv">  <!-- resultType="ArrayList<mv>" 아님 주의 -->

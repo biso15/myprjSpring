@@ -164,7 +164,7 @@ public class BoardController {
 		return path;
 	}
 
-	@RequestMapping(value="/${boardcode}/${period}/boardWriteAction.do", method=RequestMethod.POST)
+	@RequestMapping(value="/{boardcode}/{period}/boardWriteAction.do", method=RequestMethod.POST)
 	public String boardWriteAction(
 			BoardVo bv,
 			@RequestParam("attachfile") MultipartFile filename,  // input의 name 이름이 BoardVo에 있는 프로퍼티 이름과 동일하면 BoardVo로 값이 넘어가서 @RequestParam으로 받을 수 없으므로, input의 name을 filename이 아닌 attachfile으로 한다.
@@ -173,18 +173,22 @@ public class BoardController {
 			@RequestPart(name = "posterImages", required = false) MultipartFile uploadPosterImages
 			) throws Exception {
 		
-		logger.info("boardWriteAction들어옴");
+		logger.info("boardWriteAction들어옴");	
 		
-		// 파일첨부
+		// 파일첨부(썸네일)
 		MultipartFile file = filename;
 		String uploadedFileName = "";
 		
-		if(!file.getOriginalFilename().equals("")) {			
+		if(!file.getOriginalFilename().equals("")) {
+			String uploadPath = "D:\\dev\\myprj\\myprjSpring\\myprj\\src\\main\\webapp\\resources\\boardImages\\";
 			uploadedFileName = UploadFileUtiles.uploadFile(uploadPath, file.getOriginalFilename(), file.getBytes());
 		}
 		
-		String midx = request.getSession().getAttribute("midx").toString();  // HttpSession은 HttpServletRequest 안에 있음
-		int midx_int = Integer.parseInt(midx);
+		//String midx = request.getSession().getAttribute("midx").toString();  // HttpSession은 HttpServletRequest 안에 있음
+		//int midx_int = Integer.parseInt(midx);
+
+		int midx_int = 1;
+		
 		String ip = userip.getUserIp(request);
 		
 		bv.setUploadedFilename(uploadedFileName);
@@ -192,24 +196,19 @@ public class BoardController {
 		bv.setIp(ip);
 		
 		int value = boardService.boardInsert(bv);
-		
+			
 		String path = "";
-		if(value == 2) {
+		if(value == 1) {
 			rttr.addFlashAttribute("msg", "글쓰기 성공");
-			path = "redirect:/board/travelList.do";
+			path = "redirect:/board/{boardcode}/{period}/boardList.do";
 		} else {
 			rttr.addFlashAttribute("msg", "입력이 잘못되었습니다.");
-			path = "redirect:/board/travelWrite.do";
+			path = "redirect:/board/{boardcode}/{period}/boardWrite.do";
 		}
 		
 		return path;
 	}
 
-	
-	
-	
-	
-	
 	@RequestMapping(value="/imagePreview.do", method=RequestMethod.POST)
 	public ResponseEntity<Map<String, String>> imagePreview(@RequestParam("upload") MultipartFile upload, HttpServletRequest request) {
 		
@@ -233,20 +232,68 @@ public class BoardController {
 	        
 	        // 업로드된 파일의 URL을 반환
 	        String fileUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + 
-	                "/board/displayFile.do?fileName=" + fileName;  // 상대 경로 또는 절대 경로로 반환
+	                "/board/displayFile.do?fileName=" + fileName + "&type=" + "preview";
 	        
 	        // Map<String, Object> response = new HashMap<>();
 	        // response.put("uploaded", true); // 업로드 성공 여부
 	        // response.put("url", fileUrl);
 
-	        Map<String, String> response = Map.of("url", fileUrl);       
+	        Map<String, String> response = Map.of("url", fileUrl);
 	        return ResponseEntity.ok(response); // JSON 형식으로 반환
 	        
 	    } catch (IOException e) {
 	        e.printStackTrace();
 	        
 	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-	    }		 
+	    }
+	}
+	
+	@RequestMapping(value="/displayFile.do", method=RequestMethod.GET)  // 가상경로와 매핑이 되어야 함
+	public ResponseEntity<byte[]> displayFile(
+			@RequestParam("fileName") String fileName,
+			@RequestParam("type") String type  // 미리보기 이미지인지 구분
+			) {
+		
+		logger.info("displayFile들어옴");
+	
+		ResponseEntity<byte[]> entity = null;  // ResponseEntity : Collection처럼 객체를 담는다.
+		InputStream in = null;
+		
+		try{
+			String formatName = fileName.substring(fileName.lastIndexOf(".")+1);  // 파일의 확장자를 꺼냄
+			MediaType mType = MediaUtils.getMediaType(formatName);  // MediaUtils에 확장자를 넣어서 파일의 타입을 알아냄
+			
+			HttpHeaders headers = new HttpHeaders();		
+			System.out.println("type : " + type);
+			String uploadPath = "";
+			if(type.equals("preview")) {
+				uploadPath = "D:\\dev\\myprj\\myprjSpring\\myprj\\src\\main\\webapp\\resources\\ckeditor5Builder\\ckeditor5\\imagePreview\\";		
+			} else if(type.equals("thumbnail")) {
+				uploadPath = "D:\\dev\\myprj\\myprjSpring\\myprj\\src\\main\\webapp\\resources\\boardImages\\";
+			}
+			
+			in = new FileInputStream(uploadPath+fileName);  // 파일 읽기
+		
+			if(mType != null){  // 파일의 타입이 JPG, GIF, PNG 중 하나일 경우				
+				headers.setContentType(mType);
+			}
+			
+			entity = new ResponseEntity<byte[]>(IOUtils.toByteArray(in), headers, HttpStatus.CREATED);  // 생성자의 매개변수에 값을 받아서 생성
+			
+		}catch(Exception e){
+			e.printStackTrace();
+			entity = new ResponseEntity<byte[]>(HttpStatus.BAD_REQUEST);
+			
+		}finally{
+			try {
+				in.close();
+			} catch (IOException e) {
+				
+				e.printStackTrace();
+			}
+		}
+				
+		return entity;
 	}
 	
 
@@ -353,63 +400,6 @@ public class BoardController {
 	}
 	
 	
-	@RequestMapping(value="/displayFile.do", method=RequestMethod.GET)  // 가상경로와 매핑이 되어야 함
-	public ResponseEntity<byte[]> displayFile(
-			@RequestParam("fileName") String fileName,
-			@RequestParam(value="down", defaultValue="0") int down  // 다운 받을지, 화면에서 보여줄지 선택
-			) {
-		
-		logger.info("displayFile들어옴");
-	
-		ResponseEntity<byte[]> entity = null;  // ResponseEntity : Collection처럼 객체를 담는다.
-		InputStream in = null;
-		
-		try{
-			String formatName = fileName.substring(fileName.lastIndexOf(".")+1);  // 파일의 확장자를 꺼냄
-			MediaType mType = MediaUtils.getMediaType(formatName);  // MediaUtils에 확장자를 넣어서 파일의 타입을 알아냄
-			
-			HttpHeaders headers = new HttpHeaders();		
-			 
-			String uploadPath = "D:\\dev\\myprj\\myprjSpring\\myprj\\src\\main\\webapp\\resources\\ckeditor5Builder\\ckeditor5\\imagePreview\\";
-			in = new FileInputStream(uploadPath+fileName);  // 파일 읽기
-		
-			if(mType != null){  // 파일의 타입이 JPG, GIF, PNG 중 하나일 경우
-				
-				if (down==1) {  // 다운을 받는다
-					fileName = fileName.substring(fileName.indexOf("_")+1);
-					headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
-					headers.add("Content-Disposition", "attachment; filename=\""+
-							new String(fileName.getBytes("UTF-8"),"ISO-8859-1")+"\"");	
-					
-				}else {  // 다운받지 않고 타입을 저장
-					headers.setContentType(mType);	
-				}
-				
-			}else{  // 미리보기 하지 않고 다운을 받는다.
-				
-				fileName = fileName.substring(fileName.indexOf("_")+1);
-				headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
-				headers.add("Content-Disposition", "attachment; filename=\""+
-						new String(fileName.getBytes("UTF-8"),"ISO-8859-1")+"\"");				
-			}
-			
-			entity = new ResponseEntity<byte[]>(IOUtils.toByteArray(in), headers, HttpStatus.CREATED);  // 생성자의 매개변수에 값을 받아서 생성
-			
-		}catch(Exception e){
-			e.printStackTrace();
-			entity = new ResponseEntity<byte[]>(HttpStatus.BAD_REQUEST);
-			
-		}finally{
-			try {
-				in.close();
-			} catch (IOException e) {
-				
-				e.printStackTrace();
-			}
-		}
-				
-		return entity;
-	}
 	
 	
 	

@@ -13,16 +13,10 @@
   <meta name="robots" content="noindex, nofollow">
   <title>개인프로젝트</title>
 
-  <!-- ck editor -->
+  <!-- 에디터 -->
   <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/ckeditor5Builder/style.css">
   <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/ckeditor5Builder/ckeditor5/ckeditor5.css">
   
-<!-- CKEditor5를 로드하는 스크립트 -->
-<!-- <script src="https://cdn.ckeditor.com/ckeditor5/43.3.1/ckeditor5.js"></script> -->
-
-<!-- 필요한 경우 추가적인 CKEditor5 모듈을 로드하려면 추가 -->
-<!-- <script src="https://cdn.ckeditor.com/ckeditor5/43.3.1/build/classic/ckeditor.js"></script> -->
-
   <!-- 캘린더 -->
   <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js'></script>
   <script>
@@ -44,15 +38,49 @@
 	
 	// 등록하기
 	function check() {
-		  
-	  let fm = document.frm;		  
-	  let ans = confirm("저장하시겠습니까?");		  
-	  if (ans == true) {
+	  
+	  // 유효성 검사하기
+	  let fm = document.frm;  // 문자객체 안에 form 객체 생성하기
+	  
+	  if (fm.title.value == "") {
+		  alert("제목을 입력해주세요");
+		  fm.title.focus();
+		  return;
+	  } else if (fm.summary.value == "") {
+		  alert("부제목을 입력해주세요");
+		  fm.summary.focus();
+		  return;
+	  } else if (fm.attachfile.value == "") {
+		  alert("썸네일을 선택해주세요");
+		  fm.attachfile.focus();
+		  return;
+	  }
+	  
+	  
+	  let ans = confirm("저장하시겠습니까?");	  	  
+ 	  if (ans == true) {
+ 		  
+		  function cleanHTML(html) {
+		      const parser = new DOMParser();
+		      const doc = parser.parseFromString(html, 'text/html');
+		
+		      // ck-widget__resizer 클래스 제거
+		      doc.querySelectorAll('.ck.ck-reset_all.ck-widget__resizer').forEach(el => el.remove());
+		      doc.querySelectorAll('.ck.ck-reset_all.ck-widget__type-around').forEach(el => el.remove());
+		      return doc.body.innerHTML;
+		  }
+		
+	  	  // 데이터 로드 후 처리
+ 		  const ckContent = document.querySelector(".ck-content");	  
+	      const cleanedHTML = cleanHTML(ckContent.innerHTML);
+ 		  fm.contents.value = cleanedHTML;
+ 		  
+ 		  
 		  fm.action="${pageContext.request.contextPath}/board/${boardcode}/${period}/boardWriteAction.do";
 		  fm.method="post";
 		  fm.enctype="multipart/form-data";
 		  fm.submit();
-	  }		  
+	  } 
 	  return;
 	}
 	</script>	
@@ -69,7 +97,7 @@
         </svg>
         <ol class="breadcrumb breadcrumb-chevron p-3 justify-content-end">
           <li class="breadcrumb-item">
-            <a class="link-body-emphasis" href="#">
+            <a class="link-body-emphasis" href="${pageContext.request.contextPath}">
               <svg class="bi" width="16" height="16"><use xlink:href="#house-door-fill"></use></svg>
               <span class="visually-hidden">Home</span>
             </a>
@@ -80,7 +108,7 @@
     </div>
 
     <!-- 컨텐츠 -->
-    <form class="write pb-5">
+    <form class="write pb-5" name="frm">
       <div class="card mb-3">
         <div class="row">
           <div class="mb-3">
@@ -93,17 +121,19 @@
           </div>
           
           <div class="mb-3">
-            <label class="form-label" for="thumbnail">썸네일</label>
+            <label class="form-label" for="thumbnail">썸네일(정사각형 파일을 올려주세요.)</label>
             <input type="file" name="attachfile" class="form-control" id="thumbnail" required="">
           </div>
+          
 		  <div class="main-container">
-			<div class="editor-container editor-container_document-editor" id="editor-container">
-				<div class="editor-container__toolbar" id="editor-toolbar"></div>
-				<div class="editor-container__editor-wrapper">
-					<div class="editor-container__editor"><div id="editor"></div></div>
+			<div class="editor-container editor-container_classic-editor" id="editor-container">
+				<div class="editor-container__editor">
+					<div id="editor"></div>
 				</div>
 			</div>
 		  </div>
+		  
+		  <textarea class="d-none" name="contents" id="contents"></textarea>
         </div>
       </div>
       
@@ -139,50 +169,22 @@
       </div>
 
       <div class="text-center">
-        <button type="submit" class="btn btn-primary mb-3" onclick="check()">등록하기</button>
+        <button type="button" class="btn btn-primary mb-3" onclick="check()">등록하기</button>
       </div>
     </form>
     
     <%@ include file="/WEB-INF/footer.jsp" %>
-  </div>
-  <%-- 
+ 
+  <!-- 에디터 -->
   <script type="importmap">
   {
-    "imports": {
-      "ckeditor5": "https://cdn.ckeditor.com/ckeditor5/43.3.1/ckeditor5.js",
-      "ckeditor5/": "https://cdn.ckeditor.com/ckeditor5/43.3.1/"
-    }
+	"imports": {
+	  "ckeditor5": "${pageContext.request.contextPath}/resources/ckeditor5Builder/ckeditor5/ckeditor5.js",
+	  "ckeditor5/": "${pageContext.request.contextPath}/resources/ckeditor5Builder/ckeditor5/"
+	}
   }
-  </script>
-  
-  
-  
-  <script type="module">
-  	import {ClassicEditor, SimpleUploadAdapter} from 'https://cdn.ckeditor.com/ckeditor5/43.3.1/ckeditor5.js';  
-  </script>
-  
-  <script type="module" src="${pageContext.request.contextPath}/resources/ckeditor5/main.js"></script>
- --%>
- 
- 
-<script type="importmap">
-		{
-			"imports": {
-				"ckeditor5": "${pageContext.request.contextPath}/resources/ckeditor5Builder/ckeditor5/ckeditor5.js",
-				"ckeditor5/": "${pageContext.request.contextPath}/resources/ckeditor5Builder/ckeditor5/"
-			}
-		}
-		</script>
-		
-	<script type="module" src="${pageContext.request.contextPath}/resources/ckeditor5Builder/main.js"></script>
-	<!-- A friendly reminder to run on a server, remove this during the integration. -->
-	<script>
-		window.onload = function() {
-			if ( window.location.protocol === "file:" ) {
-				alert( "This sample requires an HTTP server. Please serve this file with a web server." );
-			}
-		};
-	</script>
-
+  </script>		
+  <script type="module" src="${pageContext.request.contextPath}/resources/ckeditor5Builder/main.js"></script>
+	
 </body>
 </html>

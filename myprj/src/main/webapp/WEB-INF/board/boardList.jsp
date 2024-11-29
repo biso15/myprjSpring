@@ -32,7 +32,7 @@
         </svg>
         <ol class="breadcrumb breadcrumb-chevron p-3 justify-content-end">
           <li class="breadcrumb-item">
-            <a class="link-body-emphasis" href="#">
+            <a class="link-body-emphasis" href="${pageContext.request.contextPath}">
               <svg class="bi" width="16" height="16"><use xlink:href="#house-door-fill"></use></svg>
               <span class="visually-hidden">Home</span>
             </a>
@@ -47,7 +47,7 @@
 
     <!-- 검색영역 -->
     <div class="d-flex justify-content-between">
-      <c:if test="${sessionScope.admin.equals('Y')}">
+      <c:if test="${sessionScope.adminyn.equals('Y')}">
       <a herf="${pageContext.request.contextPath}/board/${requestScope.boardcode}/${requestScope.period}/boardWrite.do" class="btn btn-outline-primary">글쓰기</a>
       </c:if>
       <form class="d-flex w-35" role="search" name="frm" action="${pageContext.request.contextPath}/board/${requestScope.boardcode}/${requestScope.period}/boardList.do" method="get">
