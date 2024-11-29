@@ -11,13 +11,6 @@
   <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
   <meta name="generator" content="Hugo 0.122.0">
   <title>개인프로젝트</title>
-  <script>
-	// 메세지
-	const msg = "${requestScope.msg}";
-	if (msg != null && msg != "") {
-	 alert(msg);
-	}
-	</script>
 
     <%@ include file="/WEB-INF/header.jsp" %>
         

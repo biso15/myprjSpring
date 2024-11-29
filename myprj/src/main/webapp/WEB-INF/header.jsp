@@ -3,7 +3,13 @@
     
   <link href="${pageContext.request.contextPath}/resources/css/bootstrap.min.css" rel="stylesheet">
   <link href="${pageContext.request.contextPath}/resources/css/style.css" rel="stylesheet">
-
+  <script>
+	// 메세지
+	const msg = "${requestScope.msg}";
+	if (msg != null && msg != "") {
+	 alert(msg);
+	}
+	</script>
 </head>
 <body>
 

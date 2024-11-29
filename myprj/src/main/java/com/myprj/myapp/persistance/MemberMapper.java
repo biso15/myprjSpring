@@ -1,6 +1,5 @@
 package com.myprj.myapp.persistance;
 
-import java.util.ArrayList;
 
 import com.myprj.myapp.domain.MemberVo;
 
@@ -11,7 +10,8 @@ public interface MemberMapper {
 
 	public int memberIdCheck(String id);
 
-	public MemberVo memberLogin(String memberId);
+	public MemberVo memberSelect(String id);
 
-	public ArrayList<MemberVo> memberSelectAll();
+	public int memberUpdate(MemberVo mv);
+	
 }

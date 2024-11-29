@@ -11,15 +11,9 @@
   <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
   <meta name="generator" content="Hugo 0.122.0">
   <title>개인프로젝트</title>
-  <script>
-	// 메세지
-	const msg = "${requestScope.msg}";
-	if (msg != null && msg != "") {
-	 alert(msg);
-	}
-	</script>
+
     <%@ include file="/WEB-INF/header.jsp" %>
-        
+
     <div class="d-flex align-items-center justify-content-between mb-4">
       <h2>${requestScope.menu}</h2>
       <!-- 네비게이션 -->
@@ -71,7 +65,7 @@
         <a class="col" href="${pageContext.request.contextPath}/board/${bv.bidx}/boardContents.do">
           <div class="card shadow-sm flex-column justify-content-between">
             <div>
- 	           <img src="${pageContext.request.contextPath}/board/displayFile.do?fileName=${bv.thumbnail}&type=thumbnail" alt="thumbnail">
+           		<img src="${pageContext.request.contextPath}/board/displayFile.do?fileName=${bv.thumbnail}&type=thumbnail" alt="thumbnail">
  	        </div>
             <div class="card-body">
               <p class="card-text ellipsis">${bv.title}</p>

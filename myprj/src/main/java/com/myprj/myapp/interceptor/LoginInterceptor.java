@@ -20,8 +20,7 @@ public class LoginInterceptor extends HandlerInterceptorAdapter {
 		
 		if(session.getAttribute("midx") != null) {
 			session.removeAttribute("midx");
-			session.removeAttribute("memberId");
-			session.removeAttribute("memberName");
+			session.removeAttribute("id");
 			session.removeAttribute("adminyn");
 		}
 		
@@ -36,8 +35,7 @@ public class LoginInterceptor extends HandlerInterceptorAdapter {
 		// RedirectAttributes나 Model 객체에 담은 값을 꺼낸다
 		// loginAction.do에서 로그인 성공시 rttr.addAttribute로 담은 값을 가져와서 저장
 		String midx = modelAndView.getModel().get("midx").toString();
-		String memberId = modelAndView.getModel().get("memberId").toString();
-		String memberName = modelAndView.getModel().get("memberName").toString();
+		String id = modelAndView.getModel().get("id").toString();
 		String adminyn = modelAndView.getModel().get("adminyn").toString();
 		
 		modelAndView.getModel().clear();  // (url에 파라미터로 값이 넘어가지 않게 하기 위해)파라미터 model 값을 지운다.
@@ -45,8 +43,7 @@ public class LoginInterceptor extends HandlerInterceptorAdapter {
 		HttpSession session = request.getSession();
 		if(midx != null) {
 			session.setAttribute("midx", midx);
-			session.setAttribute("memberId", memberId);
-			session.setAttribute("memberName", memberName);
+			session.setAttribute("id", id);
 			session.setAttribute("adminyn", adminyn);
 		}
 	}

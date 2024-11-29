@@ -283,7 +283,8 @@ const editorConfig = {
 	translations: [translations],
 	simpleUpload: {
             // The URL that the images are uploaded to.
-            uploadUrl: 'http://localhost/myapp/board/imagePreview.do',
+            // uploadUrl: 'http://localhost/myapp/board/imagePreview.do',
+            uploadUrl: `${window.location.protocol}//${window.location.hostname}${window.location.port ? `:${window.location.port}` : ''}/myapp/board/imagePreview.do`, 
 
             // Enable the XMLHttpRequest.withCredentials property.
             withCredentials: true,

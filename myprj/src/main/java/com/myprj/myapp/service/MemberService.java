@@ -11,8 +11,8 @@ public interface MemberService {
 
 	public int memberIdCheck(String id);
 	
-	public MemberVo memberLogin(String memberId);
-	
-	public ArrayList<MemberVo> memberSelectAll();
-	
+	public MemberVo memberSelect(String id);
+
+	public int memberUpdate(MemberVo mv);
+		
 }

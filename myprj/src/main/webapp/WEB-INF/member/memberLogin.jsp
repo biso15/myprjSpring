@@ -13,11 +13,6 @@
   <title>개인프로젝트</title>
          
   <script>
-	// 메세지
-	const msg = "${requestScope.msg}";
-	if (msg != null && msg != "") {
-	  alert(msg);
-	}
 
 	function check() {	  
 

@@ -9,11 +9,6 @@
 <title>글수정</title>
 <link href="${pageContext.request.contextPath}/resources/css/style2.css" rel="stylesheet">
 <script>
-// 메세지
-const msg = "${requestScope.msg}";
-if (msg != null && msg != "") {
- alert(msg);
-} 
 
 function check() {
 	  

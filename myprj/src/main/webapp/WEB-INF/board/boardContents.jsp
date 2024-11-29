@@ -10,11 +10,6 @@
 <link href="${pageContext.request.contextPath}/resources/css/style2.css" rel="stylesheet">
 <script src="https://code.jquery.com/jquery-latest.min.js"></script>
 <script>
-// 메세지
-const msg = "${requestScope.msg}";
-if (msg != null && msg != "") {
-    alert(msg);
-}
 
 // 파일 다운로드시 썸네일을 다운받게 되므로 파일 이름에서 "s-"를 제거해야함
 function checkImageType(fileName) {  // 패턴과 확장자가 일치하는 파일 이름을 리턴받음

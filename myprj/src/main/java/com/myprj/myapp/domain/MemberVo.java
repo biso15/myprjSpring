@@ -11,7 +11,7 @@ public class MemberVo {
 	private String email;
 	private String date;
 	private String delyn;
-	private String admin;
+	private String adminyn;
 	private String ip;
 	
 	public int getMidx() {
@@ -68,11 +68,11 @@ public class MemberVo {
 	public void setDelyn(String delyn) {
 		this.delyn = delyn;
 	}
-	public String getAdmin() {
-		return admin;
+	public String getAdminyn() {
+		return adminyn;
 	}
-	public void setAdmin(String admin) {
-		this.admin = admin;
+	public void setAdminyn(String admin) {
+		this.adminyn = admin;
 	}
 	public String getIp() {
 		return ip;

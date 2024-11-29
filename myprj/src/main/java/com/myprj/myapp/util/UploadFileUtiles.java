@@ -121,5 +121,9 @@ public class UploadFileUtiles {
 		boolean flag = ImageIO.write(destImg, formatName.toUpperCase(), newFile);
 		System.out.println("복사여부 flag"+flag);
 		return thumbnailName.substring(uploadPath.length()).replace(File.separatorChar, '/');
+		
+		// return uploadPath + path + File.separator + fileName;
+		// 썸네일을 만들지 않기 위해서 윗줄 제외 모두 주석처리할 수 있으나, 그럴 경우 DB에 원본 이미지 데이터가 들어가게 되는데 컬럼의 크기가 너무 커지게 됨.
+		// 썸네일을 DB에 올려놓고, 사용할때는 이미지 파일의 이름을 변경해서 원본으로 사용해야될 것 같음
 	}	
 }

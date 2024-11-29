@@ -11,7 +11,6 @@
   <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
   <meta name="generator" content="Hugo 0.122.0">
   <title>개인프로젝트</title>
-  <script src="https://code.jquery.com/jquery-latest.min.js"></script>  <!-- CDN주소 -->
     
   <script>
   
@@ -23,15 +22,7 @@
 	  // 유효성 검사하기
 	  let fm = document.frm;
 
-	  if (fm.id.value == "") {
-		  alert("아이디를 입력해주세요");
-		  fm.id.focus();
-		  return;
-	  } else if ($("#btn").val() == "N") {
-		  alert("아이디 중복체크를 해주세요");
-		  fm.memberid.focus();
-		  return;
-	  } else if (fm.password.value == "") {
+	  if (fm.password.value == "") {
 		  alert("비밀번호를 입력해주세요");
 		  fm.password.focus();
 		  return;
@@ -43,14 +34,6 @@
 		  alert("비밀번호가 다릅니다.");
 		  fm.password.value = "";
 		  fm.passwordcheck.value = "";		  
-		  return;
-	  } else if (fm.name.value == "") {
-		  alert("이름을 입력해주세요");
-		  fm.name.focus();
-		  return;
-	  } else if (fm.birthday.value == "") {
-		  alert("생년월일을 입력해주세요");
-		  fm.birthday.focus();
 		  return;
 	  } else if (fm.phone.value == "") {
 		  alert("연락처를 입력해주세요");
@@ -71,10 +54,10 @@
 		  fm.membermail.focus();
 		  return;
 	  }
-	  	  	  
-	  let ans = confirm("저장하시겠습니까?");	  
+	  	  
+	  let ans = confirm("수정하시겠습니까?");	  
 	  if (ans == true) {
-		  fm.action="<%=request.getContextPath() %>/member/memberJoinAction.do";
+		  fm.action="<%=request.getContextPath() %>/member/memberMypageAction.do";
 		  fm.method="post";
 		  fm.submit();
 	  }
@@ -82,45 +65,12 @@
 	  return;
   }
   
-	$(document).ready(function() {
-	  $("#btn").click(function() {
-		  // alert("중복체크버튼 클릭");
-		  let id = $("#id").val();
-		  if (id == "") {
-			  alert("아이디를 입력해주세요");
-			  return;
-		  }
-		  
-		  $.ajax({
-			  type: "post",  // 전송방식
-			  url: "<%=request.getContextPath()%>/member/memberIdCheck.do",
-			  dataType: "json",  // 받는 형식. json 타입은 문서에서 {"key값": "value값", "key값" : "value값"} 형식으로 구성
-			  data: {"id": id},
-			  success: function(result) {  // 결과가 넘어와서 성공했을 때 받는 영역
-				  // alert("전송성공 테스트");
-				  if (result.cnt == 0) {
-					  alert("사용할 수 있는 아이디입니다.");
-					  $("#btn").val("Y");
-				  } else {
-					  alert("사용할 수 없는 아이디입니다.");
-					  $("#id").val("");  // 입력한 아이디 지우기
-				  }
-			  },
-			  error: function(xhr, status, error) {  // 결과가 실패했을 때 받는 영역
-				alert("전송실패 테스트");
- 			    /* console.log("Error Status: " + status);
-			    console.log("Error Detail: " + error);
-			    console.log("Response: " + xhr.responseText); */
-			  }
-		  });
-	  })
-  })
   </script>
-  
- <%@ include file="/WEB-INF/header.jsp" %>
- 
-   <div class="d-flex align-items-center justify-content-between mb-4">
- 	<h2>회원가입</h2>
+
+   <%@ include file="/WEB-INF/header.jsp" %>
+    
+    <div class="d-flex align-items-center justify-content-between mb-4">
+      <h2>마이페이지</h2>
       <!-- 네비게이션 -->
       <nav aria-label="breadcrumb">
         <svg xmlns="http://www.w3.org/2000/svg" class="d-none">
@@ -138,54 +88,57 @@
           <!-- <li class="breadcrumb-item">
             <a class="link-body-emphasis fw-semibold text-decoration-none" href="#">Library</a>
           </li> -->
-          <li class="breadcrumb-item active" aria-current="page">회원가입</li>
+          <li class="breadcrumb-item active" aria-current="page">마이페이지</li>
         </ol>
       </nav>
     </div>
 
     <!-- 컨텐츠 -->
-    <form class="join pb-5" name="frm">
+    <form class="mypage pb-5" name="frm">
       <div class="card mb-3">
         <div class="row">
           <div class="mb-3 col-4">
             <label for="id" class="form-label">아이디</label>
-            <input type="text" class="form-control" id="id" name="id" placeholder="" value="" required="">
-            <button type="button" id="btn" name="btn" value="N">중복체크</button>
+            <p class="mb-0 text">${requestScope.mv.getId()}</p>
           </div>
           <div class="mb-3 col-4">
             <label for="password" class="form-label">비밀번호</label>
-            <input type="password" class="form-control" id="password" name="password" placeholder="" value="" required="">
+            <input type="password" class="form-control" id="password" name="password" >
+            <div class="invalid-feedback">비밀번호를 입력해주세요.</div>
           </div>
           <div class="mb-3 col-4">
             <label for="passwordcheck" class="form-label">비밀번호 확인</label>
-            <input type="password" class="form-control" id="passwordcheck" name="passwordcheck"  placeholder="" value="" required="">
+            <input type="password" class="form-control" id="passwordcheck">
+            <div class="invalid-feedback">비밀번호 확인을 해주세요.</div>
           </div>
 
           <div class="mb-3 col-4">
             <label for="name" class="form-label">이름</label>
-            <input type="text" class="form-control" id="name" name="name" placeholder="" value="" required="">
-          </div>          
+            <p class="mb-0 text">${requestScope.mv.getName()}</p>
+          </div>
           <div class="mb-3 col-4">
             <label for="birthday" class="form-label">생년월일</label>
-            <input type="date" class="form-control" id="birthday" name="birthday" placeholder="" value="" required="">
+            <p class="mb-0 text">${requestScope.mv.getBirthday()}</p>
           </div>
           <div class="mb-3 col-4">
             <label for="phone" class="form-label">연락처</label>
-            <input type="tel" class="form-control" id="phone" name="phone" placeholder="01012345678" value="" required="">
+            <input type="tel" class="form-control" id="phone" name="phone" value="${requestScope.mv.getPhone()}">
+            <div class="invalid-feedback">연락처를 입력해주세요.</div>
           </div>
 
           <div class="mb-3 col-4">
             <label for="email" class="form-label">이메일</label>
-            <input type="email" class="form-control" id="email" name="email" placeholder="" value="" required="">
+            <input type="email" class="form-control" id="email" name="email" value="${requestScope.mv.getEmail()}">
+            <div class="invalid-feedback">이메일을 입력해주세요.</div>
           </div>
         </div>
       </div>
 
       <div class="text-center">
-        <button class="btn btn-primary mb-3" type="button"  onclick="check();">회원가입</button>
+        <button class="btn btn-primary mb-3" type="button" onClick="check()">수정하기</button>
       </div>
     </form>
-        
-    <%@ include file="/WEB-INF/footer.jsp" %>
- </body>
+
+	<%@ include file="/WEB-INF/footer.jsp" %>
+</body>
 </html>

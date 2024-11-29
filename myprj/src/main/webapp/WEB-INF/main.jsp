@@ -17,15 +17,6 @@
   <script src="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script> 
   <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css" />
   <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick-theme.css" />
-
-  <script>
-	// 메세지
-	const msg = "${requestScope.msg}";
-	if (msg != null && msg != "") {
-	  alert(msg);
-	}
-	console.log(msg);
-  </script>
 	
     <%@ include file="header.jsp" %>
 

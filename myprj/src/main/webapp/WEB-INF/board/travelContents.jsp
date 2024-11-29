@@ -46,7 +46,9 @@
       </div>
 
       <div class="text-center">
+      	<c:if test="${sessionScope.adminyn.equals('Y')}">
         <a href="${pageContext.request.contextPath}/board/${requestScope.bv.bidx}/boardModify.do" class="btn btn-primary mb-3">수정</a>
+        </c:if>
         <a href="${pageContext.request.contextPath}/board/${requestScope.bv.bidx}/travelReservation.do" class="btn btn-primary mb-3">예약</a>
       </div>
     </div>

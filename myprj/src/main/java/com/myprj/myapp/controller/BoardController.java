@@ -184,14 +184,16 @@ public class BoardController {
 			uploadedFileName = UploadFileUtiles.uploadFile(uploadPath, file.getOriginalFilename(), file.getBytes());
 		}
 		
-		//String midx = request.getSession().getAttribute("midx").toString();  // HttpSession은 HttpServletRequest 안에 있음
-		//int midx_int = Integer.parseInt(midx);
-
-		int midx_int = 1;
+		String midx = request.getSession().getAttribute("midx").toString();  // HttpSession은 HttpServletRequest 안에 있음
+		int midx_int = Integer.parseInt(midx);
 		
 		String ip = userip.getUserIp(request);
 		
-		bv.setUploadedFilename(uploadedFileName);
+		// bv.setUploadedFilename(uploadedFileName);
+		
+		String replaceFileName = uploadedFileName.replaceAll("(\\/\\d{4}\\/\\d{2}\\/\\d{2})\\/s-", "$1/");
+        bv.setUploadedFilename(replaceFileName);
+        
 		bv.setMidx(midx_int);
 		bv.setIp(ip);
 		

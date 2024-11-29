@@ -32,16 +32,17 @@ public class MemberServiceImpl implements MemberService {
 	}
 	
 	@Override
-	public MemberVo memberLogin(String memberId) {
+	public MemberVo memberSelect(String id) {
 		
-		MemberVo mv = mm.memberLogin(memberId);
+		MemberVo mv = mm.memberSelect(id);
 		return mv;
 	}
 
 	@Override
-	public ArrayList<MemberVo> memberSelectAll() {
+	public int memberUpdate(MemberVo mv) {
 		
-		ArrayList<MemberVo> alist = mm.memberSelectAll();
-		return alist;
+		int value = mm.memberUpdate(mv);
+		return value;
 	}
+
 }
