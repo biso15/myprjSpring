@@ -3,6 +3,7 @@ package com.myprj.myapp.domain;
 public class CalendarVo {
 	private int calidx;
 	private String startday;
+	private String endday;
 	private int adultprice;
 	private int childprice;
 	private String date;
@@ -21,6 +22,12 @@ public class CalendarVo {
 	}
 	public void setStartday(String startday) {
 		this.startday = startday;
+	}
+	public String getEndday() {
+		return endday;
+	}
+	public void setEndday(String endday) {
+		this.endday = endday;
 	}
 	public int getAdultprice() {
 		return adultprice;

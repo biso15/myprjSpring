@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -57,6 +58,7 @@ import org.springframework.beans.factory.annotation.Value;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
 
 
 
@@ -167,6 +169,7 @@ public class BoardController {
 	@RequestMapping(value="/{boardcode}/{period}/boardWriteAction.do", method=RequestMethod.POST)
 	public String boardWriteAction(
 			BoardVo bv,
+			CalendarVo calv,
 			@RequestParam("attachfile") MultipartFile filename,  // input의 name 이름이 BoardVo에 있는 프로퍼티 이름과 동일하면 BoardVo로 값이 넘어가서 @RequestParam으로 받을 수 없으므로, input의 name을 filename이 아닌 attachfile으로 한다.
 			HttpServletRequest request,
 			RedirectAttributes rttr,
@@ -180,22 +183,34 @@ public class BoardController {
 		String uploadedFileName = "";
 		
 		if(!file.getOriginalFilename().equals("")) {
-			String uploadPath = "D:\\dev\\myprj\\myprjSpring\\myprj\\src\\main\\webapp\\resources\\boardImages\\";
+			String uploadPath = "C:\\Users\\J\\Desktop\\AWS 수업\\황정익강사님\\개인프로젝트\\myprjSpring\\myprj\\src\\main\\webapp\\resources\\boardImages\\";
 			uploadedFileName = UploadFileUtiles.uploadFile(uploadPath, file.getOriginalFilename(), file.getBytes());
 		}
 		
 		String midx = request.getSession().getAttribute("midx").toString();  // HttpSession은 HttpServletRequest 안에 있음
 		int midx_int = Integer.parseInt(midx);
+		bv.setMidx(midx_int);
 		
 		String ip = userip.getUserIp(request);
+		bv.setIp(ip);
 		
-		// bv.setUploadedFilename(uploadedFileName);
-		
+		// bv.setUploadedFilename(uploadedFileName);		
 		String replaceFileName = uploadedFileName.replaceAll("(\\/\\d{4}\\/\\d{2}\\/\\d{2})\\/s-", "$1/");
         bv.setUploadedFilename(replaceFileName);
         
-		bv.setMidx(midx_int);
-		bv.setIp(ip);
+		// end day 계산
+	    System.out.println(calv.getStartday());
+	    System.out.println(bv.getPeriod());
+
+	    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+	    Calendar calendar = Calendar.getInstance();
+	    calendar.setTime(sdf.parse(calv.getStartday()));
+	    calendar.add(Calendar.DAY_OF_MONTH, bv.getPeriod());
+
+	    // 계산된 날짜를 다시 request에 저장
+	    String calculatedDate = sdf.format(calendar.getTime());
+	    calv.setEndday(calculatedDate);
+	    
 		
 		int value = boardService.boardInsert(bv);
 			
@@ -217,7 +232,7 @@ public class BoardController {
 		System.out.println("imagePreview 들어옴");
 		
 		// 파일 저장 디렉토리. 실제경로
-		String uploadDirectory = "D:\\dev\\myprj\\myprjSpring\\myprj\\src\\main\\webapp\\resources\\ckeditor5Builder\\ckeditor5\\imagePreview\\";
+		String uploadDirectory = "C:\\Users\\J\\Desktop\\AWS 수업\\황정익강사님\\개인프로젝트\\myprjSpring\\myprj\\src\\main\\webapp\\resources\\ckeditor5Builder\\ckeditor5\\imagePreview\\";
 		File directory = new File(uploadDirectory);
 		
 		// 디렉토리가 존재하지 않으면 생성
@@ -269,9 +284,9 @@ public class BoardController {
 			System.out.println("type : " + type);
 			String uploadPath = "";
 			if(type.equals("preview")) {
-				uploadPath = "D:\\dev\\myprj\\myprjSpring\\myprj\\src\\main\\webapp\\resources\\ckeditor5Builder\\ckeditor5\\imagePreview\\";		
+				uploadPath = "C:\\Users\\J\\Desktop\\AWS 수업\\황정익강사님\\개인프로젝트\\myprjSpring\\myprj\\src\\main\\webapp\\resources\\ckeditor5Builder\\ckeditor5\\imagePreview\\";		
 			} else if(type.equals("thumbnail")) {
-				uploadPath = "D:\\dev\\myprj\\myprjSpring\\myprj\\src\\main\\webapp\\resources\\boardImages\\";
+				uploadPath = "C:\\Users\\J\\Desktop\\AWS 수업\\황정익강사님\\개인프로젝트\\myprjSpring\\myprj\\src\\main\\webapp\\resources\\boardImages\\";
 			}
 			
 			in = new FileInputStream(uploadPath+fileName);  // 파일 읽기

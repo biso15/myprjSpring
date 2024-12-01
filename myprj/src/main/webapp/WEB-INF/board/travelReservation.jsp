@@ -24,11 +24,28 @@
       center: 'title',
       right: 'next today'
     },
-    aspectRatio: 1.4
+    aspectRatio: 1.4,    
+    titleFormat : function(date) {
+	 	return date.date.year + '년 ' + (parseInt(date.date.month) + 1) + '월';
+	 },
+	 
+	// initialView : 'dayGridMonth',
+	events : [ 
+ 		<c:if test="${!empty requestScope.clist}">
+	    	<c:forEach items="${requestScope.clist}" var="cv" varStatus="status">
+	            {
+	            	start : "${cv.startday}",
+	    			classNames : 'travelCal',
+	    	   	 	display: 'list-item'
+	             },
+	        </c:forEach>
+    	</c:if>
+		],
     });
-
+    
     calendar.render();
-  });  
+  });
+  
   </script>
   
   <%@ include file="/WEB-INF/header.jsp" %>
