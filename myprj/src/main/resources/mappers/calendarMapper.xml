@@ -7,5 +7,10 @@
 	<select id="calendarSelectAll" parameterType="int" resultType="cv">
 		 SELECT * FROM CALENDAR WHERE delyn = 'N' and bidx = #{bidx};
 	</select>
+	
+	<insert id="calendarInsert" parameterType="cv">
+  		INSERT INTO CALENDAR(startday, endday, adultprice, childprice, bidx, ip, midx) 
+		VALUES(#{startday}, #{endday}, #{adultprice}, #{childprice}, #{bidx}, #{ip}, #{midx})
+	</insert>
 
 </mapper>

@@ -17,28 +17,11 @@
   <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/ckeditor5Builder/style.css">
   <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/ckeditor5Builder/ckeditor5/ckeditor5.css">
   
-  <!-- 캘린더 -->
-  <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js'></script>
   <script>
-	document.addEventListener('DOMContentLoaded', function() {
-	    var calendarEl = document.getElementById('calendar');
-	
-	    var calendar = new FullCalendar.Calendar(calendarEl, {
-	    windowResizeDelay : 10,
-	    headerToolbar: {
-	      left: 'prev',
-	      center: 'title',
-	      right: 'next today'
-	    },
-	    aspectRatio: 1.4,
-	  });
-	
-	  calendar.render();
-	});
 	
 	// 등록하기
-	function check() {
-	  
+	function check(action) {
+	
 	  // 유효성 검사하기
 	  let fm = document.frm;  // 문자객체 안에 form 객체 생성하기
 	  
@@ -75,8 +58,7 @@
 	      const cleanedHTML = cleanHTML(ckContent.innerHTML);
  		  fm.contents.value = cleanedHTML;
  		  
- 		  
-		  fm.action="${pageContext.request.contextPath}/board/${boardcode}/${period}/boardWriteAction.do";
+ 		  fm.action="${pageContext.request.contextPath}/board/${boardcode}/${period}/boardWriteAction.do";
 		  fm.method="post";
 		  fm.enctype="multipart/form-data";
 		  fm.submit();
@@ -136,40 +118,10 @@
 		  <textarea class="d-none" name="contents" id="contents"></textarea>
         </div>
       </div>
-      
-      <div class="card mb-3 d-flex">
-        <div class="row">
-          <div class="col-6">
-            <div class="row g-0 border rounded shadow-sm p-4 h-100">
-              <div id="calendar"></div>
-            </div>
-          </div>
-
-          <div class="col-6">            
-            <div class="row g-0 border rounded shadow-sm p-4">
-              <p class="fw-bold mb-1">1. 여행기간</p>
-              <div class="pl-4">
-                <p>2024-11-12 ~ 2024-11-14</p>
-              </div>
-
-              <p class="fw-bold mb-1 pt-3 border-top-dashed">2. 상품가격(1인)</p>
-              <div class="row">
-                <div class="col-6 pl-4">
-                  <label for="adultnumber" class="form-label">성인👩</label>
-                  <input type="number" class="form-control" id="adultnumber" min="0" value="0">
-                </div>
-                <div class="col-6 pr-4">
-                  <label for="childnumber" class="form-label">아동👶</label>
-                  <input type="number" class="form-control" id="childnumber" min="0" value="0">
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
 
       <div class="text-center">
-        <button type="button" class="btn btn-primary mb-3" onclick="check()">등록하기</button>
+        <button type="button" class="btn btn-primary mb-3" onclick="check()">등록</button>
+        <button type="button" class="btn btn-primary mb-3" onclick="history.back();">목록</button>
       </div>
     </form>
     

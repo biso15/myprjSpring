@@ -31,6 +31,10 @@
   	<insert id="boardInsert" parameterType="bv">
   		INSERT INTO BOARD(title, summary, contents, thumbnail, ip, midx, boardcode, period) 
 		VALUES(#{title}, #{summary}, #{contents}, #{uploadedFilename}, #{ip}, #{midx}, #{boardcode}, #{period})
+		
+		<selectKey keyProperty="bidx" resultType="int" order="AFTER">
+			select max(bidx) as maxbidx from board
+	  	</selectKey>
 	</insert>
 	
 	<update id="boardOriginbidxUpadte" parameterType="int">

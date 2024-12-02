@@ -51,16 +51,12 @@ import com.myprj.myapp.util.MediaUtils;
 import com.myprj.myapp.util.UploadFileUtiles;
 import com.myprj.myapp.util.UserIp;
 
-
-
 import org.springframework.beans.factory.annotation.Value;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
-
-
 
 @Controller  // Controller 객체를 만들어줘
 @RequestMapping(value="/board")  // 중복된 주소는 위쪽에서 한번에 처리
@@ -70,7 +66,7 @@ public class BoardController {
 	
 	@Autowired(required=false)  // @Autowired : 타입이 같은 객체를 찾아서 주입. required=false : 만약 주입 못받을 경우, null로 지정
 	private BoardService boardService;
-		
+	
 	@Autowired(required=false)
 	private CalendarService calendarService;
 	
@@ -168,22 +164,24 @@ public class BoardController {
 
 	@RequestMapping(value="/{boardcode}/{period}/boardWriteAction.do", method=RequestMethod.POST)
 	public String boardWriteAction(
+			@PathVariable("boardcode") String boardcode,
+			@PathVariable("period") int period,
 			BoardVo bv,
-			CalendarVo calv,
 			@RequestParam("attachfile") MultipartFile filename,  // input의 name 이름이 BoardVo에 있는 프로퍼티 이름과 동일하면 BoardVo로 값이 넘어가서 @RequestParam으로 받을 수 없으므로, input의 name을 filename이 아닌 attachfile으로 한다.
 			HttpServletRequest request,
 			RedirectAttributes rttr,
+			Model model,
 			@RequestPart(name = "posterImages", required = false) MultipartFile uploadPosterImages
 			) throws Exception {
 		
-		logger.info("boardWriteAction들어옴");	
+		logger.info("boardWriteAction들어옴");
 		
 		// 파일첨부(썸네일)
 		MultipartFile file = filename;
 		String uploadedFileName = "";
 		
 		if(!file.getOriginalFilename().equals("")) {
-			String uploadPath = "C:\\Users\\J\\Desktop\\AWS 수업\\황정익강사님\\개인프로젝트\\myprjSpring\\myprj\\src\\main\\webapp\\resources\\boardImages\\";
+			String uploadPath = "D:\\dev\\myprj\\myprjSpring\\myprj\\src\\main\\webapp\\resources\\boardImages\\";
 			uploadedFileName = UploadFileUtiles.uploadFile(uploadPath, file.getOriginalFilename(), file.getBytes());
 		}
 		
@@ -194,37 +192,58 @@ public class BoardController {
 		String ip = userip.getUserIp(request);
 		bv.setIp(ip);
 		
-		// bv.setUploadedFilename(uploadedFileName);		
-		String replaceFileName = uploadedFileName.replaceAll("(\\/\\d{4}\\/\\d{2}\\/\\d{2})\\/s-", "$1/");
-        bv.setUploadedFilename(replaceFileName);
+		bv.setUploadedFilename(uploadedFileName);
+		// String replaceFileName = uploadedFileName.replaceAll("(\\/\\d{4}\\/\\d{2}\\/\\d{2})\\/s-", "$1/");
+        // bv.setUploadedFilename(replaceFileName);
         
-		// end day 계산
-	    System.out.println(calv.getStartday());
-	    System.out.println(bv.getPeriod());
-
-	    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-	    Calendar calendar = Calendar.getInstance();
-	    calendar.setTime(sdf.parse(calv.getStartday()));
-	    calendar.add(Calendar.DAY_OF_MONTH, bv.getPeriod());
-
-	    // 계산된 날짜를 다시 request에 저장
-	    String calculatedDate = sdf.format(calendar.getTime());
-	    calv.setEndday(calculatedDate);
-	    
-		
-		int value = boardService.boardInsert(bv);
-			
+		int bidx = 0;
+		bidx = boardService.boardInsert(bv);
+				
 		String path = "";
-		if(value == 1) {
+		if(bidx != 0) {			
+			model.addAttribute("bidx", bidx);			
 			rttr.addFlashAttribute("msg", "글쓰기 성공");
-			path = "redirect:/board/{boardcode}/{period}/boardList.do";
-		} else {
+			path = "redirect:/board/" + bidx + "/boardContents.do";
+			
+		} else {			
+			model.addAttribute("boardcode", boardcode);
+			model.addAttribute("period", period);			
 			rttr.addFlashAttribute("msg", "입력이 잘못되었습니다.");
-			path = "redirect:/board/{boardcode}/{period}/boardWrite.do";
+			path = "redirect:/board/" + boardcode + "/" + period + "/boardWrite.do";
 		}
 		
 		return path;
 	}
+
+	@RequestMapping(value="/{bidx}/travelReservationWrite.do")
+	public String travelReservationWrite(
+			@PathVariable("bidx") int bidx,
+			Model model) {
+		
+		logger.info("travelReservationWrite들어옴");
+		
+		BoardVo bv = boardService.boardSelectOne(bidx);  // 해당되는 bidx의 게시물 데이터 가져옴
+		ArrayList<CalendarVo> clist = calendarService.calendarSelectAll(bidx);
+
+		String menu = "";
+		if(bv.getPeriod() == 1) {
+			menu = "당일치기";
+		} else if(bv.getPeriod() == 2) {
+			menu = "1박2일";
+		} else if(bv.getPeriod() == 3) {
+			menu = "2박3일";
+		} else if(bv.getPeriod() == 4) {
+			menu = "3박4일";
+		}
+		
+		model.addAttribute("bv", bv);
+		model.addAttribute("menu", menu);
+		model.addAttribute("clist", clist);
+
+		return "WEB-INF/board/travelReservationWrite";
+	}	
+
+	/* /{bidx}/travelReservationWriteAction.do -> CalendarController에 있음 */
 
 	@RequestMapping(value="/imagePreview.do", method=RequestMethod.POST)
 	public ResponseEntity<Map<String, String>> imagePreview(@RequestParam("upload") MultipartFile upload, HttpServletRequest request) {
@@ -232,7 +251,7 @@ public class BoardController {
 		System.out.println("imagePreview 들어옴");
 		
 		// 파일 저장 디렉토리. 실제경로
-		String uploadDirectory = "C:\\Users\\J\\Desktop\\AWS 수업\\황정익강사님\\개인프로젝트\\myprjSpring\\myprj\\src\\main\\webapp\\resources\\ckeditor5Builder\\ckeditor5\\imagePreview\\";
+		String uploadDirectory = "D:\\dev\\myprj\\myprjSpring\\myprj\\src\\main\\webapp\\resources\\ckeditor5Builder\\ckeditor5\\imagePreview\\";
 		File directory = new File(uploadDirectory);
 		
 		// 디렉토리가 존재하지 않으면 생성
@@ -284,9 +303,9 @@ public class BoardController {
 			System.out.println("type : " + type);
 			String uploadPath = "";
 			if(type.equals("preview")) {
-				uploadPath = "C:\\Users\\J\\Desktop\\AWS 수업\\황정익강사님\\개인프로젝트\\myprjSpring\\myprj\\src\\main\\webapp\\resources\\ckeditor5Builder\\ckeditor5\\imagePreview\\";		
+				uploadPath = "D:\\dev\\myprj\\myprjSpring\\myprj\\src\\main\\webapp\\resources\\ckeditor5Builder\\ckeditor5\\imagePreview\\";		
 			} else if(type.equals("thumbnail")) {
-				uploadPath = "C:\\Users\\J\\Desktop\\AWS 수업\\황정익강사님\\개인프로젝트\\myprjSpring\\myprj\\src\\main\\webapp\\resources\\boardImages\\";
+				uploadPath = "D:\\dev\\myprj\\myprjSpring\\myprj\\src\\main\\webapp\\resources\\boardImages\\";
 			}
 			
 			in = new FileInputStream(uploadPath+fileName);  // 파일 읽기
@@ -355,8 +374,8 @@ public class BoardController {
 	
 	@RequestMapping(value="/{bidx}/boardContents.do")
 	public String boardContents(@PathVariable("bidx") int bidx, Model model) {
-		
-		logger.info("boardContents들어옴");
+
+		logger.info("boardContents 들어옴");
 		
 		boardService.boardViewCntUpdate(bidx);  // 조회수 업데이트 하기
 		BoardVo bv = boardService.boardSelectOne(bidx);  // 해당되는 bidx의 게시물 데이터 가져옴
@@ -397,7 +416,7 @@ public class BoardController {
 		
 		BoardVo bv = boardService.boardSelectOne(bidx);  // 해당되는 bidx의 게시물 데이터 가져옴
 		ArrayList<CalendarVo> clist = calendarService.calendarSelectAll(bidx);
-		
+
 		String menu = "";
 		if(bv.getPeriod() == 1) {
 			menu = "당일치기";

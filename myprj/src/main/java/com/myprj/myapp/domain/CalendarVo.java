@@ -1,7 +1,7 @@
 package com.myprj.myapp.domain;
 
 public class CalendarVo {
-	private int calidx;
+	private int cidx;
 	private String startday;
 	private String endday;
 	private int adultprice;
@@ -9,13 +9,15 @@ public class CalendarVo {
 	private String date;
 	private String modify;
 	private String delyn;
+	private String ip;
 	private int bidx;
+	private int midx;
 	
-	public int getCalidx() {
-		return calidx;
+	public int getCidx() {
+		return cidx;
 	}
-	public void setCalidx(int calidx) {
-		this.calidx = calidx;
+	public void setCidx(int cidx) {
+		this.cidx = cidx;
 	}
 	public String getStartday() {
 		return startday;
@@ -59,11 +61,23 @@ public class CalendarVo {
 	public void setDelyn(String delyn) {
 		this.delyn = delyn;
 	}
+	public String getIp() {
+		return ip;
+	}
+	public void setIp(String ip) {
+		this.ip = ip;
+	}
 	public int getBidx() {
 		return bidx;
 	}
 	public void setBidx(int bidx) {
 		this.bidx = bidx;
+	}
+	public int getMidx() {
+		return midx;
+	}
+	public void setMidx(int midx) {
+		this.midx = midx;
 	}
 		
 }

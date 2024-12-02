@@ -46,10 +46,16 @@
       </div>
 
       <div class="text-center">
-      	<c:if test="${sessionScope.adminyn.equals('Y')}">
-        <a href="${pageContext.request.contextPath}/board/${requestScope.bv.bidx}/boardModify.do" class="btn btn-primary mb-3">수정</a>
-        </c:if>
-        <a href="${pageContext.request.contextPath}/board/${requestScope.bv.bidx}/travelReservation.do" class="btn btn-primary mb-3">예약</a>
+      	<c:choose>
+	    	<c:when test="${sessionScope.adminyn.equals('Y')}">
+	        <a href="${pageContext.request.contextPath}/board/${requestScope.bv.bidx}/boardModify.do" class="btn btn-primary mb-3">글수정</a>
+	        <a href="${pageContext.request.contextPath}/board/${requestScope.bv.bidx}/travelReservationWrite.do" class="btn btn-primary mb-3">일정관리</a>
+	        </c:when>
+    		<c:otherwise>
+        	<a href="${pageContext.request.contextPath}/board/${requestScope.bv.bidx}/travelReservation.do" class="btn btn-primary mb-3">예약</a>
+        	</c:otherwise>
+    	</c:choose>
+        	<button type="button" onclick="history.back();" class="btn btn-primary mb-3">목록</button>
       </div>
     </div>
 

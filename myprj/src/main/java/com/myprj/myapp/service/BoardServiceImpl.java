@@ -55,16 +55,13 @@ public class BoardServiceImpl implements BoardService {
 		return cnt;
 	}
 
-	@Transactional  // 트랜잭션
 	@Override
 	public int boardInsert(BoardVo bv) {
 		
 		int value = bm.boardInsert(bv);
-		// int maxBidx = bv.getBidx();  // selectKey 결과값
-		// int value2 = bm.boardOriginbidxUpadte(maxBidx);
+		int maxBidx = bv.getBidx();  // selectKey 결과값
 		
-		// return value + value2;
-		return value;
+		return maxBidx;
 	}
 
 	@Override

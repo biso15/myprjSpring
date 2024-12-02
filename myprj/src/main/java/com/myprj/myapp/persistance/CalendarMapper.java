@@ -7,5 +7,6 @@ import com.myprj.myapp.domain.CalendarVo;
 public interface CalendarMapper {
 
 	public ArrayList<CalendarVo> calendarSelectAll(int bidx);
-	
+
+	public int calendarInsert(CalendarVo cv);
 }

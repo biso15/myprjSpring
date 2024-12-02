@@ -14,6 +14,7 @@
   <!-- 캘린더 -->
   <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js'></script>
   <script>
+  // 캘린더    
   document.addEventListener('DOMContentLoaded', function() {
     var calendarEl = document.getElementById('calendar');
 
@@ -24,27 +25,86 @@
       center: 'title',
       right: 'next today'
     },
-    aspectRatio: 1.4,    
+    aspectRatio: 1.4,
     titleFormat : function(date) {
 	 	return date.date.year + '년 ' + (parseInt(date.date.month) + 1) + '월';
 	 },
-	 
-	// initialView : 'dayGridMonth',
 	events : [ 
  		<c:if test="${!empty requestScope.clist}">
-	    	<c:forEach items="${requestScope.clist}" var="cv" varStatus="status">
-	            {
-	            	start : "${cv.startday}",
-	    			classNames : 'travelCal',
-	    	   	 	display: 'list-item'
-	             },
-	        </c:forEach>
+    	<c:forEach items="${requestScope.clist}" var="cv" varStatus="status">
+            {
+            	start : "${cv.startday}",
+    	   	 	display: 'list-item',
+    	   	 	backgroundColor: '#0d6efd;',
+    	   	 	extendedProps: {
+    	   	 		fromTo : "${cv.startday} ~ ${cv.endday}",
+    	   	 		adultprice: "${cv.adultprice}",
+    	        	childprice: "${cacvlv.childprice}"
+    	        }
+             },
+        </c:forEach>
     	</c:if>
 		],
+		eventSources: [{ // 구글 캘린더 API 키를 발급받은 경우 공휴일 데이터 추가
+			googleCalendarId: "",
+			backgroundColor: "transparent",
+			borderColor: "transparent",
+			className: "kr-holiday",
+			textColor: "red"
+		}]
     });
     
     calendar.render();
-  });
+
+    
+    let formattedAdultPrice = 0;
+    let formattedChildPrice = 0;
+    
+ 	// 이벤트 위임 방식으로 .fc-day 클릭 처리 -> calendar.render() 실행 후 처리하기 위해서
+    calendarEl.addEventListener('click', function (e) {
+    	
+		// 클릭한 요소가 .fc-day인지 확인
+		const fcDay = e.target.closest('.fc-day');  // closest() : 주어진 선택자와 일치하는 요소를 찾을 때까지, 자기 자신을 포함해 위쪽(부모 방향, 문서 루트까지)으로 문서 트리를 순회한다.
+		if (fcDay) {  // .fc-day를 클릭한 경우
+			const fcEvent = fcDay.querySelector('.fc-event');  // 자식 요소에 event가 있는지 찾는다.
+          
+			if(fcEvent) {  // 해당 날짜의 event가 있을 때   		  
+    			const fcEventData = fcDay.getAttribute('data-date');  // 클릭한 날짜의 date 속성 가져오기
+    			const events = calendar.getEvents().filter(event => event.startStr === fcEventData);  // 모든 event의 startStr과 fcDayData를 비교해서 일치하는 event를 찾는다.
+    			
+    			if (events.length > 0) {  // events는 항상 배열    				
+    				// 첫 번째 이벤트만 처리
+    				const event = events[0];
+    				
+   		        	// 가격을 천 단위 구분자로 포맷
+   		        	formattedAdultPrice = Number(event.extendedProps.adultprice);
+                    formattedChildPrice = Number(event.extendedProps.childprice);
+                       
+   		        	// 여행기간과 가격 정보 텍스트 업데이트
+   		        	document.querySelector('#fromTo').textContent = event.extendedProps.fromTo;
+   		        	document.querySelector('#price').textContent = "성인👩 " +  formattedAdultPrice.toLocaleString() + "원 │ 아동👶 " + formattedChildPrice.toLocaleString() + "원";
+   		        	
+   		        	priceUpdate();
+    		    }
+            }
+        }
+      });
+ 	
+
+    // 총금액 업데이트    
+    function priceUpdate() {    	
+    	const totalAdultPrice = document.querySelector('#adultnumber').value * formattedAdultPrice;
+		const totalChildPrice = document.querySelector('#childnumber').value * formattedChildPrice;
+		
+    	const totalprice = document.querySelector('#totalprice')
+    	totalprice.textContent = (totalAdultPrice + totalChildPrice).toLocaleString() + "원";
+    }
+   	
+   	adultnumber.addEventListener("change", priceUpdate);
+   	childnumber.addEventListener("change", priceUpdate);
+   	
+});
+  
   
   </script>
   
@@ -92,12 +152,12 @@
             <div class="row g-0 border rounded shadow-sm p-4">
               <p class="fw-bold mb-1">1. 여행기간</h5>
               <div class="pl-4">
-                <p>2024-11-12 ~ 2024-11-14</p>
+                <p id="fromTo">달력에서 날짜를 선택해 주세요.</p>
               </div>
 
               <p class="fw-bold mb-1 pt-3 border-top-dashed">2. 상품가격(1인)</p>
               <div class="pl-4">
-                <p>성인👩 10,000원 │ 아동👶 5,000원</p>
+                <p id="price">성인👩 0원 │ 아동👶 0원</p>
               </div>
 
               <p class="fw-bold mb-1 pt-3 border-top-dashed">3. 신청인원</p>
@@ -114,7 +174,7 @@
               
               <p class="fw-bold mb-1 pt-3 border-top-dashed">4. 총금액</p>
               <div class="pl-4">
-                <p>0원</p>
+                <p id="totalprice">0원</p>
               </div>
               
               <p class="fw-bold mb-1 pt-3 border-top-dashed">5. 예약자</p>

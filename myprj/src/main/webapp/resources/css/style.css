@@ -55,6 +55,8 @@ textarea { resize: none; }
 /*.fc .fc-today-button, .fc-direction-ltr .fc-daygrid-event .fc-event-time, .fc-daygrid-dot-event
 .fc-event-title { display: none; }*/
 .fc .fc-today-button { display: none; }
+.fc-daygrid-dot-event:hover, .fc-event:focus::after { background: transparent; }
+.fc-event:focus { box-shadow: none; }
 
 .fc-theme-standard .fc-scrollgrid, .fc-theme-standard th, .fc-theme-standard td { border: none; }
 
@@ -73,7 +75,8 @@ textarea { resize: none; }
 .fc .fc-daygrid-day.fc-day-today { border-radius: var(--bs-border-radius); }
 .fc-daygrid-day-frame.fc-scrollgrid-sync-inner { display: flex; align-items: center; justify-content: center; }
 .fc .fc-daygrid-day-number { font-weight: 500; color: var(--bs-emphasis-color); text-decoration: none; }
-/* .fc .fc-daygrid-body-unbalanced .fc-daygrid-day-events { display: none; } 이거 수정해야함 */
+.fc .fc-daygrid-body-unbalanced .fc-daygrid-day-events { position: absolute; right: 0; transform: translateX(-50%); }
+.fc-event-title { display: none; }
 
 .fc-day-sun .fc-col-header-cell-cushion, .fc-day-sun .fc-daygrid-day-number { color: var(--bs-red); }
 .fc-day-sat .fc-col-header-cell-cushion, .fc-day-sat .fc-daygrid-day-number { color: var(--bs-blue); }

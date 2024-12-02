@@ -8,4 +8,6 @@ public interface CalendarService {
 
 	public ArrayList<CalendarVo> calendarSelectAll(int bidx);
 
+	public int calendarInsert(CalendarVo cv);
+
 }

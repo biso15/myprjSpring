@@ -25,5 +25,13 @@ public class CalendarServiceImpl implements CalendarService {
 		ArrayList<CalendarVo> clist = cm.calendarSelectAll(bidx);
 		return clist;
 	};
-
+	
+	@Override
+	public int calendarInsert(CalendarVo cv) {
+		
+		int value = cm.calendarInsert(cv);
+		
+		return value;
+	}
+	
 }
