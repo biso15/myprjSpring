@@ -11,7 +11,6 @@ public class CalendarVo {
 	private String delyn;
 	private String ip;
 	private int bidx;
-	private int midx;
 	
 	public int getCidx() {
 		return cidx;
@@ -72,12 +71,6 @@ public class CalendarVo {
 	}
 	public void setBidx(int bidx) {
 		this.bidx = bidx;
-	}
-	public int getMidx() {
-		return midx;
-	}
-	public void setMidx(int midx) {
-		this.midx = midx;
 	}
 		
 }

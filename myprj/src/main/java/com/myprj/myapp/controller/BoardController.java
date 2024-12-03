@@ -241,10 +241,97 @@ public class BoardController {
 		model.addAttribute("clist", clist);
 
 		return "WEB-INF/board/travelReservationWrite";
-	}	
+	}
 
 	/* /{bidx}/travelReservationWriteAction.do -> CalendarController에 있음 */
+	
 
+	@RequestMapping(value="/{bidx}/boardModify.do")
+	public String boardModify(
+			@PathVariable("bidx") int bidx,
+			Model model) {
+		
+		logger.info("boardModify들어옴");
+				
+		BoardVo bv = boardService.boardSelectOne(bidx);		
+		model.addAttribute("bv", bv);
+		
+		String menu = "";
+		String path = "";
+		if(bv.getBoardcode().equals("travel")) {
+			if(bv.getPeriod() == 1) {
+				menu = "당일치기";
+			} else if(bv.getPeriod() == 2) {
+				menu = "1박2일";
+			} else if(bv.getPeriod() == 3) {
+				menu = "2박3일";
+			} else if(bv.getPeriod() == 4) {
+				menu = "3박4일";
+			}
+			path = "WEB-INF/board/travelModify";
+		} else if(bv.getBoardcode().equals("free")) {
+			menu = "자유게시판";
+			path = "WEB-INF/board/freeModifys";
+		} else if(bv.getBoardcode().equals("notice")){
+			menu = "공지사항";
+			path = "WEB-INF/board/noticeModify";
+		}
+		
+		model.addAttribute("bv", bv);
+		model.addAttribute("menu", menu);
+		
+		return path;
+		
+	}
+	
+	@RequestMapping(value="/{bidx}/boardModifyAction.do", method=RequestMethod.POST)
+	public String boardModifyAction(
+			BoardVo bv,
+			@RequestParam("attachfile") MultipartFile filename,
+			HttpServletRequest request,
+			RedirectAttributes rttr,
+			@RequestParam("isFileChange") String isFileChange
+			) throws Exception {
+		
+		
+		logger.info("boardModifyAction들어옴");
+
+		String uploadedFileName = "";
+		if(isFileChange.equals("true")) {
+			// 파일첨부(썸네일)
+			MultipartFile file = filename;
+			
+			if(!file.getOriginalFilename().equals("")) {
+				String uploadPath = "D:\\dev\\myprj\\myprjSpring\\myprj\\src\\main\\webapp\\resources\\boardImages\\";
+				uploadedFileName = UploadFileUtiles.uploadFile(uploadPath, file.getOriginalFilename(), file.getBytes());
+			}
+		} else {
+			
+			BoardVo bvOrigin = boardService.boardSelectOne(bv.getBidx());
+			uploadedFileName = bvOrigin.getThumbnail();
+		}
+		
+		String ip = userip.getUserIp(request);
+		bv.setIp(ip);
+		
+		bv.setThumbnail(uploadedFileName);
+        
+		// 파일 업로드하고 upadte를 하기 위한 service를 만든다
+		int value = boardService.boardUpdate(bv);
+		
+		String path = "";
+		if(value == 1) {
+			rttr.addFlashAttribute("msg", "글수정 성공");
+			path = "redirect:/board/" + bv.getBidx() + "/boardContents.do";
+		} else {
+			rttr.addFlashAttribute("msg", "입력이 잘못되었습니다.");
+			path = "redirect:/board/boardModify.aws?bidx=" + bv.getBidx();
+		}
+			
+		return path;
+	}
+	
+	
 	@RequestMapping(value="/imagePreview.do", method=RequestMethod.POST)
 	public ResponseEntity<Map<String, String>> imagePreview(@RequestParam("upload") MultipartFile upload, HttpServletRequest request) {
 		
@@ -549,78 +636,6 @@ public class BoardController {
 		return path;
 	}
 	
-	@RequestMapping(value="boardModify.aws", method=RequestMethod.GET)
-	public String boardModify(
-			@RequestParam("bidx") int bidx,
-			Model model) {
-		
-		logger.info("boardModify들어옴");
-		
-		BoardVo bv = boardService.boardSelectOne(bidx);
-		
-		model.addAttribute("bv", bv);
-		
-		return "WEB-INF/board/boardModify";
-	}
-
-	@RequestMapping(value="boardModifyAction.aws", method=RequestMethod.POST)
-	public String boardModifyAction(
-			BoardVo bv,
-			@RequestParam("attachfile") MultipartFile filename,
-			HttpServletRequest request,
-			RedirectAttributes rttr,
-			Model model,
-			@RequestParam("isFileChange") String isFileChange
-			) throws Exception {
-		
-		logger.info("boardModifyAction들어옴");
-		
-		BoardVo bvOrigin = boardService.boardSelectOne(bv.getBidx());
-
-		String path = "";
-		if(bvOrigin.getPassword().equals(bv.getPassword())) {
-			int value = 0;
-
-			String uploadedFileName = "";
-			if(isFileChange.equals("true")) {
-				// 파일첨부
-				MultipartFile file = filename;
-				
-				if(!file.getOriginalFilename().equals("")) {			
-					uploadedFileName = UploadFileUtiles.uploadFile(uploadPath, file.getOriginalFilename(), file.getBytes());
-				}
-			} else {
-				uploadedFileName = bvOrigin.getFilename();
-			}
-			
-			String midx = request.getSession().getAttribute("midx").toString();
-			int midx_int = Integer.parseInt(midx);
-			String ip = userip.getUserIp(request);
-			
-			bv.setUploadedFilename(uploadedFileName);
-			bv.setMidx(midx_int);
-			bv.setIp(ip);
-			
-			// 파일 업로드하고 upadte를 하기 위한 service를 만든다
-			value = boardService.boardUpdate(bv);
-			
-			if(value == 1) {
-				rttr.addFlashAttribute("msg", "글수정 성공");
-				path = "redirect:/board/boardContents.aws?bidx=" + bv.getBidx();
-			} else {
-				rttr.addFlashAttribute("msg", "입력이 잘못되었습니다.");
-				path = "redirect:/board/boardModify.aws?bidx=" + bv.getBidx();
-			}
-			
-		} else {
-				
-			// 비밀번호가 일치하지 않으면
-			rttr.addFlashAttribute("msg", "비밀번호가 일치하지 않습니다.");
-			path = "redirect:/board/boardModify.aws?bidx=" + bv.getBidx();
-		}
-			
-		return path;
-	}
 	
 	@RequestMapping(value="boardReply.aws", method=RequestMethod.GET)
 	public String boardReply(

@@ -62,11 +62,11 @@
 	</update>
 	
 	<update id="boardDelete" parameterType="HashMap">
-		update board set delyn = 'Y', modifyday = now() where bidx = #{bidx} and midx = #{midx} and password = #{password}
+		update board set delyn = 'Y', modify = now() where bidx = #{bidx} and midx = #{midx} and password = #{password}
 	</update>
 	
 	<update id="boardUpdate" parameterType="bv">
-		update board set title = #{title}, contents = #{contents}, writer = #{writer}, modifyday = now(), filename = #{uploadedFilename}, ip = #{ip} where bidx = #{bidx} and password = #{password} and midx = #{midx}
+		UPDATE BOARD SET title = #{title}, summary = #{summary}, contents = #{contents}, thumbnail = #{thumbnail}, modify = now(), ip = #{ip} WHERE bidx = #{bidx}
 	</update>
 	
 	<update id="boardReplyUpdate" parameterType="bv">

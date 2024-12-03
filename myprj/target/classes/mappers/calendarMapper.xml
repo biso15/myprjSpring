@@ -9,8 +9,12 @@
 	</select>
 	
 	<insert id="calendarInsert" parameterType="cv">
-  		INSERT INTO CALENDAR(startday, endday, adultprice, childprice, bidx, ip, midx) 
-		VALUES(#{startday}, #{endday}, #{adultprice}, #{childprice}, #{bidx}, #{ip}, #{midx})
+  		INSERT INTO CALENDAR(startday, endday, adultprice, childprice, bidx, ip) 
+		VALUES(#{startday}, #{endday}, #{adultprice}, #{childprice}, #{bidx}, #{ip})
 	</insert>
+	
+	<update id="calendarUpdate" parameterType="cv">
+  		UPDATE CALENDAR SET startday = #{startday}, endday = #{endday}, adultprice = #{adultprice}, childprice = #{childprice}, modify = now(), ip = #{ip} WHERE cidx = #{cidx}
+	</update>
 
 </mapper>

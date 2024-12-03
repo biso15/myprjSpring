@@ -127,9 +127,6 @@ public class BoardServiceImpl implements BoardService {
 		return maxBidx;
 	}
 	
-	
-	
-	
 	@Override
 	public ArrayList<BoardVo> boardSelect(String boardcode, int number) {
 		

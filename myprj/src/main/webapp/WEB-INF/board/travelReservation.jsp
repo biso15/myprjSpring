@@ -39,7 +39,7 @@
     	   	 	extendedProps: {
     	   	 		fromTo : "${cv.startday} ~ ${cv.endday}",
     	   	 		adultprice: "${cv.adultprice}",
-    	        	childprice: "${cacvlv.childprice}"
+    	        	childprice: "${cv.childprice}"
     	        }
              },
         </c:forEach>
@@ -66,6 +66,11 @@
 		// 클릭한 요소가 .fc-day인지 확인
 		const fcDay = e.target.closest('.fc-day');  // closest() : 주어진 선택자와 일치하는 요소를 찾을 때까지, 자기 자신을 포함해 위쪽(부모 방향, 문서 루트까지)으로 문서 트리를 순회한다.
 		if (fcDay) {  // .fc-day를 클릭한 경우
+			
+	    	const fcDayArr = document.querySelectorAll('.fc-day');
+	    	fcDayArr.forEach((fcDay) => fcDay.classList.remove("select"));			
+			fcDay.classList.add("select");
+			
 			const fcEvent = fcDay.querySelector('.fc-event');  // 자식 요소에 event가 있는지 찾는다.
           
 			if(fcEvent) {  // 해당 날짜의 event가 있을 때   		  

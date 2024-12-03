@@ -81,6 +81,8 @@ textarea { resize: none; }
 .fc-day-sun .fc-col-header-cell-cushion, .fc-day-sun .fc-daygrid-day-number { color: var(--bs-red); }
 .fc-day-sat .fc-col-header-cell-cushion, .fc-day-sat .fc-daygrid-day-number { color: var(--bs-blue); }
 
+.fc-day.select .fc-daygrid-day-frame { cursor: pointer; background: var(--bs-secondary-bg); border-radius: var(--bs-border-radius); }
+
 /* editor 디자인 수정 */
 .ck-rounded-corners .ck.ck-editor__main>.ck-editor__editable, .ck.ck-editor__main>.ck-editor__editable.ck-rounded-corners {
     min-height: 20rem; transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
@@ -119,3 +121,6 @@ textarea { resize: none; }
 /* slide */
 .slick-slide .text-body-secondary { min-height: 4rem; }
 
+/* file input */
+#fileInputName { position: absolute; left: 6.7rem; padding: .375rem .75rem; bottom: 1px; background: #fff; 
+	width: calc(100% - 7.5rem); border-radius: var(--bs-border-radius); cursor: pointer; }

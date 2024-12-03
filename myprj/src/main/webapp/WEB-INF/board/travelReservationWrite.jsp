@@ -32,40 +32,71 @@
 		    titleFormat : function(date) {
 			 	return date.date.year + '년 ' + (parseInt(date.date.month) + 1) + '월';
 			 },
-	 		 events : [
-		 		<c:if test="${!empty requestScope.clist}">
-		    	<c:forEach items="${requestScope.clist}" var="cv" varStatus="status">
-	            {
-	            	start : "${cv.startday}",
-	    	   	 	display: 'list-item',
-	    	   	 	backgroundColor: '#0d6efd;',
-	    	   	 	extendedProps: {
-	    	   	 		period : "${cv.startday} ~ ${cv.endday}",
-	    	   	 		adultprice: "${cv.adultprice}",
-	    	        	childprice: "${cv.childprice}"
-	    	        }
-	             },
-		        </c:forEach>
-		    	</c:if>
-			],
-	    	
-			dateClick: function(info) {
+			events : "${pageContext.request.contextPath}/calendar/" + ${requestScope.bidx} + "/getCalendarAll.do",
+/* 			dateClick: function(info) {
 			    document.querySelector('#startday').value = info.dateStr;
 			    const period = ${bv.period};
 			    
-			    // startday에 period를 더해서 endday를 계산 후 입력	
+			    // startday에 period를 더해서 endday를 계산 후 입력
 			    const date = new Date(info.dateStr);
 			    date.setDate(date.getDate() + period - 1);  // 1 빼야됨 주의
 			    const endday = date.toISOString().split('T')[0];  // 날짜만 추출
 			    document.querySelector('#endday').value = endday;
 			    
 			    document.querySelector('#fromTo').textContent = info.dateStr + " ~ " + endday;
-		        
-			 }
+			 } */
 		  });
 		
 	    calendar.render();
-	  
+	    
+	    calendarEl.addEventListener('click', function (e) {
+	    
+		    const fcDay = e.target.closest('.fc-day');  // closest() : 주어진 선택자와 일치하는 요소를 찾을 때까지, 자기 자신을 포함해 위쪽(부모 방향, 문서 루트까지)으로 문서 트리를 순회한다.
+			if (fcDay) {  // .fc-day를 클릭한 경우
+				
+		    	const fcDayArr = document.querySelectorAll('.fc-day');
+		    	fcDayArr.forEach((fcDay) => fcDay.classList.remove("select"));
+				fcDay.classList.add("select");				
+
+            	const fcDayData = fcDay.getAttribute('data-date');  // 클릭한 날짜의 date 속성 가져오기
+            	console.log(fcDayData)
+            	
+				const fcEvent = fcDay.querySelector('.fc-event');  // 자식 요소에 event가 있는지 찾는다.
+            	
+				if(fcEvent) {  // 해당 날짜의 event가 있을 때
+	    			const events = calendar.getEvents().filter(event => event.startStr === fcDayData);  // 모든 event의 startStr과 fcDayData를 비교해서 일치하는 event를 찾는다.
+	    			
+	    			if (events.length > 0) {  // events는 항상 배열
+	    				// 첫 번째 이벤트만 처리
+	    				const event = events[0];
+	    				
+	   		        	// 가격을 천 단위 구분자로 포맷
+	   		        	formattedAdultPrice = Number(event.extendedProps.adultprice);
+	                    formattedChildPrice = Number(event.extendedProps.childprice);
+	                    
+	   		        	// 여행기간과 가격 정보 텍스트 업데이트
+	   		        	document.querySelector('#fromTo').textContent = event.extendedProps.fromTo;
+	   		        	document.querySelector('#adultprice').value = formattedAdultPrice.toLocaleString();
+	   		        	document.querySelector('#childprice').value = formattedChildPrice.toLocaleString();
+	   		        	
+	    		    }
+	            } else {
+					document.querySelector('#startday').value = fcDayData;
+				    const period = ${bv.period};
+				    
+				    // startday에 period를 더해서 endday를 계산 후 입력
+				    const date = new Date(fcDayData);
+				    date.setDate(date.getDate() + period - 1);  // 1 빼야됨 주의
+				    const endday = date.toISOString().split('T')[0];  // 날짜만 추출
+				    document.querySelector('#endday').value = endday;
+				    
+				    document.querySelector('#fromTo').textContent = fcDayData + " ~ " + endday;
+   		        	document.querySelector('#adultprice').value = "";
+   		        	document.querySelector('#childprice').value = "";
+	            }
+	        }
+	    });
+	    
 	  
       function priceChange() {
     	const price = this.value;
@@ -115,16 +146,16 @@
 				
 				$.ajax({
 					type: "post",  // 전송방식
-					url: "${pageContext.request.contextPath}/calendar/${bidx}/travelReservationWriteAction.do",
+					url: "${pageContext.request.contextPath}/calendar/${requestScope.bv.bidx}/travelReservationWriteAction.do",
 					dataType: "json",
 					data: {"startday": startday, "endday": endday, "adultprice": adultprice, "childprice": childprice},
 					success: function(result) {
-						alert("전송성공");
-						// calendar.getEvents();
-						calendar.refetchEvents();
+						//alert("전송성공");
+						calendar.getEventSources().forEach(source => source.refetch());
 					},
 					error: function(xhr, status, error) {  // 결과가 실패했을 때 받는 영역
 						alert("전송실패");
+					
 						console.log("Error Status: " + status);
 					    console.log("Error Detail: " + error);
 					    console.log("Response: " + xhr.responseText);
@@ -137,61 +168,9 @@
 		
 		document.querySelector('#save').addEventListener("click", check);
 
-    });
+	 });
 	
-	<%-- // 캘린더 
-	$.ajax({
-		type: "get",  // 전송방식
-		url: "${pageContext.request.contextPath}/comment/commentList.aws?bidx=${requestScope.bv.getBidx()%>",
-		url: "${pageContext.request.contextPath}/comment/${requestScope.bv.bidx}/" +block+ "/commentList.aws",  /* RestFul 방식(Rest api 사용) */
-		dataType: "json",  // 받는 형식. json 타입은 문서에서 {"key값": "value값", "key값" : "value값"} 형식으로 구성
-		success: function(result) {  // 결과가 넘어와서 성공했을 때 받는 영역
-			// alert("전송성공 테스트");			
-			
-			if(result.moreView == "N") {
-				$("#moreBtn").css("display", "none");
-				$("#blockPre").val($("#block").val());
-			} else {
-				$("#moreBtn").css("display", "block");
-				$("#blockPre").val($("#block").val() - 1);
-			}
-			
-			let nextBlock = result.nextBlock;	
-			$("#block").val(nextBlock);
-			
-			var str = "<table class='replyTable'><tr><th>번호</th><th>작성자</th><th>내용</th><th>날짜</th><th>DEL</th></tr>";
-
-			var strTr = "";
-			var index = result.length;
-			
-			$(result.clist).each(function(index) {
-				var btnn = "";
-				if (this.midx == "${sessionScope.midx}") {
-					if(this.delyn == "N") {
-						btnn = "<button type='button' class='btn' onclick='commentDel(" + this.cidx + ")'>삭제</button>";
-					}
-				}
-				
-				var index = index + 1;
-				strTr += "<tr><td class='cidx'>" + index-- + "</td>" + 
-						"<td class='cwriter'>" + this.cwriter + "</td>" + 
-						"<td class='ccontents'>" + this.ccontents + "</td>" + 
-						"<td class='writeday'>" + this.writeday + "</td>" + 
-						"<td class='delyn'>" + btnn + "</td></tr>";
-			});
-			
-			str = str + strTr + "</table>";
-			
-			$("#commentListView").html(str);
-
-		},
-	    error: function(xhr, status, error) {  // 결과가 실패했을 때 받는 영역
-			alert("전송실패 테스트");
-		    /* console.log("Error Status: " + status);
-		    console.log("Error Detail: " + error);
-		    console.log("Response: " + xhr.responseText); */
-		}
-	}); --%>
+	
 	</script>	
   
   <%@ include file="/WEB-INF/header.jsp" %>

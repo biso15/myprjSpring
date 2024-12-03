@@ -33,5 +33,13 @@ public class CalendarServiceImpl implements CalendarService {
 		
 		return value;
 	}
+
+	@Override
+	public int calendarUpdate(CalendarVo cv) {
+		
+		int value = cm.calendarUpdate(cv);
+		
+		return value;
+	}
 	
 }

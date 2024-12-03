@@ -33,12 +33,7 @@
 		  alert("부제목을 입력해주세요");
 		  fm.summary.focus();
 		  return;
-	  } else if (fm.attachfile.value == "") {
-		  alert("썸네일을 선택해주세요");
-		  fm.attachfile.focus();
-		  return;
-	  }
-	  
+	  }	  
 	  
 	  let ans = confirm("저장하시겠습니까?");	  	  
  	  if (ans == true) {
@@ -59,7 +54,7 @@
 	      const cleanedHTML = cleanHTML(ckContent.innerHTML);
  		  fm.contents.value = cleanedHTML;
  		  
- 		  fm.action="${pageContext.request.contextPath}/board/${boardcode}/${period}/boardWriteAction.do";
+ 		  fm.action="${pageContext.request.contextPath}/board/${requestScope.bv.bidx}/boardModifyAction.do";
 		  fm.method="post";
 		  fm.enctype="multipart/form-data";
 		  fm.submit();
@@ -92,26 +87,29 @@
 
     <!-- 컨텐츠 -->
     <form class="write pb-5" name="frm">
-      <div class="card mb-3">
+      <input type="hidden" value="${requestScope.bv.bidx}">
+      <input type="hidden" class="isFileChange" name="isFileChange" value="false">  <!-- bidx값이 수정할때 필요해서 hidden으로 안보이게 한 input에 넣어서 controller로 보낸다. -->
+	  <div class="card mb-3">
         <div class="row">
           <div class="mb-3">
             <label for="title" class="form-label">제목</label>
-            <input type="text" class="form-control" id="title" name="title" value="" required="">
+            <input type="text" class="form-control" id="title" name="title" value="${requestScope.bv.title}" required="">
           </div>
           <div class="mb-3">
             <label for="summary" class="form-label">부제목</label>
-            <textarea class="form-control" id="summary" name="summary" rows="3" value="" required=""></textarea>
+            <textarea class="form-control" id="summary" name="summary" rows="3" required="">${requestScope.bv.summary}</textarea>
           </div>
           
-          <div class="mb-3">
+          <div class="mb-3 position-relative">
             <label class="form-label" for="thumbnail">썸네일(정사각형 파일을 올려주세요.)</label>
-            <input type="file" name="attachfile" class="form-control" id="thumbnail" required="">
+            <input type="file" name="attachfile" class="form-control" id="thumbnail" required="" >    
+	        <span class="fileInputName" id="fileInputName">선택된 파일 없음</span>
           </div>
           
 		  <div class="main-container">
 			<div class="editor-container editor-container_classic-editor" id="editor-container">
 				<div class="editor-container__editor">
-					<div id="editor"></div>
+					<div id="editor">${requestScope.bv.contents}</div>
 				</div>
 			</div>
 		  </div>
@@ -138,5 +136,38 @@
   }
   </script>		
   <script type="module" src="${pageContext.request.contextPath}/resources/ckeditor5Builder/main.js"></script>
+	
+	<script>
+	// 썸네일
+	const thumbnail = document.querySelector("#thumbnail");
+	const fileInputName = document.querySelector("#fileInputName");
+	const fileName = "${requestScope.bv.thumbnail}";
+
+	// file name 불러오기
+	if(fileName != "") {
+		function getOriginalFileName(fileName) {
+			const idx = fileName.lastIndexOf("_")+1;
+			return fileName.substr(idx);
+		}
+		
+		fileInputName.textContent = getOriginalFileName(fileName);
+	}
+
+	// file input 값이 변경되면 text input 값이 변경되도록 수정
+	thumbnail.addEventListener("change", function() {
+		const fileUrl = thumbnail.value.split("\\");
+		fileInputName.textContent = fileUrl[fileUrl.length - 1];
+		
+		const isFileChange = document.querySelector(".isFileChange");
+		isFileChange.value="true";
+	});
+	
+	// text input 클릭시 file input 클릭됨
+	document.getElementById('fileInputName').addEventListener('click', function() {
+        document.getElementById('thumbnail').click();
+        document.getElementById('thumbnail').focus();
+    });
+	
+	</script>
 </body>
 </html>

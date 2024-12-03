@@ -1,5 +1,9 @@
 package com.myprj.myapp.controller;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.json.simple.JSONObject;
@@ -7,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -46,20 +51,55 @@ public class CalendarController {
 //	    String calculatedDate = sdf.format(calendar.getTime());
 //	    cv.setEndday(calculatedDate);
 		
-		String midx = request.getSession().getAttribute("midx").toString();  // HttpSession은 HttpServletRequest 안에 있음
-		int midx_int = Integer.parseInt(midx);
-		cv.setMidx(midx_int);
-		
 		String ip = userip.getUserIp(request);
 		cv.setIp(ip);
 		
-		int value = calendarService.calendarInsert(cv);
+		System.out.println("cv.getCidx : " + cv.getCidx());
+		int value = 0;
+		if(cv.getCidx() == 0) {
+			System.out.println("인서트");
+			value = calendarService.calendarInsert(cv);
+		} else {
+			System.out.println("업데이트");
+			value = calendarService.calendarUpdate(cv);
+		}
 		
 		JSONObject js = new JSONObject();
 
 		js.put("value", value);
 
 		return js;
+	}
+	
+	@ResponseBody
+	@RequestMapping(value="/{bidx}/getCalendarAll.do")
+	public ArrayList<Map<String, Object>> getCalendarAll(
+			@PathVariable("bidx") int bidx
+			) throws Exception {
+
+		logger.info("getCalendarAll들어옴");
+		
+		ArrayList<CalendarVo> clist = calendarService.calendarSelectAll(bidx);
+		
+		ArrayList<Map<String, Object>> events = new ArrayList<>();
+
+        // 데이터 추가
+		for(CalendarVo cv : clist ) {
+	        Map<String, Object> extendedProps = new HashMap<>();
+	        extendedProps.put("fromTo", cv.getStartday() + " ~ " + cv.getEndday());
+	        extendedProps.put("adultprice", cv.getAdultprice());
+	        extendedProps.put("childprice", cv.getChildprice());
+	        
+	        Map<String, Object> event = new HashMap<>();
+	        event.put("start", cv.getStartday());
+	        event.put("display", "list-item");
+	        event.put("backgroundColor", "#0d6efd");
+	        event.put("extendedProps", extendedProps);
+	        events.add(event);
+		}
+		
+		System.out.println(events);
+        return events;
 	}
 	
 }

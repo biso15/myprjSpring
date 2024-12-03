@@ -10,4 +10,6 @@ public interface CalendarService {
 
 	public int calendarInsert(CalendarVo cv);
 
+	public int calendarUpdate(CalendarVo cv);
+
 }
