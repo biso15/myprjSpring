@@ -27,11 +27,11 @@
           <li><a href="${pageContext.request.contextPath}/board/travel/2/boardList.do" class="nav-link px-3 link-body-emphasis">1박2일</a></li>
           <li><a href="${pageContext.request.contextPath}/board/travel/3/boardList.do" class="nav-link px-3 link-body-emphasis">2박3일</a></li>
           <li><a href="${pageContext.request.contextPath}/board/travel/4/boardList.do" class="nav-link px-3 link-body-emphasis">3박4일</a></li>
-          <li><a href="${pageContext.request.contextPath}/board/free/0/boardList.do" class="nav-link px-3 link-body-emphasis">자유게시판</a></li>
-          <li><a href="${pageContext.request.contextPath}/board/notice/0/boardList.do" class="nav-link px-3 link-body-emphasis">공지사항</a></li>
           <c:if test="${!empty sessionScope.midx}">
           <li><a href="${pageContext.request.contextPath}/board/reservation/0/boardList.do" class="nav-link px-3 link-body-emphasis">예약확인</a></li>
           </c:if>
+          <li><a href="${pageContext.request.contextPath}/board/free/0/boardList.do" class="nav-link px-3 link-body-emphasis">자유게시판</a></li>
+          <li><a href="${pageContext.request.contextPath}/board/notice/0/boardList.do" class="nav-link px-3 link-body-emphasis">공지사항</a></li>
       </ul>
 
       <ul class="nav">

@@ -1,7 +1,5 @@
 package com.myprj.myapp.controller;
 
-import java.util.ArrayList;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
@@ -48,7 +46,8 @@ public class MemberController {
 	@RequestMapping(value="/memberJoinAction.do", method=RequestMethod.POST)
 	public String memberJoinAction(
 			MemberVo mv,
-			HttpServletRequest request
+			HttpServletRequest request,
+			RedirectAttributes rttr
 			) throws Exception {
 
 		logger.info("memberJoinAction들어옴");
@@ -64,14 +63,15 @@ public class MemberController {
 		
 		String path = "";
 		if(value == 1) {
+			rttr.addFlashAttribute("msg", "회원가입이 완료되었습니다.");
 			path = "redirect:/";
 		} else {
+			rttr.addFlashAttribute("msg", "회원가입이 실패했습니다.");
 			path = "redirect:/member/memberJoin.do";			
 		}
 		
 		return path;
 	}	
-	
 	
 	@RequestMapping(value="memberLogin.do", method=RequestMethod.GET)
 	public String memberLogin() {
@@ -99,16 +99,17 @@ public class MemberController {
 			// 저장된 비밀번호를 가져온다
 			String password = mv.getPassword();			
 			
-			if(bCryptPasswordEncoder.matches(inputMv.getPassword(), password)) {  // 인코딩 된 부분이 2번쨰 파라미터
+			if(bCryptPasswordEncoder.matches(inputMv.getPassword(), password)) {  // 인코딩 된 부분이 2번째 파라미터
 				logger.info("비밀번호 일치");
 				
 				rttr.addAttribute("midx", mv.getMidx());
 				rttr.addAttribute("id", mv.getId());
-				rttr.addAttribute("adminyn", mv.getAdminyn());
-				
-				rttr.addFlashAttribute("msg", "님 환영합니다🎉");
+				rttr.addAttribute("adminyn", mv.getAdminyn());				
+
+				rttr.addFlashAttribute("msg", mv.getName() + "님 환영합니다🎉");
 				
 				if(session.getAttribute("saveUrl") != null) {  // 이동할 위치 확인 -> interceptor
+				System.out.println("로그인컨트롤러에 있는 주소 : " + session.getAttribute("saveUrl"));
 					path = "redirect:" + session.getAttribute("saveUrl").toString();
 				} else {
 					path = "redirect:/";
@@ -146,7 +147,9 @@ public class MemberController {
 	}
 	
 	@RequestMapping(value="memberLogout.do", method=RequestMethod.GET)
-	public String memberLogout(HttpSession session) {
+	public String memberLogout(
+			HttpSession session,
+			RedirectAttributes rttr) {
 
 		logger.info("memberLogout들어옴");
 		
@@ -154,7 +157,8 @@ public class MemberController {
 		session.removeAttribute("memberId");
 		session.removeAttribute("memberName");
 		session.removeAttribute("adminyn");		
-		
+
+		rttr.addFlashAttribute("msg", "로그아웃이 완료되었습니다.");
 		return "redirect:/";
 		
 	}
@@ -198,12 +202,42 @@ public class MemberController {
 		int value = memberService.memberUpdate(mv);
 		
 		if(value == 1) {
-			rttr.addFlashAttribute("msg", "회원정보 수정 성공");
+			rttr.addFlashAttribute("msg", "회원정보 수정이 완료되었습니다.");
 		} else {
-			rttr.addFlashAttribute("msg", "입력이 잘못되었습니다.");
+			rttr.addFlashAttribute("msg", "회원정보 수정이 실패했습니다.");
 		}			
 		
 		return "redirect:/member/memberMypage.do";
 	}
+	
+	@RequestMapping(value="/memberDeleteAction.do")
+	public String memberCancelAction(
+			MemberVo mv, 
+			HttpServletRequest request, 
+			RedirectAttributes rttr
+			) throws Exception {
+
+		logger.info("memberDeleteAction들어옴");
+		
+		String path = "";
+
+		// 저장된 midx를 가져온다
+		String midx = request.getSession().getAttribute("midx").toString();
+		int midx_int = Integer.parseInt(midx);
+		mv.setMidx(midx_int);
+
+		String ip = userip.getUserIp(request);
+		mv.setIp(ip);
+		
+		int value = memberService.memberDelete(mv);
+		
+		if(value == 1) {
+			rttr.addFlashAttribute("msg", "회원탈퇴가 완료되었습니다.");
+		} else {
+			rttr.addFlashAttribute("msg", "회원탈퇴가 실패했습니다.");
+		}
+		
+		return "redirect:/member/memberLogout.do";
+	}	
 	
 }

@@ -42,7 +42,17 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 	
 	public void saveUrl(HttpServletRequest request) {
 		
-		String uri = request.getRequestURI();  // 전체경로주소
+		// String uri = request.getRequestURI();  // 전체경로주소
+		
+	    // 전체 URL 가져오기		
+	    String fullUrl = request.getRequestURL().toString();
+	    
+	    // 컨텍스트 경로 가져오기 (프로젝트 이름 포함)
+	    String contextPath = request.getContextPath();
+	    
+	    // 컨텍스트 경로 제외한 URL
+	    String cleanUrl = fullUrl.replaceFirst(request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + contextPath, "");
+	    	    
 		String param = request.getQueryString();  // 파라미터를 가져온다
 		
 		if(param == null || param.equals("null") || param.equals("")) {
@@ -52,7 +62,8 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 		}
 		
 		// 이동할 페이지
-		String locationUrl = uri + param; 
+		// String locationUrl = uri + param;
+		String locationUrl = cleanUrl + param;
 		
 		HttpSession session = request.getSession();
 		if(request.getMethod().equals("GET")) {  // 대문자 GET

@@ -23,4 +23,8 @@
 		UPDATE MEMBER SET password = #{password}, phone = #{phone}, email = #{email}, ip = #{ip}, modify = now() WHERE midx = #{midx}
 	</update>
 	
+	<update id="memberDelete" parameterType="mv">
+		UPDATE MEMBER SET delyn = "Y", ip = #{ip}, modify = now() WHERE midx = #{midx}
+	</update>
+	
 </mapper>

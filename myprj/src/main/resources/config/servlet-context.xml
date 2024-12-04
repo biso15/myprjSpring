@@ -45,14 +45,21 @@
 		
 		<!-- 로그인 인증 인터셉트 -->
 		<interceptor>
-			<mapping path="/board/boardWrite.do" />
-			<mapping path="/board/boardWriteAction.do" />
-			<mapping path="/board/boardDelete.do" />
-			<mapping path="/board/boardDeleteAction.do" />
-			<mapping path="/board/boardModify.do" />
-			<mapping path="/board/boardModifyAction.do" />
-			<mapping path="/board/boardReply.do" />
-			<mapping path="/board/boardReplyAction.do" />
+			<mapping path="/board//{boardcode}/{period}/boardWrite.do" />
+			<mapping path="/board/{boardcode}/{period}/boardWriteAction.do" />
+			<mapping path="/board/{bidx}/travelReservationWrite.do" />
+			<mapping path="/board/{bidx}/travelReservationWriteAction.do" />
+			<mapping path="/board/{bidx}/boardModify.do" />
+			<mapping path="/board/{bidx}/boardModifyAction.do" />
+			
+			<mapping path="/board/{bidx}/travelReservation.do" />
+			<mapping path="/board/{bidx}/travelReservationAction.do" />
+			<mapping path="/board/{bidx}/boardDeleteAction.do" />
+			
+			<mapping path="/member/memberMypage.do" />
+			<mapping path="/member/memberMypageAction.do" />
+			<mapping path="/member/memberDeleteAction.do" />
+			
 			<beans:ref bean="authInterceptor" />
 		</interceptor>
 	</interceptors>

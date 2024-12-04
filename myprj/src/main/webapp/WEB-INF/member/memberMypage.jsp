@@ -57,9 +57,19 @@
 	  	  
 	  let ans = confirm("수정하시겠습니까?");	  
 	  if (ans == true) {
-		  fm.action="<%=request.getContextPath() %>/member/memberMypageAction.do";
+		  fm.action="${pageContext.request.contextPath}/member/memberMypageAction.do";
 		  fm.method="post";
 		  fm.submit();
+	  }
+	  
+	  return;
+  }
+  
+  function cancel() {
+	  
+	  let ans = confirm("탈퇴하시겠습니까?");	  
+	  if (ans == true) {
+		  location.href = "${pageContext.request.contextPath}/member/memberDeleteAction.do";
 	  }
 	  
 	  return;
@@ -136,6 +146,7 @@
 
       <div class="text-center">
         <button class="btn btn-primary mb-3" type="button" onClick="check()">수정하기</button>
+        <button class="btn btn-primary mb-3" type="button" onClick="cancel()">탈퇴하기</button>
       </div>
     </form>
 

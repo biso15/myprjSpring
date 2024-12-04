@@ -32,10 +32,10 @@
 		    titleFormat : function(date) {
 			 	return date.date.year + '년 ' + (parseInt(date.date.month) + 1) + '월';
 			 },
-			events : "${pageContext.request.contextPath}/calendar/" + ${requestScope.bidx} + "/getCalendarAll.do",
+			events : "${pageContext.request.contextPath}/board/" + ${requestScope.bidx} + "/getCalendarAll.do",
 /* 			dateClick: function(info) {
 			    document.querySelector('#startday').value = info.dateStr;
-			    const period = ${bv.period};
+			    const period = ${requestScope.bv.period};
 			    
 			    // startday에 period를 더해서 endday를 계산 후 입력
 			    const date = new Date(info.dateStr);
@@ -59,6 +59,7 @@
 				fcDay.classList.add("select");				
 
             	const fcDayData = fcDay.getAttribute('data-date');  // 클릭한 날짜의 date 속성 가져오기
+				document.querySelector('#startday').value = fcDayData;
             	console.log(fcDayData)
             	
 				const fcEvent = fcDay.querySelector('.fc-event');  // 자식 요소에 event가 있는지 찾는다.
@@ -81,8 +82,7 @@
 	   		        	
 	    		    }
 	            } else {
-					document.querySelector('#startday').value = fcDayData;
-				    const period = ${bv.period};
+				    const period = ${requestScope.bv.period};
 				    
 				    // startday에 period를 더해서 endday를 계산 후 입력
 				    const date = new Date(fcDayData);
@@ -91,8 +91,8 @@
 				    document.querySelector('#endday').value = endday;
 				    
 				    document.querySelector('#fromTo').textContent = fcDayData + " ~ " + endday;
-   		        	document.querySelector('#adultprice').value = "";
-   		        	document.querySelector('#childprice').value = "";
+   		        	document.querySelector('#adultprice').value = "0";
+   		        	document.querySelector('#childprice').value = "0";
 	            }
 	        }
 	    });
@@ -141,16 +141,16 @@
 	
 				const startday = $("#startday").val();
 				const endday = $("#endday").val();
-				const adultprice = $("#adultprice").val();
-				const childprice = $("#childprice").val();
+				const adultprice = $("#adultprice").val().replace(',', '');
+				const childprice = $("#childprice").val().replace(',', '');
 				
 				$.ajax({
 					type: "post",  // 전송방식
-					url: "${pageContext.request.contextPath}/calendar/${requestScope.bv.bidx}/travelReservationWriteAction.do",
+					url: "${pageContext.request.contextPath}/board/${requestScope.bv.bidx}/travelReservationWriteAction.do",
 					dataType: "json",
 					data: {"startday": startday, "endday": endday, "adultprice": adultprice, "childprice": childprice},
 					success: function(result) {
-						//alert("전송성공");
+						alert("저장되었습니다.");
 						calendar.getEventSources().forEach(source => source.refetch());
 					},
 					error: function(xhr, status, error) {  // 결과가 실패했을 때 받는 영역

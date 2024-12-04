@@ -5,15 +5,12 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.io.IOUtils;
@@ -27,36 +24,28 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.myprj.myapp.domain.BoardVo;
 import com.myprj.myapp.domain.CalendarVo;
+import com.myprj.myapp.domain.MemberVo;
 import com.myprj.myapp.domain.PageMaker;
+import com.myprj.myapp.domain.ReservationVo;
 import com.myprj.myapp.domain.SearchCriteria;
 import com.myprj.myapp.service.BoardService;
 import com.myprj.myapp.service.CalendarService;
 import com.myprj.myapp.service.MemberService;
+import com.myprj.myapp.service.ReservationService;
 import com.myprj.myapp.util.MediaUtils;
 import com.myprj.myapp.util.UploadFileUtiles;
 import com.myprj.myapp.util.UserIp;
-
-import org.springframework.beans.factory.annotation.Value;
-
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.text.SimpleDateFormat;
 
 @Controller  // Controller 객체를 만들어줘
 @RequestMapping(value="/board")  // 중복된 주소는 위쪽에서 한번에 처리
@@ -69,6 +58,12 @@ public class BoardController {
 	
 	@Autowired(required=false)
 	private CalendarService calendarService;
+
+	@Autowired(required=false)
+	private MemberService memberService;
+
+	@Autowired(required=false)
+	private ReservationService reservationService;
 	
 	@Autowired(required=false)
 	private PageMaker pm;  // @Component 어노테이션 사용 안할 경우, private PageMaker pm = new PageMaker(); 이렇게 사용하면 되는듯
@@ -108,6 +103,9 @@ public class BoardController {
 				menu = "3박4일";
 			}
 			path = "WEB-INF/board/travelList";
+		} else if(boardcode.equals("reservation")) {
+			menu = "예약확인";
+			path = "WEB-INF/board/boardList";
 		} else if(boardcode.equals("free")) {
 			menu = "자유게시판";
 			path = "WEB-INF/board/boardList";
@@ -243,8 +241,77 @@ public class BoardController {
 		return "WEB-INF/board/travelReservationWrite";
 	}
 
-	/* /{bidx}/travelReservationWriteAction.do -> CalendarController에 있음 */
+	@ResponseBody
+	@RequestMapping(value="/{bidx}/travelReservationWriteAction.do", method=RequestMethod.POST)
+		public JSONObject travelReservationWriteAction(
+			CalendarVo cv,
+			HttpServletRequest request
+			) throws Exception {
+
+		logger.info("travelReservationWriteAction들어옴");
+		
+//		// end day 계산
+//	    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+//	    Calendar calendar = Calendar.getInstance();
+//	    calendar.setTime(sdf.parse(cv.getStartday()));
+//	    calendar.add(Calendar.DAY_OF_MONTH, bv.getPeriod());
+//
+//	    // 계산된 날짜를 다시 request에 저장
+//	    String calculatedDate = sdf.format(calendar.getTime());
+//	    cv.setEndday(calculatedDate);
+		
+		String ip = userip.getUserIp(request);
+		cv.setIp(ip);
+		
+		Integer value = calendarService.calendarFindIdx(cv.getBidx(), cv.getStartday());  // int는 null값인 경우 오류 발생. Integer는 null값 가능
+		
+		System.out.println(value);		
+		
+		if(value == null) {  // value가 null인 경우 NullPointerException을 발생시킬 가능성이 있으므로, null을 먼저 비교한다.
+			System.out.println("인서트");
+			value = calendarService.calendarInsert(cv);
+		} else {
+			System.out.println("업데이트");
+			value = calendarService.calendarUpdate(cv);
+		}
+		
+		JSONObject js = new JSONObject();
+
+		js.put("value", value);
+
+		return js;
+	}
 	
+	@ResponseBody
+	@RequestMapping(value="/{bidx}/getCalendarAll.do")
+	public ArrayList<Map<String, Object>> getCalendarAll(
+			@PathVariable("bidx") int bidx
+			) throws Exception {
+
+		logger.info("getCalendarAll들어옴");
+		
+		ArrayList<CalendarVo> clist = calendarService.calendarSelectAll(bidx);
+		
+		ArrayList<Map<String, Object>> events = new ArrayList<>();
+
+        // 데이터 추가
+		for(CalendarVo cv : clist ) {
+	        Map<String, Object> extendedProps = new HashMap<>();
+	        extendedProps.put("fromTo", cv.getStartday() + " ~ " + cv.getEndday());
+	        extendedProps.put("adultprice", cv.getAdultprice());
+	        extendedProps.put("childprice", cv.getChildprice());
+	        
+	        Map<String, Object> event = new HashMap<>();
+	        event.put("start", cv.getStartday());
+	        event.put("display", "list-item");
+	        event.put("backgroundColor", "#0d6efd");
+	        event.put("extendedProps", extendedProps);
+	        events.add(event);
+		}
+		
+		System.out.println(events);
+        return events;
+	}	
 
 	@RequestMapping(value="/{bidx}/boardModify.do")
 	public String boardModify(
@@ -419,46 +486,6 @@ public class BoardController {
 		return entity;
 	}
 	
-
-//	@RequestMapping(value="boardWriteAction.aws", method=RequestMethod.POST)
-//	public String boardWriteAction(
-//			BoardVo bv,
-//			@RequestParam("attachfile") MultipartFile filename,  // input의 name 이름이 BoardVo에 있는 프로퍼티 이름과 동일하면 BoardVo로 값이 넘어가서 @RequestParam으로 받을 수 없으므로, input의 name을 filename이 아닌 attachfile으로 한다.
-//			HttpServletRequest request,
-//			RedirectAttributes rttr
-//			) throws Exception {
-//		
-//		logger.info("boardWriteAction들어옴");
-//		
-//		// 파일첨부
-//		MultipartFile file = filename;
-//		String uploadedFileName = "";
-//		
-//		if(!file.getOriginalFilename().equals("")) {			
-//			uploadedFileName = UploadFileUtiles.uploadFile(uploadPath, file.getOriginalFilename(), file.getBytes());  // getOriginalFilename 대.소문자 주의
-//		}
-//		
-//		String midx = request.getSession().getAttribute("midx").toString();  // HttpSession은 HttpServletRequest 안에 있음
-//		int midx_int = Integer.parseInt(midx);  // session.getAttribute()가 String 타입일 가능성이 더 높으므로 (int)session.getAttribute("midx")로 바로 형변환 하지 않고 String으로 변환 후 int로 변환한다.
-//		String ip = userip.getUserIp(request);
-//		
-//		bv.setUploadedFilename(uploadedFileName);
-//		bv.setMidx(midx_int);
-//		bv.setIp(ip);
-//		
-//		int value = boardService.boardInsert(bv);
-//		
-//		String path = "";
-//		if(value == 2) {
-//			rttr.addFlashAttribute("msg", "글쓰기 성공");
-//			path = "redirect:/board/boardList.aws";  // redirect는 새로운 주소로 보내기 때문에 .aws도 붙여줘야 함. 주소 앞에 request.getContextPath()도 붙여야 하지만 서버에서 지원해주므로 생략
-//		} else {
-//			rttr.addFlashAttribute("msg", "입력이 잘못되었습니다.");
-//			path = "redirect:/board/boardWrite.aws";
-//		}
-//		return path;
-//	}
-	
 	@RequestMapping(value="/{bidx}/boardContents.do")
 	public String boardContents(@PathVariable("bidx") int bidx, Model model) {
 
@@ -496,6 +523,7 @@ public class BoardController {
 	
 	@RequestMapping(value="/{bidx}/travelReservation.do")
 	public String travelReservation(
+			HttpServletRequest request,
 			@PathVariable("bidx") int bidx,
 			Model model) {
 
@@ -503,7 +531,10 @@ public class BoardController {
 		
 		BoardVo bv = boardService.boardSelectOne(bidx);  // 해당되는 bidx의 게시물 데이터 가져옴
 		ArrayList<CalendarVo> clist = calendarService.calendarSelectAll(bidx);
-
+		
+		String id = request.getSession().getAttribute("id").toString();
+		MemberVo mv = memberService.memberSelect(id);
+		
 		String menu = "";
 		if(bv.getPeriod() == 1) {
 			menu = "당일치기";
@@ -516,13 +547,70 @@ public class BoardController {
 		}
 
 		model.addAttribute("bv", bv);
-		model.addAttribute("clist", clist);
+		model.addAttribute("clist", clist);	
+		model.addAttribute("mv", mv);
 		model.addAttribute("menu", menu);
 		
 		return "WEB-INF/board/travelReservation";
 	}
 	
-	
+	/* 할차례 */
+	@RequestMapping(value="/{bidx}/travelReservationAction.do")
+	public String travelReservationAction(
+			@PathVariable("bidx") int bidx,
+			@RequestParam("startday") String startday,
+			HttpServletRequest request,
+			ReservationVo rv,
+			RedirectAttributes rttr) throws Exception {
+
+		logger.info("travelReservationAction들어옴");
+
+		String midx = request.getSession().getAttribute("midx").toString();  // HttpSession은 HttpServletRequest 안에 있음
+		int midx_int = Integer.parseInt(midx);
+		rv.setMidx(midx_int);
+		
+		String ip = userip.getUserIp(request);
+		rv.setIp(ip);
+		
+		rv.setBidx(bidx);
+		
+		int cidx = calendarService.calendarFindIdx(rv.getBidx(), startday);
+		rv.setCidx(cidx);
+		
+		int value = reservationService.reservationInsert(rv);
+		String path = "";
+		if(value == 1) {
+			rttr.addFlashAttribute("msg", " 예약이 완료되었습니다.");
+			path = "redirect:/board/reservation/0/boardList.do";
+		} else {
+			rttr.addFlashAttribute("msg", "예약이 실패하였습니다.");
+			path = "redirect:/board/{bidx}/travelReservationAction.do";
+		}
+		
+		return path;
+	}
+		
+	@RequestMapping(value="boardDeleteAction.aws", method=RequestMethod.POST)
+	public String boardDeleteAction(
+			@RequestParam("bidx") int bidx,
+			@RequestParam("password") String password,
+			HttpSession session,
+			RedirectAttributes rttr) {
+		
+		logger.info("boardDeleteAction들어옴");		
+		
+		int midx = Integer.parseInt(session.getAttribute("midx").toString());
+		int value = boardService.boardDelete(bidx, midx, password);
+
+		String path = "redirect:/board/boardList.aws";
+		rttr.addFlashAttribute("msg", "글삭제 성공");
+		if(value == 0) {
+			path = "redirect:/board/boardDelete.aws?bidx=" + bidx;	
+			rttr.addFlashAttribute("msg", "글삭제 실패");
+		}
+		
+		return path;
+	}
 	
 	
 	
@@ -603,38 +691,6 @@ public class BoardController {
 		return js;
 	}
 
-	@RequestMapping(value="boardDelete.aws")
-	public String boardDelete(@RequestParam("bidx") int bidx, Model model) {
-		
-		logger.info("boardDelete들어옴");
-		
-		model.addAttribute("bidx", bidx);
-
-		return "WEB-INF/board/boardDelete";
-		
-	}
-	
-	@RequestMapping(value="boardDeleteAction.aws", method=RequestMethod.POST)
-	public String boardDeleteAction(
-			@RequestParam("bidx") int bidx,
-			@RequestParam("password") String password,
-			HttpSession session,
-			RedirectAttributes rttr) {
-		
-		logger.info("boardDeleteAction들어옴");		
-		
-		int midx = Integer.parseInt(session.getAttribute("midx").toString());
-		int value = boardService.boardDelete(bidx, midx, password);
-
-		String path = "redirect:/board/boardList.aws";
-		rttr.addFlashAttribute("msg", "글삭제 성공");
-		if(value == 0) {
-			path = "redirect:/board/boardDelete.aws?bidx=" + bidx;	
-			rttr.addFlashAttribute("msg", "글삭제 실패");
-		}
-		
-		return path;
-	}
 	
 	
 	@RequestMapping(value="boardReply.aws", method=RequestMethod.GET)

@@ -5,7 +5,7 @@
 <mapper namespace="com.myprj.myapp.persistance.CalendarMapper">
 
 	<select id="calendarSelectAll" parameterType="int" resultType="cv">
-		 SELECT * FROM CALENDAR WHERE delyn = 'N' and bidx = #{bidx};
+		 SELECT * FROM CALENDAR WHERE delyn = 'N' and bidx = #{bidx}
 	</select>
 	
 	<insert id="calendarInsert" parameterType="cv">
@@ -14,7 +14,11 @@
 	</insert>
 	
 	<update id="calendarUpdate" parameterType="cv">
-  		UPDATE CALENDAR SET startday = #{startday}, endday = #{endday}, adultprice = #{adultprice}, childprice = #{childprice}, modify = now(), ip = #{ip} WHERE cidx = #{cidx}
+  		UPDATE CALENDAR SET adultprice = #{adultprice}, childprice = #{childprice}, modify = now(), ip = #{ip} WHERE bidx = #{bidx} and startday = #{startday}
 	</update>
+	
+	<select id="calendarFindIdx" parameterType="HashMap" resultType="Integer">
+  		SELECT cidx FROM CALENDAR WHERE bidx = #{bidx} and startday = #{startday}
+	</select>
 
 </mapper>

@@ -13,5 +13,7 @@ public interface MemberMapper {
 	public MemberVo memberSelect(String id);
 
 	public int memberUpdate(MemberVo mv);
+
+	public int memberDelete(MemberVo mv);
 	
 }

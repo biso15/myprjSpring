@@ -7,5 +7,6 @@
  <typeAlias alias="bv" type="com.myprj.myapp.domain.BoardVo"/>
  <typeAlias alias="scri" type="com.myprj.myapp.domain.SearchCriteria"/>
  <typeAlias alias="cv" type="com.myprj.myapp.domain.CalendarVo"/>
+ <typeAlias alias="rv" type="com.myprj.myapp.domain.ReservationVo"/>
 </typeAliases>
 </configuration>

@@ -1,7 +1,5 @@
 package com.myprj.myapp.service;
 
-import java.util.ArrayList;
-
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -42,6 +40,13 @@ public class MemberServiceImpl implements MemberService {
 	public int memberUpdate(MemberVo mv) {
 		
 		int value = mm.memberUpdate(mv);
+		return value;
+	}
+
+	@Override
+	public int memberDelete(MemberVo mv) {
+		
+		int value = mm.memberDelete(mv);
 		return value;
 	}
 

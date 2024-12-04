@@ -74,7 +74,7 @@
 	  	  	  
 	  let ans = confirm("저장하시겠습니까?");	  
 	  if (ans == true) {
-		  fm.action="<%=request.getContextPath() %>/member/memberJoinAction.do";
+		  fm.action="${pageContext.request.contextPath}/member/memberJoinAction.do";
 		  fm.method="post";
 		  fm.submit();
 	  }
@@ -93,7 +93,7 @@
 		  
 		  $.ajax({
 			  type: "post",  // 전송방식
-			  url: "<%=request.getContextPath()%>/member/memberIdCheck.do",
+			  url: "${pageContext.request.contextPath}/member/memberIdCheck.do",
 			  dataType: "json",  // 받는 형식. json 타입은 문서에서 {"key값": "value값", "key값" : "value값"} 형식으로 구성
 			  data: {"id": id},
 			  success: function(result) {  // 결과가 넘어와서 성공했을 때 받는 영역

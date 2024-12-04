@@ -10,7 +10,9 @@
   <meta name="description" content="">
   <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
   <meta name="generator" content="Hugo 0.122.0">
-  <title>개인프로젝트</title>  
+  <title>개인프로젝트</title>
+  <script src="https://code.jquery.com/jquery-latest.min.js"></script>
+  
   <!-- 캘린더 -->
   <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js'></script>
   <script>
@@ -86,11 +88,18 @@
                     formattedChildPrice = Number(event.extendedProps.childprice);
                        
    		        	// 여행기간과 가격 정보 텍스트 업데이트
+   		        	document.querySelector('#startday').value = fcEventData;
    		        	document.querySelector('#fromTo').textContent = event.extendedProps.fromTo;
    		        	document.querySelector('#price').textContent = "성인👩 " +  formattedAdultPrice.toLocaleString() + "원 │ 아동👶 " + formattedChildPrice.toLocaleString() + "원";
    		        	
    		        	priceUpdate();
     		    }
+            } else {            	
+            	document.querySelector('#startday').value = "";
+	        	document.querySelector('#fromTo').textContent = "달력에서 날짜를 선택해 주세요."
+	        	document.querySelector('#price').textContent = "성인👩 0원 │ 아동👶 0원";
+	        	document.querySelector('#adultnumber').value = "0";
+		        document.querySelector('#childnumber').value = "0";
             }
         }
       });
@@ -109,6 +118,42 @@
    	childnumber.addEventListener("change", priceUpdate);
    	
 });
+  
+//예약하기
+function check() {
+
+  // 유효성 검사하기
+  let fm = document.frm;  // 문자객체 안에 form 객체 생성하기
+  if (fm.startday.value == "") {
+	  alert("여행기간을 선택해주세요");
+	  return;
+  } else if (fm.adultnumber.value == "") {
+	  alert("성인 인원을 입력해주세요");
+	  fm.adultnumber.focus();
+	  return;
+  } else if (fm.childnumber.value == "") {
+	  alert("아동 인원을 입력해주세요");
+	  fm.childnumber.focus();
+	  return;
+  } else if (fm.name.value == "") {
+	  alert("예약자 이름을 입력해주세요");
+	  fm.name.focus();
+	  return;
+  } else if (fm.phone.value == "") {
+	  alert("예약자 연락처를 입력해주세요");
+	  fm.phone.focus();
+	  return;
+  }
+  
+  let ans = confirm("신청하시겠습니까?");
+	  if (ans == true) {
+		  fm.action="${pageContext.request.contextPath}/board/${requestScope.bv.bidx}/travelReservationAction.do";
+		  fm.method="post";
+		  fm.submit();
+	}
+	
+	return;
+}
   
   
   </script>
@@ -139,10 +184,11 @@
     </div>
 
     <!-- 컨텐츠 -->
-    <form class="detail pb-5">
+    <form class="detail pb-5" name="frm">
+      <input type="hidden" class="form-control" id="startday" name="startday">
       <div class="card text-center mb-3">
-        <h3 class="card-title fw-bold mb-4">${bv.getTitle()}</h3>
-        <p class="card-text text-body-secondary pt-4 border-top-dashed">${bv.getSummary()}</p>
+        <h3 class="card-title fw-bold mb-4">${requestScope.bv.getTitle()}</h3>
+        <p class="card-text text-body-secondary pt-4 border-top-dashed">${requestScope.bv.getSummary()}</p>
       </div>
       
       <div class="card mb-3 d-flex">
@@ -169,11 +215,11 @@
               <div class="row mb-3">
                 <div class="col-6 pl-4">
                   <label for="adultnumber" class="form-label">성인👩</label>
-                  <input type="number" class="form-control" id="adultnumber" min="0" value="0">
+                  <input type="number" class="form-control" id="adultnumber" name="adultnumber" min="0" value="0">
                 </div>
                 <div class="col-6 pr-4">
                   <label for="childnumber" class="form-label">아동👶</label>
-                  <input type="number" class="form-control" id="childnumber" min="0" value="0">
+                  <input type="number" class="form-control" id="childnumber" name="childnumber" min="0" value="0">
                 </div>
               </div>
               
@@ -186,12 +232,12 @@
               <div class="row">
                 <div class="col-6 pl-4">
                   <label for="name" class="form-label">이름</label>
-                  <input type="text" class="form-control" id="reservationname" required="" value="노지혜" placeholder="홍길동">
+                  <input type="text" class="form-control" id="reservationname" required="" value="${requestScope.mv.name}" name="name" placeholder="홍길동">
                   <div class="invalid-feedback">이름을 입력해주세요.</div>
                 </div>
                 <div class="col-6 pr-4">
                   <label for="phone" class="form-label">연락처</label>
-                  <input type="text" class="form-control" id="reservationphone" required="" value="01012341234" placeholder="01012345678">
+                  <input type="text" class="form-control" id="reservationphone" required="" value="${requestScope.mv.phone}" name="phone" placeholder="01012345678">
                   <div class="invalid-feedback">연락처를 입력해주세요.</div>
                 </div>
               </div>
@@ -201,7 +247,7 @@
       </div>
 
       <div class="text-center">
-        <button class="btn btn-primary mb-3" type="submit">예약하기</button>
+        <button class="btn btn-primary mb-3" type="button" onClick="check()">예약하기</button>
       </div>
     </form>
 

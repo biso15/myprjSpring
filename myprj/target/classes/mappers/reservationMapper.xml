@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.myprj.myapp.persistance.ReservationMapper">
+	
+	<insert id="reservationInsert" parameterType="rv">
+  		INSERT INTO RESERVATION(adultnumber, childnumber, name, phone, ip, cidx, midx, bidx)   		
+		VALUES(#{adultnumber}, #{childnumber}, #{name}, #{phone}, #{ip}, #{cidx}, #{midx}, #{bidx})
+	</insert>
+	
+</mapper>

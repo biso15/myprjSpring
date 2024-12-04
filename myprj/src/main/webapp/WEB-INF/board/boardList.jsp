@@ -57,12 +57,16 @@
     </div>
 
     <!-- 목록 -->
+    
+    
     <div class="album py-5">
       <div class="row row-cols-md-4 g-3">
         <c:forEach items="${requestScope.blist}" var="bv" varStatus="status">
         <a class="col" href="${pageContext.request.contextPath}/board/${bv.bidx}/boardContents.do">
-          <div class="card shadow-sm">
-            <img src="${pageContext.request.contextPath}/board/displayFile.aws?fileName=${requestScope.bv.filename}" alt="thumbnail">
+          <div class="card shadow-sm flex-column justify-content-between">
+            <div>
+           		<img src="${pageContext.request.contextPath}/board/displayFile.do?fileName=${bv.thumbnail}&type=thumbnail" alt="thumbnail">
+ 	        </div>
             <div class="card-body">
               <p class="card-text ellipsis">${bv.title}</p>
               <small class="text-body-secondary ellipsis ellipsis3">${bv.summary}</small>
@@ -71,90 +75,66 @@
         </a>
         </c:forEach>
       </div>
+            
+    <div class="py-5">
+      <table class="table">
+        <colgroup>
+          <col width="8%">
+          <col width="">
+          <col width="10%">
+          <col width="8%">
+          <col width="8%">
+        </colgroup>
+        <thead>
+          <tr class="text-center">
+            <th>순번</th>
+            <th>제목</th>
+            <th>여행기간</th>
+            <th>총금액</th>
+            <th>신청일</th>
+            <th>상태</th>
+          </tr>
+        </thead>
+        <tbody>
+          <c:forEach items="${requestScope.blist}" var="bv" varStatus="status">
+          <tr>
+            <td class="text-center">1</td>
+            <td>${bv.title}</td>
+            <td class="text-center">${cv.startday} ~ ${cv.endday}</td>
+            <td class="text-center">${cv.adultprice} * ${cv.adultnumber} + ${cv.childprice} * ${cv.childnumber}</td>
+            <td class="text-center">${bv.date}</td>
+            <td class="text-center">${rv.status}</td>
+          </tr>
+          </c:forEach>
+        </tbody>
+      </table>
       
-      <!-- 페이징 -->
+	  <!-- 페이징 -->
+      <c:set var="queryParam" value="keyword=${requestScope.pm.scri.keyword}&searchType=${requestScope.pm.scri.searchType}"></c:set>
       <ul class="pagination mt-5 justify-content-center">
+        <c:if test="${requestScope.pm.prev == true}">
         <li class="page-item">
-          <a class="page-link" href="#" aria-label="Previous">
+          <a class="page-link" href="${pageContext.request.contextPath}/board/boardList.do?page=${requestScope.pm.startPage - 1}&${queryParam}" aria-label="Previous">
             <span aria-hidden="true">&laquo;</span>
           </a>
         </li>
-        <li class="page-item"><a class="page-link active" href="#">1</a></li>
-        <li class="page-item"><a class="page-link" href="#">2</a></li>
-        <li class="page-item"><a class="page-link" href="#">3</a></li>
-        <li class="page-item"><a class="page-link" href="#">4</a></li>
-        <li class="page-item"><a class="page-link" href="#">5</a></li>
-        <li class="page-item"><a class="page-link" href="#">6</a></li>
-        <li class="page-item"><a class="page-link" href="#">7</a></li>
-        <li class="page-item"><a class="page-link" href="#">8</a></li>
-        <li class="page-item"><a class="page-link" href="#">9</a></li>
-        <li class="page-item"><a class="page-link" href="#">10</a></li>
-        <li class="page-item">
-          <a class="page-link" href="#" aria-label="Next">
+		</c:if> 
+		
+        <c:forEach var="i" begin="${requestScope.pm.startPage}" end="${requestScope.pm.endPage}" step="1">
+        <li class="page-item"><a class="page-link <c:if test="${i == requestScope.pm.scri.page}"> active</c:if>" href="${pageContext.request.contextPath}/board/${requestScope.boardcode}/${requestScope.period}/boardList.do?page=${i}&${queryParam}">${i}</a></li>
+        </c:forEach>
+        
+        <c:if test="${requestScope.pm.next == true && requestScope.pm.endPage > 0}">
+		<li class="page-item">
+          <a class="page-link" href="${pageContext.request.contextPath}/board/boardList.do?page=${requestScope.pm.endPage + 1}&${queryParam}" aria-label="Next">
             <span aria-hidden="true">&raquo;</span>
           </a>
         </li>
+		</c:if>        
       </ul>
     </div>
     
-    
     <%@ include file="/WEB-INF/footer.jsp" %>   
   </div>
-
-
-
-
-
-
-
-
-
-<%-- 
-
-		<c:forEach items="${requestScope.blist}" var="bv" varStatus="status">  <!-- status.index는 0부터 시작 -->
-		<tr>
-			<td>${requestScope.pm.totalCount - ((status.index) + (requestScope.pm.scri.page-1) * requestScope.pm.scri.perPageNum)}</td>
-			<td class="title"><a href="${pageContext.request.contextPath}/board/boardContents.aws?bidx=${bv.bidx}">
-				<c:forEach var="i" begin="1" end="${bv.level_}" step="1">
-					<c:if test="${i > 1}">
-						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-					</c:if>
-					<c:if test="${i == bv.level_}">
-						└ &nbsp;
-					</c:if>
-				</c:forEach>
-				${bv.subject}
-			</a></td>
-			<td>${bv.writer}</td>
-			<td class="viewcnt">${bv.viewcnt}</td>
-			<td class="recom">${bv.recom}</td>
-			<td>${bv.writeday}</td>
-		</tr>
-		</c:forEach>		
-	</table>
-	
-	<div class="btnBox">
-		<a class="btn aBtn" href="${pageContext.request.contextPath}/board/boardWrite.aws">글쓰기</a>
-	</div>
-	
-	<div class="page">
-		<c:set var="queryParam" value="keyword=${requestScope.pm.scri.keyword}&searchType=${requestScope.pm.scri.searchType}"></c:set>	
- 		<ul>
- 		<c:if test="${requestScope.pm.prev == true}">
-			<li><a href="${pageContext.request.contextPath}/board/boardList.aws?page=${requestScope.pm.startPage - 1}&${queryParam}">◀</a></li>
-		</c:if>
-			
-		<c:forEach var="i" begin="${requestScope.pm.startPage}" end="${requestScope.pm.endPage}" step="1">
-			<li<c:if test="${i == requestScope.pm.scri.page}"> class="on"</c:if>>
-			<a href="${pageContext.request.contextPath}/board/boardList.aws?page=${i}&${queryParam}">${i}</a></li>
-		</c:forEach>
-		
- 		<c:if test="${requestScope.pm.next == true && requestScope.pm.endPage > 0}">  <!-- && requestScope.pm.endPage > 0 : 게시물이 0개일 경우 endPage가 0이 됨. 이때는 버튼이 없어야 함 -->
-			<li><a href="${pageContext.request.contextPath}/board/boardList.aws?page=${requestScope.pm.endPage + 1}&${queryParam}">▶</a></li>
-		</c:if>
-		</ul>
-	</div>
-</section> --%>
-
 </body>
 </html>

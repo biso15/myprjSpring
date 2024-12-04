@@ -1,6 +1,7 @@
 package com.myprj.myapp.service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,5 +42,16 @@ public class CalendarServiceImpl implements CalendarService {
 		
 		return value;
 	}
-	
+
+	@Override
+	public Integer calendarFindIdx(int bidx, String startday) {
+
+		HashMap<String,Object> hm = new HashMap<String,Object>();
+		hm.put("bidx", bidx);
+		hm.put("startday", startday);
+		
+		Integer value = cm.calendarFindIdx(hm);
+		
+		return value;
+	}
 }
