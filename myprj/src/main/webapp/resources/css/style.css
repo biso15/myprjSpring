@@ -16,6 +16,9 @@ textarea { resize: none; }
 .text-right { text-align: right; }
 .border-top-dashed { border-top: 1px dashed var(--bs-card-border-color); }
 .border-left { border-left: var(--bs-border-width) var(--bs-border-style) var(--bs-border-color) !important; }
+.text-body-primary { color: var(--bs-primary)!important; }
+.text-body-danger { color: var(--bs-danger)!important; }
+.text-body-success { color: var(--bs-success)!important; }
 
 .search { width: calc( 100% - 58px - .5rem)!important; }
 .detail>.card, .mypage>.card, .join>.card, .write>.card { padding: 2rem; }
@@ -26,6 +29,11 @@ textarea { resize: none; }
 .album .card { height: 100%; }
 .album .card-body { max-height: fit-content; }
 .album .text-body-secondary { min-height: 4rem; }
+
+/* board List */
+.list table a { text-decoration: none; color: var(--bs-body-color); }
+.list table a:hover { color: var(--bs-link-hover-color-rgb); }
+.list th, .list td { vertical-align: middle; }
 
 /* nav */
 .breadcrumb-chevron { --bs-breadcrumb-divider: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%236c757d'%3E%3Cpath fill-rule='evenodd' d='M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E");

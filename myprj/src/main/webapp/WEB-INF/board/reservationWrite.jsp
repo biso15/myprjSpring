@@ -145,9 +145,9 @@ function check() {
 	  return;
   }
   
-  let ans = confirm("신청하시겠습니까?");
+  let ans = confirm("예약하시겠습니까?");
 	  if (ans == true) {
-		  fm.action="${pageContext.request.contextPath}/board/${requestScope.bv.bidx}/travelReservationAction.do";
+		  fm.action="${pageContext.request.contextPath}/reservation/${requestScope.bv.bidx}/reservationWriteAction.do";
 		  fm.method="post";
 		  fm.submit();
 	}
@@ -211,7 +211,7 @@ function check() {
                 <p id="price">성인👩 0원 │ 아동👶 0원</p>
               </div>
 
-              <p class="fw-bold mb-1 pt-3 border-top-dashed">3. 신청인원</p>
+              <p class="fw-bold mb-1 pt-3 border-top-dashed">3. 예약인원</p>
               <div class="row mb-3">
                 <div class="col-6 pl-4">
                   <label for="adultnumber" class="form-label">성인👩</label>

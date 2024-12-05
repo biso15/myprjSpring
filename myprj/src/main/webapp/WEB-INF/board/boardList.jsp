@@ -40,7 +40,7 @@
 
     <!-- 검색영역 -->
     <div class="d-flex justify-content-between">
-      <c:if test="${sessionScope.adminyn.equals('Y')}">
+      <c:if test="${sessionScope.adminyn == 'Y'}">
       <a herf="${pageContext.request.contextPath}/board/${requestScope.boardcode}/${requestScope.period}/boardWrite.do" class="btn btn-outline-primary">글쓰기</a>
       </c:if>
       <form class="d-flex w-35" role="search" name="frm" action="${pageContext.request.contextPath}/board/${requestScope.boardcode}/${requestScope.period}/boardList.do" method="get">
@@ -57,8 +57,6 @@
     </div>
 
     <!-- 목록 -->
-    
-    
     <div class="album py-5">
       <div class="row row-cols-md-4 g-3">
         <c:forEach items="${requestScope.blist}" var="bv" varStatus="status">
@@ -91,7 +89,7 @@
             <th>제목</th>
             <th>여행기간</th>
             <th>총금액</th>
-            <th>신청일</th>
+            <th>예약일</th>
             <th>상태</th>
           </tr>
         </thead>

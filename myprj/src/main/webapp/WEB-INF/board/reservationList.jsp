@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <!doctype html>
 <html lang="ko" data-bs-theme="auto">
@@ -13,7 +14,7 @@
   <title>개인프로젝트</title>
 
     <%@ include file="/WEB-INF/header.jsp" %>
-
+        
     <div class="d-flex align-items-center justify-content-between mb-4">
       <h2>${requestScope.menu}</h2>
       <!-- 네비게이션 -->
@@ -30,26 +31,20 @@
               <span class="visually-hidden">Home</span>
             </a>
           </li>
+          <!-- <li class="breadcrumb-item">
+            <a class="link-body-emphasis fw-semibold text-decoration-none" href="#">Library</a>
+          </li> -->
           <li class="breadcrumb-item active" aria-current="page">${requestScope.menu}</li>
         </ol>
       </nav>
     </div>
-    
+
     <!-- 검색영역 -->
-    <c:choose>
-    <c:when test="${sessionScope.adminyn == 'Y'}">
-    <div class="d-flex justify-content-between">
-      <a href="${pageContext.request.contextPath}/board/${requestScope.boardcode}/${requestScope.period}/boardWrite.do" class="btn btn-outline-primary">글쓰기</a>
-    </c:when>
-    <c:otherwise>
     <div class="d-flex justify-content-end">
-    </c:otherwise>
-    </c:choose>
-      <form class="d-flex w-35" role="search" name="frm" action="${pageContext.request.contextPath}/board/${requestScope.boardcode}/${requestScope.period}/boardList.do" method="get">
+      <form class="d-flex w-35" role="search" name="frm" action="${pageContext.request.contextPath}/reservation/reservationList.do" method="get">
         <select class="form-select me-2" name="searchType">
           <option value="title" selected>제목</option>
-          <option value="summary">부제목</option>
-          <option value="contents">내용</option>
+          <option value="name">예약자</option>
         </select>
         <div class="d-flex col-9">
           <input class="form-control me-2 w-auto search" type="search" name="keyword" placeholder="검색어를 입력해주세요." value="">
@@ -59,50 +54,66 @@
     </div>
 
     <!-- 목록 -->
-    <div class="album py-5">
-      <div class="row row-cols-md-4 g-3">
-        <c:forEach items="${requestScope.blist}" var="bv" varStatus="status">
-        <a class="col" href="${pageContext.request.contextPath}/board/${bv.bidx}/boardContents.do">
-          <div class="card shadow-sm flex-column justify-content-between">
-            <div>
-           		<img src="${pageContext.request.contextPath}/board/displayFile.do?fileName=${bv.thumbnail}&type=thumbnail" alt="thumbnail">
- 	        </div>
-            <div class="card-body">
-              <p class="card-text ellipsis">${bv.title}</p>
-              <small class="text-body-secondary ellipsis ellipsis3">${bv.summary}</small>
-            </div>
-          </div>
-        </a>
-        </c:forEach>
-      </div>
-	
-      <!-- 페이징 -->
+    <div class="py-5 list">
+      <table class="table">
+        <colgroup>
+        	<col width="10%">
+        	<col>
+        	<col width="20%">
+        	<col width="8%">
+        	<col width="10%">
+        	<col width="8%">
+        </colgroup>
+        <thead>
+          <tr class="text-center">
+            <th>순번</th>
+            <th>제목</th>
+            <th>여행기간</th>
+            <th>예약자</th>
+            <th>예약일</th>
+            <th>상태</th>
+          </tr>
+        </thead>
+        <tbody>
+          <c:forEach items="${requestScope.rlist}" var="rd" varStatus="status">
+          <tr>
+            <td class="text-center">${requestScope.pm.totalCount - status.index}</td>
+            <td><a class="ellipsis" href="${pageContext.request.contextPath}/reservation/${rd.ridx}/${rd.cidx}/${rd.bidx}/reservationContents.do">${rd.title}</a></td>
+            <td class="text-center">${rd.startday} ~ ${rd.endday}</td>
+            <td class="text-center">${rd.name}</td>
+            <td class="text-center">${fn:substringBefore(rd.date, ' ')}</td>  <!-- 뒤쪽의 시간부분 삭제 -->
+            <td class="text-center<c:choose><c:when test="${rd.status == '대기중'}"> text-body-primary</c:when><c:when test="${rd.status == '취소완료'}"> text-body-danger</c:when><c:otherwise> text-body-success</c:otherwise></c:choose>">${rd.status}</td>
+          </tr>
+          </c:forEach>
+        </tbody>
+      </table>
+      
+	  <!-- 페이징 -->
       <c:set var="queryParam" value="keyword=${requestScope.pm.scri.keyword}&searchType=${requestScope.pm.scri.searchType}"></c:set>
       <ul class="pagination mt-5 justify-content-center">
         <c:if test="${requestScope.pm.prev == true}">
         <li class="page-item">
-          <a class="page-link" href="${pageContext.request.contextPath}/board/boardList.do?page=${requestScope.pm.startPage - 1}&${queryParam}" aria-label="Previous">
+          <a class="page-link" href="${pageContext.request.contextPath}/reservation/reservationList.do?page=${requestScope.pm.startPage - 1}&${queryParam}" aria-label="Previous">
             <span aria-hidden="true">&laquo;</span>
           </a>
         </li>
 		</c:if>
 		
         <c:forEach var="i" begin="${requestScope.pm.startPage}" end="${requestScope.pm.endPage}" step="1">
-        <li class="page-item"><a class="page-link <c:if test="${i == requestScope.pm.scri.page}"> active</c:if>" href="${pageContext.request.contextPath}/board/${requestScope.boardcode}/${requestScope.period}/boardList.do?page=${i}&${queryParam}">${i}</a></li>
+        <li class="page-item"><a class="page-link <c:if test="${i == requestScope.pm.scri.page}"> active</c:if>" href="${pageContext.request.contextPath}/reservation/reservationList.do?page=${i}&${queryParam}">${i}</a></li>
         </c:forEach>
         
         <c:if test="${requestScope.pm.next == true && requestScope.pm.endPage > 0}">
 		<li class="page-item">
-          <a class="page-link" href="${pageContext.request.contextPath}/board/boardList.do?page=${requestScope.pm.endPage + 1}&${queryParam}" aria-label="Next">
+          <a class="page-link" href="${pageContext.request.contextPath}/reservation/reservationList.do?page=${requestScope.pm.endPage + 1}&${queryParam}" aria-label="Next">
             <span aria-hidden="true">&raquo;</span>
           </a>
         </li>
 		</c:if>        
       </ul>
-    </div>    
+    </div>
     
     <%@ include file="/WEB-INF/footer.jsp" %>   
   </div>
-
 </body>
 </html>

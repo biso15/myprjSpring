@@ -3,10 +3,55 @@
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.myprj.myapp.persistance.ReservationMapper">
+
+	<sql id="search">
+		<if test="searchType != null and searchType.equals('title')">
+			and title like concat('%',#{keyword},'%')
+		</if>
+		<if test="searchType != null and searchType.equals('name')">
+			and name like concat('%',#{keyword},'%')
+		</if>
+	</sql>
+		
+	<sql id="adminyn">
+		<if test="adminyn.equals('N')">
+			AND R.midx = #{midx}
+		</if>
+	</sql>
+		
+  	<select id="reservationTotalCount" parameterType="HashMap" resultType="int">
+		SELECT COUNT(*) AS cnt FROM reservation WHERE delyn = 'N'
+		<include refid="adminyn"/>
+		<include refid="search"/>
+	</select>
 	
 	<insert id="reservationInsert" parameterType="rv">
   		INSERT INTO RESERVATION(adultnumber, childnumber, name, phone, ip, cidx, midx, bidx)   		
 		VALUES(#{adultnumber}, #{childnumber}, #{name}, #{phone}, #{ip}, #{cidx}, #{midx}, #{bidx})
 	</insert>
+		
+	<select id="reservationSelectAll" parameterType="HashMap" resultType="rd">  <!-- mybatis에서는 여러개의 변수를 받아서 사용할수 없다.(같은 타입 2개까지는 가능하지만 지양) HashMap으로 여러개의 변수를 한번에 받아서 사용 -->
+		SELECT B.title as title, C.startday as startday, C.endday as endday, R.name as name, R.date as date, R.status as status, R.ridx, C.cidx, B.bidx 
+		FROM board AS B 
+		JOIN calendar AS C 
+		ON B.bidx = C.bidx 
+		JOIN reservation AS R 
+		ON R.cidx = C.cidx 
+		where R.delyn = 'N' 
+		<include refid="adminyn"/>
+		<include refid="search"/>
+		order by ridx desc limit #{startPageNum}, #{perPageNum}  <!-- mybatis에서는 연산을 사용하지 않는다. 연산한 결과를 받아서 사용 -->
+	</select>
+	
+  	<select id="reservationSelectOne" parameterType="int" resultType="rd">  <!-- 매개변수를 여러개 사용할 경우, 위치 기반으로 사용해야 함. #{ridx}로 사용할 경우 Parameter 'ridx' not found 발생 -->
+  		select B.bidx as bidx, B.title as title, B.summary as summary, B.contents as contents, C.startday as startday, C.endday as endday, C.cidx as cidx, 
+  		R.ridx as ridx,	R.name as name, R.phone as phone, R.adultnumber as adultnumber, R.childnumber as childnumber, C.adultprice as adultprice, C.childprice as childprice 
+		FROM board AS B 
+		JOIN calendar AS C 
+		ON B.bidx = C.bidx 
+		JOIN reservation AS R 
+		ON R.cidx = C.cidx 
+		where R.delyn = 'N' and R.ridx = #{param1} and C.cidx = #{param2} and B.bidx = #{param3}
+	</select>
 	
 </mapper>

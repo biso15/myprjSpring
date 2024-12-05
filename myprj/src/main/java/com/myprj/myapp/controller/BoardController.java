@@ -103,9 +103,6 @@ public class BoardController {
 				menu = "3박4일";
 			}
 			path = "WEB-INF/board/travelList";
-		} else if(boardcode.equals("reservation")) {
-			menu = "예약확인";
-			path = "WEB-INF/board/boardList";
 		} else if(boardcode.equals("free")) {
 			menu = "자유게시판";
 			path = "WEB-INF/board/boardList";
@@ -213,106 +210,6 @@ public class BoardController {
 		return path;
 	}
 
-	@RequestMapping(value="/{bidx}/travelReservationWrite.do")
-	public String travelReservationWrite(
-			@PathVariable("bidx") int bidx,
-			Model model) {
-		
-		logger.info("travelReservationWrite들어옴");
-		
-		BoardVo bv = boardService.boardSelectOne(bidx);  // 해당되는 bidx의 게시물 데이터 가져옴
-		ArrayList<CalendarVo> clist = calendarService.calendarSelectAll(bidx);
-
-		String menu = "";
-		if(bv.getPeriod() == 1) {
-			menu = "당일치기";
-		} else if(bv.getPeriod() == 2) {
-			menu = "1박2일";
-		} else if(bv.getPeriod() == 3) {
-			menu = "2박3일";
-		} else if(bv.getPeriod() == 4) {
-			menu = "3박4일";
-		}
-		
-		model.addAttribute("bv", bv);
-		model.addAttribute("menu", menu);
-		model.addAttribute("clist", clist);
-
-		return "WEB-INF/board/travelReservationWrite";
-	}
-
-	@ResponseBody
-	@RequestMapping(value="/{bidx}/travelReservationWriteAction.do", method=RequestMethod.POST)
-		public JSONObject travelReservationWriteAction(
-			CalendarVo cv,
-			HttpServletRequest request
-			) throws Exception {
-
-		logger.info("travelReservationWriteAction들어옴");
-		
-//		// end day 계산
-//	    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-//	    Calendar calendar = Calendar.getInstance();
-//	    calendar.setTime(sdf.parse(cv.getStartday()));
-//	    calendar.add(Calendar.DAY_OF_MONTH, bv.getPeriod());
-//
-//	    // 계산된 날짜를 다시 request에 저장
-//	    String calculatedDate = sdf.format(calendar.getTime());
-//	    cv.setEndday(calculatedDate);
-		
-		String ip = userip.getUserIp(request);
-		cv.setIp(ip);
-		
-		Integer value = calendarService.calendarFindIdx(cv.getBidx(), cv.getStartday());  // int는 null값인 경우 오류 발생. Integer는 null값 가능
-		
-		System.out.println(value);		
-		
-		if(value == null) {  // value가 null인 경우 NullPointerException을 발생시킬 가능성이 있으므로, null을 먼저 비교한다.
-			System.out.println("인서트");
-			value = calendarService.calendarInsert(cv);
-		} else {
-			System.out.println("업데이트");
-			value = calendarService.calendarUpdate(cv);
-		}
-		
-		JSONObject js = new JSONObject();
-
-		js.put("value", value);
-
-		return js;
-	}
-	
-	@ResponseBody
-	@RequestMapping(value="/{bidx}/getCalendarAll.do")
-	public ArrayList<Map<String, Object>> getCalendarAll(
-			@PathVariable("bidx") int bidx
-			) throws Exception {
-
-		logger.info("getCalendarAll들어옴");
-		
-		ArrayList<CalendarVo> clist = calendarService.calendarSelectAll(bidx);
-		
-		ArrayList<Map<String, Object>> events = new ArrayList<>();
-
-        // 데이터 추가
-		for(CalendarVo cv : clist ) {
-	        Map<String, Object> extendedProps = new HashMap<>();
-	        extendedProps.put("fromTo", cv.getStartday() + " ~ " + cv.getEndday());
-	        extendedProps.put("adultprice", cv.getAdultprice());
-	        extendedProps.put("childprice", cv.getChildprice());
-	        
-	        Map<String, Object> event = new HashMap<>();
-	        event.put("start", cv.getStartday());
-	        event.put("display", "list-item");
-	        event.put("backgroundColor", "#0d6efd");
-	        event.put("extendedProps", extendedProps);
-	        events.add(event);
-		}
-		
-		System.out.println(events);
-        return events;
-	}	
-
 	@RequestMapping(value="/{bidx}/boardModify.do")
 	public String boardModify(
 			@PathVariable("bidx") int bidx,
@@ -397,8 +294,7 @@ public class BoardController {
 			
 		return path;
 	}
-	
-	
+		
 	@RequestMapping(value="/imagePreview.do", method=RequestMethod.POST)
 	public ResponseEntity<Map<String, String>> imagePreview(@RequestParam("upload") MultipartFile upload, HttpServletRequest request) {
 		
@@ -520,76 +416,7 @@ public class BoardController {
 		
 		return path;
 	}
-	
-	@RequestMapping(value="/{bidx}/travelReservation.do")
-	public String travelReservation(
-			HttpServletRequest request,
-			@PathVariable("bidx") int bidx,
-			Model model) {
-
-		logger.info("travelReservation들어옴");
-		
-		BoardVo bv = boardService.boardSelectOne(bidx);  // 해당되는 bidx의 게시물 데이터 가져옴
-		ArrayList<CalendarVo> clist = calendarService.calendarSelectAll(bidx);
-		
-		String id = request.getSession().getAttribute("id").toString();
-		MemberVo mv = memberService.memberSelect(id);
-		
-		String menu = "";
-		if(bv.getPeriod() == 1) {
-			menu = "당일치기";
-		} else if(bv.getPeriod() == 2) {
-			menu = "1박2일";
-		} else if(bv.getPeriod() == 3) {
-			menu = "2박3일";
-		} else if(bv.getPeriod() == 4) {
-			menu = "3박4일";
-		}
-
-		model.addAttribute("bv", bv);
-		model.addAttribute("clist", clist);	
-		model.addAttribute("mv", mv);
-		model.addAttribute("menu", menu);
-		
-		return "WEB-INF/board/travelReservation";
-	}
-	
-	/* 할차례 */
-	@RequestMapping(value="/{bidx}/travelReservationAction.do")
-	public String travelReservationAction(
-			@PathVariable("bidx") int bidx,
-			@RequestParam("startday") String startday,
-			HttpServletRequest request,
-			ReservationVo rv,
-			RedirectAttributes rttr) throws Exception {
-
-		logger.info("travelReservationAction들어옴");
-
-		String midx = request.getSession().getAttribute("midx").toString();  // HttpSession은 HttpServletRequest 안에 있음
-		int midx_int = Integer.parseInt(midx);
-		rv.setMidx(midx_int);
-		
-		String ip = userip.getUserIp(request);
-		rv.setIp(ip);
-		
-		rv.setBidx(bidx);
-		
-		int cidx = calendarService.calendarFindIdx(rv.getBidx(), startday);
-		rv.setCidx(cidx);
-		
-		int value = reservationService.reservationInsert(rv);
-		String path = "";
-		if(value == 1) {
-			rttr.addFlashAttribute("msg", " 예약이 완료되었습니다.");
-			path = "redirect:/board/reservation/0/boardList.do";
-		} else {
-			rttr.addFlashAttribute("msg", "예약이 실패하였습니다.");
-			path = "redirect:/board/{bidx}/travelReservationAction.do";
-		}
-		
-		return path;
-	}
-		
+			
 	@RequestMapping(value="boardDeleteAction.aws", method=RequestMethod.POST)
 	public String boardDeleteAction(
 			@RequestParam("bidx") int bidx,
@@ -672,27 +499,7 @@ public class BoardController {
 //		return entity;
 //	}
 	
-	
-	
-	
-
-	@ResponseBody
-	@RequestMapping(value="boardRecom.aws")
-	public JSONObject boardRecom(@RequestParam("bidx") int bidx) {
 		
-		logger.info("boardRecom들어옴");
-		
-		int recom = boardService.boardRecomUpdate(bidx);
-
-		JSONObject js = new JSONObject();
-
-		js.put("recom", recom);
-		
-		return js;
-	}
-
-	
-	
 	@RequestMapping(value="boardReply.aws", method=RequestMethod.GET)
 	public String boardReply(
 		@RequestParam("bidx") int bidx,

@@ -84,7 +84,7 @@
 	
 	
 	
-	
+	<!-- 메인에서 사용 -->
 	<select id="boardSelect" resultType="bv">
 		SELECT * FROM BOARD WHERE delyn = 'N' and boardcode = #{boardcode} order by view desc limit #{number}
 	</select>

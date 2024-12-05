@@ -32,7 +32,7 @@
 		    titleFormat : function(date) {
 			 	return date.date.year + '년 ' + (parseInt(date.date.month) + 1) + '월';
 			 },
-			events : "${pageContext.request.contextPath}/board/" + ${requestScope.bidx} + "/getCalendarAll.do",
+			events : "${pageContext.request.contextPath}/calendar/" + ${requestScope.bidx} + "/getCalendarAll.do",
 /* 			dateClick: function(info) {
 			    document.querySelector('#startday').value = info.dateStr;
 			    const period = ${requestScope.bv.period};
@@ -146,7 +146,7 @@
 				
 				$.ajax({
 					type: "post",  // 전송방식
-					url: "${pageContext.request.contextPath}/board/${requestScope.bv.bidx}/travelReservationWriteAction.do",
+					url: "${pageContext.request.contextPath}/calendar/${requestScope.bv.bidx}/calendarWriteAction.do",
 					dataType: "json",
 					data: {"startday": startday, "endday": endday, "adultprice": adultprice, "childprice": childprice},
 					success: function(result) {

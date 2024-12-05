@@ -47,13 +47,16 @@
 		<interceptor>
 			<mapping path="/board//{boardcode}/{period}/boardWrite.do" />
 			<mapping path="/board/{boardcode}/{period}/boardWriteAction.do" />
-			<mapping path="/board/{bidx}/travelReservationWrite.do" />
-			<mapping path="/board/{bidx}/travelReservationWriteAction.do" />
 			<mapping path="/board/{bidx}/boardModify.do" />
 			<mapping path="/board/{bidx}/boardModifyAction.do" />
 			
-			<mapping path="/board/{bidx}/travelReservation.do" />
-			<mapping path="/board/{bidx}/travelReservationAction.do" />
+			<mapping path="/calendar/{bidx}/calendarWrite.do" />
+			<mapping path="/calendar/{bidx}/calendarWriteAction.do" />
+			
+			<mapping path="/reservation/{bidx}/reservationList.do" />
+			<mapping path="/reservation/{bidx}/reservationWrite.do" />
+			<mapping path="/reservation/{bidx}/reservationWriteAction.do" />
+			
 			<mapping path="/board/{bidx}/boardDeleteAction.do" />
 			
 			<mapping path="/member/memberMypage.do" />

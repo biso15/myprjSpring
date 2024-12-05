@@ -109,7 +109,6 @@ public class MemberController {
 				rttr.addFlashAttribute("msg", mv.getName() + "님 환영합니다🎉");
 				
 				if(session.getAttribute("saveUrl") != null) {  // 이동할 위치 확인 -> interceptor
-				System.out.println("로그인컨트롤러에 있는 주소 : " + session.getAttribute("saveUrl"));
 					path = "redirect:" + session.getAttribute("saveUrl").toString();
 				} else {
 					path = "redirect:/";
