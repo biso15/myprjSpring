@@ -27,4 +27,12 @@
 		UPDATE MEMBER SET delyn = "Y", ip = #{ip}, modify = now() WHERE midx = #{midx}
 	</update>
 	
+	<select id="memberFindId" parameterType="mv" resultType="String">
+		select id from member where delyn = 'N' and name = #{name} and birthday = #{birthday} and phone = #{phone}
+	</select>
+		
+	<select id="memberFindPw" parameterType="mv" resultType="String">
+		select email from member where delyn = 'N' and id = #{id} and name = #{name} and birthday = #{birthday}
+	</select>
+	<!-- 같은 타입의 매개변수를 (HashMap이나 객체를 사용하지 않고)여러개 사용할 경우, 위치 기반으로 사용해야 함. #{name}로 사용할 경우 Parameter 'name' not found 발생 -->
 </mapper>

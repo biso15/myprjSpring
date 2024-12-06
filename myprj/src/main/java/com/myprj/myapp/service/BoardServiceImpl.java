@@ -81,28 +81,9 @@ public class BoardServiceImpl implements BoardService {
 	}
 
 	@Override
-	public int boardRecomUpdate(int bidx) {
-
-		BoardVo bv = new BoardVo();
+	public int boardDelete(int bidx) {
 		
-		bv.setBidx(bidx);
-
-		int cnt = bm.boardRecomUpdate(bv);
-		
-		int recom = bv.getRecom();
-				
-		return recom;
-	}
-
-	@Override
-	public int boardDelete(int bidx, int midx, String password) {
-
-		HashMap<String,Object> hm = new HashMap<String,Object>();
-		hm.put("bidx", bidx);
-		hm.put("midx", midx);
-		hm.put("password", password);
-		
-		int cnt = bm.boardDelete(hm);
+		int cnt = bm.boardDelete(bidx);
 		
 		return cnt;
 		

@@ -50,4 +50,18 @@ public class MemberServiceImpl implements MemberService {
 		return value;
 	}
 
+	@Override
+	public String memberFindId(MemberVo mv) {
+
+		String id = mm.memberFindId(mv);
+		return id;
+	};
+
+	@Override
+	public String memberFindPw(MemberVo mv) {
+
+		String email = mm.memberFindPw(mv);
+		return email;
+	};
+
 }

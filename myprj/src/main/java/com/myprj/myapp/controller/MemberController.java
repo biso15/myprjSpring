@@ -239,4 +239,90 @@ public class MemberController {
 		return "redirect:/member/memberLogout.do";
 	}	
 	
+	@RequestMapping(value="memberFindId.do", method=RequestMethod.GET)
+	public String memberFindId(HttpServletRequest request, Model model) {
+
+		logger.info("memberFindId들어옴");
+		
+		return "WEB-INF/member/memberFindId";
+	}
+
+	@RequestMapping(value="memberFindIdAction.do", method=RequestMethod.POST)
+	public String memberFindIdAction(
+			MemberVo mv, 
+			RedirectAttributes rttr,
+			Model model
+			) {
+
+		logger.info("memberFindIdAction들어옴");
+
+		String id = "";
+		id = memberService.memberFindId(mv);
+	
+		String path = "";
+		if(id == null) {
+			rttr.addFlashAttribute("msg", "아이디가 없습니다.");
+			path = "redirect:/member/memberFindId.do";
+		} else {
+			// model.addAttribute("id", id);
+			// model.addAttribute("name", mv.getName());
+			// model.addAttribute()로 설정한 데이터는 리다이렉트 이후에 접근할 수 없으므로 rttr.addFlashAttribute를 사용
+			rttr.addFlashAttribute("id", id);
+		    rttr.addFlashAttribute("name", mv.getName());
+			path = "redirect:/member/memberFindIdResult.do";
+		}
+		
+		return path;
+	}
+
+	@RequestMapping(value="memberFindIdResult.do", method=RequestMethod.GET)
+	public String memberFindIdResult() {		
+		
+		logger.info("memberFindIdResult들어옴");
+		
+		return "WEB-INF/member/memberFindIdResult";
+	}
+	
+	@RequestMapping(value="memberFindPw.do", method=RequestMethod.GET)
+	public String memberFindPw(HttpServletRequest request, Model model) {
+
+		logger.info("memberFindPw들어옴");
+		
+		return "WEB-INF/member/memberFindPw";
+	}
+
+	@RequestMapping(value="memberFindPwAction.do", method=RequestMethod.POST)
+	public String memberFindPwAction(
+			MemberVo mv, 
+			RedirectAttributes rttr,
+			Model model
+			) {
+
+		logger.info("memberFindPwAction들어옴");
+		
+		String email = "";
+		email = memberService.memberFindPw(mv);
+	
+		System.out.println(email);
+		String path = "";
+		if(email == null) {
+			rttr.addFlashAttribute("msg", "아이디가 없습니다.");
+			path = "redirect:/member/memberFindPw.do";
+		} else {
+			rttr.addFlashAttribute("email", email);
+			path = "redirect:/member/memberFindPwResult.do";
+		}		
+		
+		return path;
+	}
+
+	@RequestMapping(value="memberFindPwResult.do", method=RequestMethod.GET)
+	public String memberFindPwResult() {
+		
+		logger.info("memberFindPwResult들어옴");
+		
+		return "WEB-INF/member/memberFindPwResult";
+	}
+	
+	
 }

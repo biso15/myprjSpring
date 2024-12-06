@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import com.myprj.myapp.domain.BoardVo;
-import com.myprj.myapp.domain.SearchCriteria;
 
 // mybatis용 메서드
 public interface BoardMapper {
@@ -15,15 +14,11 @@ public interface BoardMapper {
 	
 	public int boardInsert(BoardVo bv);
 
-	public int boardOriginbidxUpadte(int bidx);
-
 	public BoardVo boardSelectOne(int bidx);
 		
 	public int boardViewCntUpdate(int bidx);
 	
-	public int boardRecomUpdate(BoardVo bv);
-	
-	public int boardDelete(HashMap<String,Object> hm);
+	public int boardDelete(int bidx);
 
 	public int boardUpdate(BoardVo bv);
 

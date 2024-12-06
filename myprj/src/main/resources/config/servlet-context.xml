@@ -45,19 +45,23 @@
 		
 		<!-- 로그인 인증 인터셉트 -->
 		<interceptor>
-			<mapping path="/board//{boardcode}/{period}/boardWrite.do" />
+			<mapping path="/board/{boardcode}/{period}/boardWrite.do" />
 			<mapping path="/board/{boardcode}/{period}/boardWriteAction.do" />
 			<mapping path="/board/{bidx}/boardModify.do" />
 			<mapping path="/board/{bidx}/boardModifyAction.do" />
+			<mapping path="/board/{bidx}/boardDeleteAction.do" />
 			
 			<mapping path="/calendar/{bidx}/calendarWrite.do" />
 			<mapping path="/calendar/{bidx}/calendarWriteAction.do" />
+			<mapping path="/calendar/{bidx}/calendarDeleteAction.do" />
 			
-			<mapping path="/reservation/{bidx}/reservationList.do" />
+			<mapping path="/reservation/reservationList.do" />
 			<mapping path="/reservation/{bidx}/reservationWrite.do" />
 			<mapping path="/reservation/{bidx}/reservationWriteAction.do" />
-			
-			<mapping path="/board/{bidx}/boardDeleteAction.do" />
+			<mapping path="/reservation/{ridx}/{cidx}/{bidx}/reservationContents.do" />
+			<mapping path="/reservation/{ridx}/{cidx}/{bidx}/reservationModify.do" />
+			<mapping path="/reservation/{ridx}/reservationModifyAction.do" />
+			<mapping path="/reservation/{ridx}/reservationDeleteAction.do" />
 			
 			<mapping path="/member/memberMypage.do" />
 			<mapping path="/member/memberMypageAction.do" />

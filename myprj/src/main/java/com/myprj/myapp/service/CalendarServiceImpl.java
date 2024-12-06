@@ -54,4 +54,12 @@ public class CalendarServiceImpl implements CalendarService {
 		
 		return value;
 	}
+
+	@Override
+	public int calendarDelete(CalendarVo cv) {
+		
+		int value = cm.calendarDelete(cv);
+		
+		return value;
+	}
 }

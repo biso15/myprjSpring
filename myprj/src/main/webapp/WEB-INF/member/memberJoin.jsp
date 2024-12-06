@@ -149,8 +149,10 @@
         <div class="row">
           <div class="mb-3 col-4">
             <label for="id" class="form-label">아이디</label>
-            <input type="text" class="form-control" id="id" name="id" placeholder="" value="" required="">
-            <button type="button" id="btn" name="btn" value="N">중복체크</button>
+            <div class="d-flex justify-content-between">
+	            <input type="text" class="form-control" id="id" name="id" placeholder="" value="" required="" style="width: calc(100% - 100px)">
+	            <button type="button" id="btn" name="btn" value="N" class="btn btn-primary">중복체크</button>
+            </div>
           </div>
           <div class="mb-3 col-4">
             <label for="password" class="form-label">비밀번호</label>
@@ -182,7 +184,7 @@
       </div>
 
       <div class="text-center">
-        <button class="btn btn-primary mb-3" type="button"  onclick="check();">회원가입</button>
+        <button class="btn btn-primary mb-3" type="button" onclick="check();">회원가입</button>
       </div>
     </form>
         

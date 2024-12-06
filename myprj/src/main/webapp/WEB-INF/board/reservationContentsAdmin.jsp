@@ -12,6 +12,23 @@
   <meta name="generator" content="Hugo 0.122.0">
   <title>개인프로젝트</title>
   
+ <script>
+ 	function del() {
+		
+     let fm = document.frm;
+		let ans = confirm("삭제하시겠습니까?");
+	  	  if (ans == true) {
+			  fm.action="${pageContext.request.contextPath}/reservation/${requestScope.rd.ridx}/reservationDeleteAction.do";
+			  fm.method="post";
+			  fm.submit();
+		}
+		
+		return;		
+	}
+ </script>
+ 
+  
+  
     <%@ include file="/WEB-INF/header.jsp" %>
     
 	<div class="d-flex align-items-center justify-content-between mb-4">
@@ -58,7 +75,7 @@
 	        <td class="p-3">${requestScope.rd.name}, ${requestScope.rd.phone}</td>
 	      </tr>
 	      <tr>
-	        <th scope="row" class="text-center p-3">상품가액</th>
+	        <th scope="row" class="text-center p-3">상품가격</th>
 	        <td class="p-3">
 	          <p id="adult-detail"></p>
 	          <p id="child-detail"></p>
@@ -70,8 +87,13 @@
 	</div>
 
     <div class="text-center">
-      <a class="btn btn-primary mb-3" href="${pageContext.request.contextPath}/reservation/${requestScope.rd.ridx}/${requestScope.rd.cidx}/${requestScope.rd.bidx}/reservationModify.do">수정</a>
-      <button type="button" class="btn btn-primary mb-3" onclick="history.back();">목록</button>
+	  <form name="frm">
+	   	  <input type="hidden" name="cidx" value="${requestScope.rd.cidx}">
+	   	  <input type="hidden" name="bidx" value="${requestScope.rd.bidx}">
+	      <a class="btn btn-primary mb-3" href="${pageContext.request.contextPath}/reservation/${requestScope.rd.ridx}/${requestScope.rd.cidx}/${requestScope.rd.bidx}/reservationModify.do">수정</a>
+	      <button type="button" class="btn btn-primary mb-3" onclick="del();">삭제</button>
+	      <button type="button" class="btn btn-primary mb-3" onclick="history.back();">목록</button>
+	  </form>
     </div>
     
     <%@ include file="/WEB-INF/footer.jsp" %>   

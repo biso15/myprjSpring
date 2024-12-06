@@ -14,4 +14,6 @@ public interface CalendarService {
 
 	public Integer calendarFindIdx(int bidx, String startday);
 
+	public int calendarDelete(CalendarVo cv);
+
 }

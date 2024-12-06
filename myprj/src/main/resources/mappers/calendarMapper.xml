@@ -18,7 +18,11 @@
 	</update>
 	
 	<select id="calendarFindIdx" parameterType="HashMap" resultType="Integer">
-  		SELECT cidx FROM CALENDAR WHERE bidx = #{bidx} and startday = #{startday}
+  		SELECT cidx FROM CALENDAR WHERE delyn = 'N' and bidx = #{bidx} and startday = #{startday}
 	</select>
+	
+	<update id="calendarDelete" parameterType="cv">
+  		UPDATE CALENDAR SET delyn = "Y", modify = now(), ip = #{ip} WHERE bidx = #{bidx} and startday = #{startday}
+	</update>
 
 </mapper>

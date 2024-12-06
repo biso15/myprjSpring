@@ -53,25 +53,25 @@
 	    
 		    const fcDay = e.target.closest('.fc-day');  // closest() : 주어진 선택자와 일치하는 요소를 찾을 때까지, 자기 자신을 포함해 위쪽(부모 방향, 문서 루트까지)으로 문서 트리를 순회한다.
 			if (fcDay) {  // .fc-day를 클릭한 경우
+				$("#del").remove();
 				
 		    	const fcDayArr = document.querySelectorAll('.fc-day');
 		    	fcDayArr.forEach((fcDay) => fcDay.classList.remove("select"));
-				fcDay.classList.add("select");				
+				fcDay.classList.add("select");
 
             	const fcDayData = fcDay.getAttribute('data-date');  // 클릭한 날짜의 date 속성 가져오기
 				document.querySelector('#startday').value = fcDayData;
-            	console.log(fcDayData)
             	
 				const fcEvent = fcDay.querySelector('.fc-event');  // 자식 요소에 event가 있는지 찾는다.
             	
 				if(fcEvent) {  // 해당 날짜의 event가 있을 때
 	    			const events = calendar.getEvents().filter(event => event.startStr === fcDayData);  // 모든 event의 startStr과 fcDayData를 비교해서 일치하는 event를 찾는다.
 	    			
-	    			if (events.length > 0) {  // events는 항상 배열
+	    			// if (events.length > 0) {  // events는 항상 배열
 	    				// 첫 번째 이벤트만 처리
 	    				const event = events[0];
 	    				
-	   		        	// 가격을 천 단위 구분자로 포맷
+	   		        	// 가격을 숫자형으로 포맷
 	   		        	formattedAdultPrice = Number(event.extendedProps.adultprice);
 	                    formattedChildPrice = Number(event.extendedProps.childprice);
 	                    
@@ -80,7 +80,11 @@
 	   		        	document.querySelector('#adultprice').value = formattedAdultPrice.toLocaleString();
 	   		        	document.querySelector('#childprice').value = formattedChildPrice.toLocaleString();
 	   		        	
-	    		    }
+	   		        	const delBtn = "<button type='button' class='btn btn-primary mb-3' onclick='del()' id='del'>삭제</button>";
+						$(".btn-box").prepend(delBtn);
+						document.querySelector('#del').addEventListener("click", del);
+		
+	    		    // }
 	            } else {
 				    const period = ${requestScope.bv.period};
 				    
@@ -152,9 +156,14 @@
 					success: function(result) {
 						alert("저장되었습니다.");
 						calendar.getEventSources().forEach(source => source.refetch());
+
+						$("#del").remove();
+	   		        	const delBtn = "<button type='button' class='btn btn-primary mb-3' id='del'>삭제</button>";
+						$(".btn-box").prepend(delBtn);
+						document.querySelector('#del').addEventListener("click", del);
 					},
 					error: function(xhr, status, error) {  // 결과가 실패했을 때 받는 영역
-						alert("전송실패");
+						alert("저장실패");
 					
 						console.log("Error Status: " + status);
 					    console.log("Error Detail: " + error);
@@ -167,10 +176,44 @@
 		}
 		
 		document.querySelector('#save').addEventListener("click", check);
+		
+		function del() {
+			
+			let ans = confirm("삭제하시겠습니까?");
+			  if (ans == true) {
 
+				const startday = $("#startday").val();
+				
+				$.ajax({
+					type: "post",  // 전송방식
+					url: "${pageContext.request.contextPath}/calendar/${requestScope.bv.bidx}/calendarDeleteAction.do",
+					dataType: "json",
+					data: {"startday": startday},
+					success: function(result) {
+						alert("삭제되었습니다.");
+						calendar.getEventSources().forEach(source => source.refetch());
+
+						$("#del").remove();
+						
+	   		        	document.querySelector('#adultprice').value = "0";
+	   		        	document.querySelector('#childprice').value = "0";						
+						
+					},
+					error: function(xhr, status, error) {  // 결과가 실패했을 때 받는 영역
+						alert("삭제실패");
+					
+						console.log("Error Status: " + status);
+					    console.log("Error Detail: " + error);
+					    console.log("Response: " + xhr.responseText);
+					}
+				});
+			}
+			
+			return;
+			
+		}
 	 });
-	
-	
+
 	</script>	
   
   <%@ include file="/WEB-INF/header.jsp" %>
@@ -231,7 +274,7 @@
         </div>
       </div>
 
-      <div class="text-center">
+      <div class="text-center btn-box">
         <button type="button" class="btn btn-primary mb-3" id="save">확인</button>
         <button type="button" class="btn btn-primary mb-3" onclick="history.back();">뒤로</button>
       </div>

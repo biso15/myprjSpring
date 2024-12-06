@@ -60,11 +60,28 @@ public class ReservationServiceImpl implements ReservationService {
 	};
 	
 	@Override
-	public ReservationDto reservationSelectOne(int ridx, int cidx, int bidx) {
+	public ReservationDto reservationSelectOne(int ridx) {
 
-		ReservationDto rd = rm.reservationSelectOne(ridx, cidx, bidx);
+		ReservationDto rd = rm.reservationSelectOne(ridx);
 		
 		return rd;
+	};
+	
+
+	@Override
+	public int reservationUpdate(ReservationVo rv){
+
+		int value = rm.reservationUpdate(rv);
+		
+		return value;
+	};
+
+	@Override
+	public int reservationDelete(int ridx){
+
+		int value = rm.reservationDelete(ridx);
+		
+		return value;
 	};
 	
 }

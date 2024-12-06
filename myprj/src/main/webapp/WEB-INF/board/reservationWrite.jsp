@@ -79,11 +79,11 @@
     			const fcEventData = fcDay.getAttribute('data-date');  // 클릭한 날짜의 date 속성 가져오기
     			const events = calendar.getEvents().filter(event => event.startStr === fcEventData);  // 모든 event의 startStr과 fcDayData를 비교해서 일치하는 event를 찾는다.
     			
-    			if (events.length > 0) {  // events는 항상 배열    				
+    			// if (events.length > 0) {  // events는 항상 배열    				
     				// 첫 번째 이벤트만 처리
     				const event = events[0];
     				
-   		        	// 가격을 천 단위 구분자로 포맷
+   		        	// 가격을 숫자형으로 포맷
    		        	formattedAdultPrice = Number(event.extendedProps.adultprice);
                     formattedChildPrice = Number(event.extendedProps.childprice);
                        
@@ -93,13 +93,14 @@
    		        	document.querySelector('#price').textContent = "성인👩 " +  formattedAdultPrice.toLocaleString() + "원 │ 아동👶 " + formattedChildPrice.toLocaleString() + "원";
    		        	
    		        	priceUpdate();
-    		    }
-            } else {            	
+    		    // }
+            } else {
             	document.querySelector('#startday').value = "";
 	        	document.querySelector('#fromTo').textContent = "달력에서 날짜를 선택해 주세요."
 	        	document.querySelector('#price').textContent = "성인👩 0원 │ 아동👶 0원";
-	        	document.querySelector('#adultnumber').value = "0";
-		        document.querySelector('#childnumber').value = "0";
+	        	formattedAdultPrice = "0";
+                formattedChildPrice = "0";
+                priceUpdate();
             }
         }
       });
@@ -120,6 +121,7 @@
 });
   
 //예약하기
+const phone = /^\d{1,15}$/;  // 9 ~ 11자의 숫자만 사용
 function check() {
 
   // 유효성 검사하기
@@ -143,7 +145,12 @@ function check() {
 	  alert("예약자 연락처를 입력해주세요");
 	  fm.phone.focus();
 	  return;
-  }
+  } else if (phone.test(fm.phone.value) == false) {
+	  alert("연락처는 숫자만 입력해 주세요");
+	  fm.membermail.value = "";
+	  fm.membermail.focus();
+	  return;
+  } 
   
   let ans = confirm("예약하시겠습니까?");
 	  if (ans == true) {
@@ -233,12 +240,10 @@ function check() {
                 <div class="col-6 pl-4">
                   <label for="name" class="form-label">이름</label>
                   <input type="text" class="form-control" id="reservationname" required="" value="${requestScope.mv.name}" name="name" placeholder="홍길동">
-                  <div class="invalid-feedback">이름을 입력해주세요.</div>
                 </div>
                 <div class="col-6 pr-4">
                   <label for="phone" class="form-label">연락처</label>
                   <input type="text" class="form-control" id="reservationphone" required="" value="${requestScope.mv.phone}" name="phone" placeholder="01012345678">
-                  <div class="invalid-feedback">연락처를 입력해주세요.</div>
                 </div>
               </div>
             </div>
@@ -247,7 +252,9 @@ function check() {
       </div>
 
       <div class="text-center">
-        <button class="btn btn-primary mb-3" type="button" onClick="check()">예약하기</button>
+        <button class="btn btn-primary mb-3" type="button" onClick="check()">예약</button>
+        
+        <button class="btn btn-primary mb-3" type="button" onclick="history.back();">목록</button>
       </div>
     </form>
 

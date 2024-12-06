@@ -14,5 +14,9 @@ public interface MemberService {
 	public int memberUpdate(MemberVo mv);
 
 	public int memberDelete(MemberVo mv);
+	
+	public String memberFindId(MemberVo mv);
+
+	public String memberFindPw(MemberVo mv);
 		
 }

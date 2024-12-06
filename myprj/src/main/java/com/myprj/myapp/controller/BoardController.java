@@ -5,16 +5,13 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 
 import org.apache.commons.io.IOUtils;
-import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,20 +26,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.myprj.myapp.domain.BoardVo;
-import com.myprj.myapp.domain.CalendarVo;
-import com.myprj.myapp.domain.MemberVo;
 import com.myprj.myapp.domain.PageMaker;
-import com.myprj.myapp.domain.ReservationVo;
 import com.myprj.myapp.domain.SearchCriteria;
 import com.myprj.myapp.service.BoardService;
-import com.myprj.myapp.service.CalendarService;
-import com.myprj.myapp.service.MemberService;
-import com.myprj.myapp.service.ReservationService;
 import com.myprj.myapp.util.MediaUtils;
 import com.myprj.myapp.util.UploadFileUtiles;
 import com.myprj.myapp.util.UserIp;
@@ -55,16 +45,7 @@ public class BoardController {
 	
 	@Autowired(required=false)  // @Autowired : 타입이 같은 객체를 찾아서 주입. required=false : 만약 주입 못받을 경우, null로 지정
 	private BoardService boardService;
-	
-	@Autowired(required=false)
-	private CalendarService calendarService;
-
-	@Autowired(required=false)
-	private MemberService memberService;
-
-	@Autowired(required=false)
-	private ReservationService reservationService;
-	
+		
 	@Autowired(required=false)
 	private PageMaker pm;  // @Component 어노테이션 사용 안할 경우, private PageMaker pm = new PageMaker(); 이렇게 사용하면 되는듯
 	
@@ -196,13 +177,13 @@ public class BoardController {
 				
 		String path = "";
 		if(bidx != 0) {			
-			model.addAttribute("bidx", bidx);			
+			model.addAttribute("bidx", bidx);
 			rttr.addFlashAttribute("msg", "글쓰기 성공");
 			path = "redirect:/board/" + bidx + "/boardContents.do";
 			
-		} else {			
+		} else {
 			model.addAttribute("boardcode", boardcode);
-			model.addAttribute("period", period);			
+			model.addAttribute("period", period);
 			rttr.addFlashAttribute("msg", "입력이 잘못되었습니다.");
 			path = "redirect:/board/" + boardcode + "/" + period + "/boardWrite.do";
 		}
@@ -289,7 +270,7 @@ public class BoardController {
 			path = "redirect:/board/" + bv.getBidx() + "/boardContents.do";
 		} else {
 			rttr.addFlashAttribute("msg", "입력이 잘못되었습니다.");
-			path = "redirect:/board/boardModify.aws?bidx=" + bv.getBidx();
+			path = "redirect:/board/" + bv.getBidx() + "/boardModify.do";
 		}
 			
 		return path;
@@ -417,22 +398,22 @@ public class BoardController {
 		return path;
 	}
 			
-	@RequestMapping(value="boardDeleteAction.aws", method=RequestMethod.POST)
+	@RequestMapping(value="/{bidx}/boardDeleteAction.do")
 	public String boardDeleteAction(
-			@RequestParam("bidx") int bidx,
-			@RequestParam("password") String password,
-			HttpSession session,
+			@PathVariable("bidx") int bidx,
+			@RequestParam("boardcode") String boardcode,
+			@RequestParam("period") int period,
+			HttpServletRequest request,
 			RedirectAttributes rttr) {
 		
 		logger.info("boardDeleteAction들어옴");		
 		
-		int midx = Integer.parseInt(session.getAttribute("midx").toString());
-		int value = boardService.boardDelete(bidx, midx, password);
+		int value = boardService.boardDelete(bidx);
 
-		String path = "redirect:/board/boardList.aws";
+		String path = "redirect:/board/" + boardcode + "/" + period + "/boardList.do";
 		rttr.addFlashAttribute("msg", "글삭제 성공");
 		if(value == 0) {
-			path = "redirect:/board/boardDelete.aws?bidx=" + bidx;	
+			path = "redirect:/board/" + bidx + "/boardContent.do";
 			rttr.addFlashAttribute("msg", "글삭제 실패");
 		}
 		

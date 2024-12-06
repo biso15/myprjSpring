@@ -66,6 +66,8 @@ public class ReservationController {
 		
 		String id = request.getSession().getAttribute("id").toString();
 		MemberVo mv = memberService.memberSelect(id);
+
+		String adminyn = request.getSession().getAttribute("adminyn").toString();
 		
 		String menu = "";
 		if(bv.getPeriod() == 1) {
@@ -83,7 +85,14 @@ public class ReservationController {
 		model.addAttribute("mv", mv);
 		model.addAttribute("menu", menu);
 		
-		return "WEB-INF/board/reservationWrite";
+		String path = "";
+		if(adminyn.equals("Y")) {
+			path = "WEB-INF/board/calendarWrite";
+		} else {
+			path = "WEB-INF/board/reservationWrite";
+		}
+				
+		return path;
 	}	
 	
 	@RequestMapping(value="/{bidx}/reservationWriteAction.do")
@@ -166,7 +175,7 @@ public class ReservationController {
 
 		String adminyn = session.getAttribute("adminyn").toString();
 		
-		ReservationDto rd = reservationService.reservationSelectOne(ridx, cidx, bidx);
+		ReservationDto rd = reservationService.reservationSelectOne(ridx);
 		
 		String menu = "예약확인";
 		String path = "";
@@ -193,13 +202,63 @@ public class ReservationController {
 
 		logger.info("reservationModify들어옴");
 		
-		ReservationDto rd = reservationService.reservationSelectOne(ridx, cidx, bidx);
+		ReservationDto rd = reservationService.reservationSelectOne(ridx);
+		ArrayList<CalendarVo> clist = calendarService.calendarSelectAll(bidx);
 
 		String menu = "예약확인";
 		
 		model.addAttribute("rd", rd);
-		model.addAttribute("menu", menu);
-		
+		model.addAttribute("clist", clist);
+		model.addAttribute("menu", menu);		
+
 		return "WEB-INF/board/reservationModify";
+	}
+	
+	@RequestMapping(value="/{ridx}/reservationModifyAction.do")
+		public String reservationModifyAction(
+			@PathVariable("ridx") int ridx,
+			@RequestParam("cidx") int cidx,
+			HttpServletRequest request,
+			ReservationVo rv,
+			RedirectAttributes rttr) throws Exception {
+
+		logger.info("reservationModifyAction들어옴");
+		
+		String ip = userip.getUserIp(request);
+		rv.setIp(ip);
+		
+		int value = reservationService.reservationUpdate(rv);
+		String path = "";
+		if(value == 1) {
+			rttr.addFlashAttribute("msg", " 수정이 완료되었습니다.");
+			path = "redirect:/reservation/" + rv.getRidx() + "/" + rv.getCidx() + "/" + rv.getBidx() + "/reservationContents.do";
+		} else {
+			rttr.addFlashAttribute("msg", "수정이 실패했습니다.");
+			path = "redirect:/reservation/" + rv.getRidx() + "/" + rv.getCidx() + "/" + rv.getBidx() + "/reservationModify.do";
+		}
+		
+		return path;
+	}
+		
+	@RequestMapping(value="/{ridx}/reservationDeleteAction.do")
+	public String boardDeleteAction(
+			@PathVariable("ridx") int ridx,
+			@RequestParam("cidx") int cidx,
+			@RequestParam("bidx") int bidx,
+			HttpServletRequest request,
+			RedirectAttributes rttr) {
+		
+		logger.info("boardDeleteAction들어옴");		
+		
+		int value = reservationService.reservationDelete(ridx);
+	
+		String path = "redirect:/reservation/reservationList.do";
+		rttr.addFlashAttribute("msg", "글삭제 성공");
+		if(value == 0) {
+			path = "redirect:/reservation/" + ridx + "/" + cidx + "/" + bidx +"/reservationContents.do";
+			rttr.addFlashAttribute("msg", "글삭제 실패");
+		}
+		
+		return path;
 	}
 }

@@ -114,12 +114,10 @@
           <div class="mb-3 col-4">
             <label for="password" class="form-label">비밀번호</label>
             <input type="password" class="form-control" id="password" name="password" >
-            <div class="invalid-feedback">비밀번호를 입력해주세요.</div>
           </div>
           <div class="mb-3 col-4">
             <label for="passwordcheck" class="form-label">비밀번호 확인</label>
             <input type="password" class="form-control" id="passwordcheck">
-            <div class="invalid-feedback">비밀번호 확인을 해주세요.</div>
           </div>
 
           <div class="mb-3 col-4">
@@ -133,13 +131,11 @@
           <div class="mb-3 col-4">
             <label for="phone" class="form-label">연락처</label>
             <input type="tel" class="form-control" id="phone" name="phone" value="${requestScope.mv.getPhone()}">
-            <div class="invalid-feedback">연락처를 입력해주세요.</div>
           </div>
 
           <div class="mb-3 col-4">
             <label for="email" class="form-label">이메일</label>
             <input type="email" class="form-control" id="email" name="email" value="${requestScope.mv.getEmail()}">
-            <div class="invalid-feedback">이메일을 입력해주세요.</div>
           </div>
         </div>
       </div>

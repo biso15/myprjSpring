@@ -14,5 +14,7 @@ public interface CalendarMapper {
 	public int calendarUpdate(CalendarVo cv);
 
 	public Integer calendarFindIdx(HashMap<String,Object> hm);
+
+	public int calendarDelete(CalendarVo cv);
 }
 

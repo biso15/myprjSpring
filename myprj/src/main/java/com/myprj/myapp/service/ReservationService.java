@@ -14,7 +14,10 @@ public interface ReservationService {
 	
 	public int reservationTotalCount(SearchCriteria scri, int midx, String adminyn);
 	
-	public ReservationDto reservationSelectOne(int ridx, int cidx, int bidx);
+	public ReservationDto reservationSelectOne(int ridx);
+
+	public int reservationUpdate(ReservationVo rv);	
 	
+	public int reservationDelete(int ridx);
 	
 }

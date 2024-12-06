@@ -14,7 +14,11 @@ public interface ReservationMapper {
 	
 	public int reservationTotalCount(HashMap<String,Object> hm);
 	
-	public ReservationDto reservationSelectOne(int ridx, int cidx, int bidx);
+	public ReservationDto reservationSelectOne(int ridx);
+
+	public int reservationUpdate(ReservationVo rv);	
+
+	public int reservationDelete(int ridx);
 	
 }
 

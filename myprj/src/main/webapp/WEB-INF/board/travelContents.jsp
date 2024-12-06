@@ -11,6 +11,21 @@
   <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
   <meta name="generator" content="Hugo 0.122.0">
   <title>개인프로젝트</title>  
+  
+  <script>
+	function del() {
+		
+        let fm = document.frm;
+		let ans = confirm("삭제하시겠습니까?");
+	  	  if (ans == true) {
+			  fm.action="${pageContext.request.contextPath}/board/${requestScope.bv.bidx}/boardDeleteAction.do";
+			  fm.method="post";
+			  fm.submit();
+		}
+		
+		return;		
+	}
+  </script>
   <%@ include file="/WEB-INF/header.jsp" %>
     
     <div class="d-flex align-items-center justify-content-between mb-4">
@@ -46,16 +61,21 @@
       </div>
 
       <div class="text-center">
-      	<c:choose>
+	    <form name="frm">
+   		<input type="hidden" name="boardcode" value="${requestScope.bv.boardcode}">
+   		<input type="hidden" name="period" value="${requestScope.bv.period}">
+      		<c:choose>
 	    	<c:when test="${sessionScope.adminyn == 'Y'}">
-	        <a href="${pageContext.request.contextPath}/board/${requestScope.bv.bidx}/boardModify.do" class="btn btn-primary mb-3">글수정</a>
-	        <a href="${pageContext.request.contextPath}/calendar/${requestScope.bv.bidx}/calendarWrite.do" class="btn btn-primary mb-3">일정관리</a>
+        	<a href="${pageContext.request.contextPath}/board/${requestScope.bv.bidx}/boardModify.do" class="btn btn-primary mb-3">글수정</a>
+	        <button type="button" class="btn btn-primary mb-3" onClick="del()">글삭제</button>
+        	<a href="${pageContext.request.contextPath}/calendar/${requestScope.bv.bidx}/calendarWrite.do" class="btn btn-primary mb-3">일정관리</a>
 	        </c:when>
     		<c:otherwise>
         	<a href="${pageContext.request.contextPath}/reservation/${requestScope.bv.bidx}/reservationWrite.do" class="btn btn-primary mb-3">예약</a>
         	</c:otherwise>
-    	</c:choose>
+    		</c:choose>
         	<button type="button" onclick="history.back();" class="btn btn-primary mb-3">목록</button>
+	    </form>
       </div>
     </div>
 

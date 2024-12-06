@@ -5,22 +5,24 @@
 <mapper namespace="com.myprj.myapp.persistance.ReservationMapper">
 
 	<sql id="search">
-		<if test="searchType != null and searchType.equals('title')">
+		<if test='searchType != null and searchType.equals("title")'>
 			and title like concat('%',#{keyword},'%')
 		</if>
-		<if test="searchType != null and searchType.equals('name')">
+		<if test='searchType != null and searchType.equals("name")'>
 			and name like concat('%',#{keyword},'%')
 		</if>
 	</sql>
 		
 	<sql id="adminyn">
-		<if test="adminyn.equals('N')">
-			AND R.midx = #{midx}
+		<if test='adminyn == "N"'>  <!-- ""로 문자를 감싼다. -->
+			AND R.midx = #{midx} 
+		</if>
+		<if test='adminyn == "Y"'>
 		</if>
 	</sql>
 		
   	<select id="reservationTotalCount" parameterType="HashMap" resultType="int">
-		SELECT COUNT(*) AS cnt FROM reservation WHERE delyn = 'N'
+		SELECT COUNT(*) AS cnt FROM reservation as R WHERE delyn = 'N'
 		<include refid="adminyn"/>
 		<include refid="search"/>
 	</select>
@@ -43,15 +45,26 @@
 		order by ridx desc limit #{startPageNum}, #{perPageNum}  <!-- mybatis에서는 연산을 사용하지 않는다. 연산한 결과를 받아서 사용 -->
 	</select>
 	
-  	<select id="reservationSelectOne" parameterType="int" resultType="rd">  <!-- 매개변수를 여러개 사용할 경우, 위치 기반으로 사용해야 함. #{ridx}로 사용할 경우 Parameter 'ridx' not found 발생 -->
-  		select B.bidx as bidx, B.title as title, B.summary as summary, B.contents as contents, C.startday as startday, C.endday as endday, C.cidx as cidx, 
-  		R.ridx as ridx,	R.name as name, R.phone as phone, R.adultnumber as adultnumber, R.childnumber as childnumber, C.adultprice as adultprice, C.childprice as childprice 
+  	<select id="reservationSelectOne" parameterType="int" resultType="rd">
+  		select 
+  		B.bidx as bidx, B.title as title, B.summary as summary, B.contents as contents, 
+  		C.cidx as cidx, C.startday as startday, C.endday as endday, C.adultprice as adultprice, C.childprice as childprice, 
+  		R.ridx as ridx,	R.name as name, R.phone as phone, R.adultnumber as adultnumber, R.childnumber as childnumber, R.status as status   		
 		FROM board AS B 
 		JOIN calendar AS C 
 		ON B.bidx = C.bidx 
 		JOIN reservation AS R 
 		ON R.cidx = C.cidx 
-		where R.delyn = 'N' and R.ridx = #{param1} and C.cidx = #{param2} and B.bidx = #{param3}
+		where R.delyn = 'N' and R.ridx = #{ridx}
 	</select>
+		
+	<update id="reservationUpdate" parameterType="rv">
+		UPDATE reservation SET adultnumber = #{adultnumber}, childnumber = #{childnumber}, name = #{name}, phone = #{phone}, modify = now(), ip = #{ip}, cidx = #{cidx}, status = #{status}  
+		WHERE ridx = #{ridx}
+	</update>
+	
+	<update id="reservationDelete" parameterType="int">
+		update reservation set delyn = 'Y', modify = now() where ridx = #{ridx}
+	</update>
 	
 </mapper>

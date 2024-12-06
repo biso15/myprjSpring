@@ -88,11 +88,12 @@ public class CalendarController {
 		String ip = userip.getUserIp(request);
 		cv.setIp(ip);
 		
-		Integer value = calendarService.calendarFindIdx(cv.getBidx(), cv.getStartday());  // int는 null값인 경우 오류 발생. Integer는 null값 가능
+		Integer cidx = calendarService.calendarFindIdx(cv.getBidx(), cv.getStartday());  // int는 null값인 경우 오류 발생. Integer는 null값 가능
 		
-		System.out.println(value);		
+		System.out.println(cidx);
 		
-		if(value == null) {  // value가 null인 경우 NullPointerException을 발생시킬 가능성이 있으므로, null을 먼저 비교한다.
+		int value = 0;
+		if(cidx == null) {  // value가 null인 경우 NullPointerException을 발생시킬 가능성이 있으므로, null을 먼저 비교한다.
 			System.out.println("인서트");
 			value = calendarService.calendarInsert(cv);
 		} else {
@@ -137,5 +138,30 @@ public class CalendarController {
 		System.out.println(events);
         return events;
 	}	
+	
+	@ResponseBody
+	@RequestMapping(value="/{bidx}/calendarDeleteAction.do", method=RequestMethod.POST)
+		public JSONObject calendarDeleteAction(
+			CalendarVo cv,
+			HttpServletRequest request
+			) throws Exception {
+
+		logger.info("calendarDeleteAction들어옴");
+		
+		String ip = userip.getUserIp(request);
+		cv.setIp(ip);
+		
+		Integer cidx = calendarService.calendarFindIdx(cv.getBidx(), cv.getStartday());  // int는 null값인 경우 오류 발생. Integer는 null값 가능
+
+		System.out.println(cidx);
+		
+		int value = calendarService.calendarDelete(cv);
+		
+		JSONObject js = new JSONObject();
+
+		js.put("value", value);
+
+		return js;
+	}
 
 }

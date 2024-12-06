@@ -15,7 +15,7 @@
     <%@ include file="/WEB-INF/header.jsp" %>
     
 	<div class="d-flex align-items-center justify-content-between mb-4">
-      <h2>예약확인</h2>
+      <h2>${requestScope.menu}</h2>
       <!-- 네비게이션 -->
       <nav aria-label="breadcrumb">
         <svg xmlns="http://www.w3.org/2000/svg" class="d-none">
@@ -33,7 +33,7 @@
           <!-- <li class="breadcrumb-item">
             <a class="link-body-emphasis fw-semibold text-decoration-none" href="#">Library</a>
           </li> -->
-          <li class="breadcrumb-item active" aria-current="page">예약확인</li>
+          <li class="breadcrumb-item active" aria-current="page">${requestScope.menu}</li>
         </ol>
       </nav>
     </div>
@@ -46,13 +46,13 @@
             여행기간
           </div>
           <div class="card-body">
-            <p class="card-text">2024-11-11 ~ 2024-11-15</p>
+            <p class="card-text">${requestScope.rd.startday} ~ ${requestScope.rd.endday}</p>
           </div>
           <div class="card-header border-top">
             예약자
           </div>
           <div class="card-body">
-            <p class="card-text">홍길동, 010-1234-1234</p>
+            <p class="card-text">${requestScope.rd.name}, ${requestScope.rd.phone}</p>
           </div>
         </div>
         <div class="col-6 border-left">
@@ -60,9 +60,9 @@
             상품가격
           </div>
           <div class="card-body">
-            <p class="card-text">성인👩 1,0000원 × 1명 = 1,000원</p>
-            <p class="card-text">아동👶 5,000원 × 1명 = 5,000원</p>
-            <p class="card-text">총금액 15000원</p>
+          	<p id="adult-detail" class="card-text"></p>
+	        <p id="child-detail" class="card-text"></p>
+	        <p class="child-detail m-0" id="totalprice"></p>
           </div>
         </div>
       </div>
@@ -70,29 +70,39 @@
 
     <div class="detail pb-5">
       <div class="card text-center mb-3">
-        <h3 class="card-title fw-bold mb-4">가을날 이색데이트 in 대전 3박4일</h3>
-        <p class="card-text text-body-secondary pt-4 border-top-dashed">- 대전에서의 특별한 3박 4일! 다양한 테마카페부터 맛집, 그리고 향기로운 공방체험까지 -</p>
+        <h3 class="card-title fw-bold mb-4">${requestScope.rd.title}</h3>
+        <p class="card-text text-body-secondary pt-4 border-top-dashed">${requestScope.rd.summary}</p>
       </div>
 
       <div class="card contents mb-3 p-4">
-          컨텐츠 들어갈 곳<br>
-          컨텐츠 들어갈 곳<br>
-          컨텐츠 들어갈 곳<br>
-          컨텐츠 들어갈 곳<br>
-          컨텐츠 들어갈 곳<br>
-          컨텐츠 들어갈 곳<br>
-          컨텐츠 들어갈 곳<br>
-          컨텐츠 들어갈 곳<br>
-          컨텐츠 들어갈 곳<br>
-          컨텐츠 들어갈 곳<br>
+          ${requestScope.rd.contents}
       </div>
 
       <div class="text-center">
-        <a href="#" class="btn btn-primary mb-3">목록가기</a>
+        <button onclick="history.back();" class="btn btn-primary mb-3">목록</button>
       </div>
     </div>
 
-    <%@ include file="/WEB-INF/footer.jsp" %>   
+    <%@ include file="/WEB-INF/footer.jsp" %>
+     
+    <script>
+	const adultDetail = document.querySelector("#adult-detail");
+	const childDetail = document.querySelector("#child-detail");
+	const totalprice = document.querySelector("#totalprice");
+
+	const adultnumber = ${requestScope.rd.adultnumber};
+	const adultprice = ${requestScope.rd.adultprice};
+	const formattedAdultPrice = Number(adultprice).toLocaleString();
+
+	const childnumber = ${requestScope.rd.childnumber};
+	const childprice = ${requestScope.rd.childprice};
+	const formattedChildPrice = Number(childprice).toLocaleString();
+	
+	adultDetail.textContent = "성인👩 " + formattedAdultPrice + "원 × ${requestScope.rd.adultnumber}명 = " + (adultnumber * adultprice).toLocaleString() + "원";
+	childDetail.textContent = "아동👶 " + formattedChildPrice + "원 × ${requestScope.rd.childnumber}명 = " + (childnumber * childprice).toLocaleString() + "원";
+	totalprice.textContent = "총금액 " + (adultnumber * adultprice + childnumber * childprice).toLocaleString() + "원";
+	
+	</script>
   </div>
 </body>
 </html>

@@ -42,7 +42,7 @@
 		</c:forEach>		
       </div>
 
-      <div class="mt-5 mb-4">
+      <%-- <div class="mt-5 mb-4">
         <h2>공지사항</h2>
       </div>
 
@@ -60,7 +60,7 @@
           </div>
 		  </c:forEach>
         </div>
-      </div>
+      </div> --%>
     </div>
 
     <%@ include file="footer.jsp" %>    

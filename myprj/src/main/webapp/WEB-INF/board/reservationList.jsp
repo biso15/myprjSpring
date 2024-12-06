@@ -82,7 +82,7 @@
             <td class="text-center">${rd.startday} ~ ${rd.endday}</td>
             <td class="text-center">${rd.name}</td>
             <td class="text-center">${fn:substringBefore(rd.date, ' ')}</td>  <!-- 뒤쪽의 시간부분 삭제 -->
-            <td class="text-center<c:choose><c:when test="${rd.status == '대기중'}"> text-body-primary</c:when><c:when test="${rd.status == '취소완료'}"> text-body-danger</c:when><c:otherwise> text-body-success</c:otherwise></c:choose>">${rd.status}</td>
+            <td class="text-center<c:choose><c:when test="${rd.status == '대기'}"> text-body-primary</c:when><c:when test="${rd.status == '취소'}"> text-body-danger</c:when><c:otherwise> text-body-success</c:otherwise></c:choose>">${rd.status}</td>
           </tr>
           </c:forEach>
         </tbody>

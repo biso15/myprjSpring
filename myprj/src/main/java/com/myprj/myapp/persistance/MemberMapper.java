@@ -16,4 +16,8 @@ public interface MemberMapper {
 
 	public int memberDelete(MemberVo mv);
 	
+	public String memberFindId(MemberVo mv);
+	
+	public String memberFindPw(MemberVo mv);		
+	
 }
