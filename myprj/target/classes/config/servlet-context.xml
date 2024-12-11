@@ -67,6 +67,9 @@
 			<mapping path="/member/memberMypageAction.do" />
 			<mapping path="/member/memberDeleteAction.do" />
 			
+			<mapping path="/comment/commentWriteAction.do" />
+			<mapping path="/comment/commentDeleteAction.do" />
+			
 			<beans:ref bean="authInterceptor" />
 		</interceptor>
 	</interceptors>

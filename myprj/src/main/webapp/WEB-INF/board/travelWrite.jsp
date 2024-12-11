@@ -108,6 +108,7 @@
             <input type="file" name="attachfile" class="form-control" id="thumbnail" required="">
           </div>
           
+          <label class="form-label">내용</label>
 		  <div class="main-container">
 			<div class="editor-container editor-container_classic-editor" id="editor-container">
 				<div class="editor-container__editor">

@@ -29,6 +29,7 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.myprj.myapp.domain.BoardDto;
 import com.myprj.myapp.domain.BoardVo;
 import com.myprj.myapp.domain.PageMaker;
 import com.myprj.myapp.domain.SearchCriteria;
@@ -92,7 +93,7 @@ public class BoardController {
 			path = "WEB-INF/board/boardList";
 		}
 		
-		ArrayList<BoardVo> blist = boardService.boardSelectAll(scri, boardcode, period);
+		ArrayList<BoardDto> blist = boardService.boardSelectAll(scri, boardcode, period);
 		model.addAttribute("blist", blist);	 // 화면까지 가지고 가기위해 model 객체에 담는다(redirect 사용 안하므로 Modele을 사용)
 		model.addAttribute("pm", pm);  // forward 방식으로 넘기기 때문에 공유가 가능하다
 		model.addAttribute("menu", menu);
@@ -125,10 +126,10 @@ public class BoardController {
 			path = "WEB-INF/board/travelWrite";
 		} else if(boardcode.equals("free")) {
 			menu = "자유게시판";
-			path = "WEB-INF/board/freeWrite";
+			path = "WEB-INF/board/boardWrite";
 		} else if(boardcode.equals("notice")){
 			menu = "공지사항";
-			path = "WEB-INF/board/noticeWrite";
+			path = "WEB-INF/board/boardWrite";
 		}
 
 		model.addAttribute("menu", menu);
@@ -216,10 +217,10 @@ public class BoardController {
 			path = "WEB-INF/board/travelModify";
 		} else if(bv.getBoardcode().equals("free")) {
 			menu = "자유게시판";
-			path = "WEB-INF/board/freeModifys";
+			path = "WEB-INF/board/boardModify";
 		} else if(bv.getBoardcode().equals("notice")){
 			menu = "공지사항";
-			path = "WEB-INF/board/noticeModify";
+			path = "WEB-INF/board/boardModify";
 		}
 		
 		model.addAttribute("bv", bv);
@@ -386,10 +387,10 @@ public class BoardController {
 			path = "WEB-INF/board/travelContents";
 		} else if(bv.getBoardcode().equals("free")) {
 			menu = "자유게시판";
-			path = "WEB-INF/board/freeContents";
+			path = "WEB-INF/board/boardContents";
 		} else if(bv.getBoardcode().equals("notice")){
 			menu = "공지사항";
-			path = "WEB-INF/board/noticeContents";
+			path = "WEB-INF/board/boardContents";
 		}
 		
 		model.addAttribute("bv", bv);

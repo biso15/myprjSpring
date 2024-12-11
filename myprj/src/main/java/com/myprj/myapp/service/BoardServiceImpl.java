@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.myprj.myapp.domain.BoardDto;
 import com.myprj.myapp.domain.BoardVo;
 import com.myprj.myapp.domain.SearchCriteria;
 import com.myprj.myapp.persistance.BoardMapper;
@@ -27,7 +28,7 @@ public class BoardServiceImpl implements BoardService {
 	}
 	
 	@Override
-	public ArrayList<BoardVo> boardSelectAll(SearchCriteria scri, String boardcode, int period) {
+	public ArrayList<BoardDto> boardSelectAll(SearchCriteria scri, String boardcode, int period) {
 		
 		HashMap<String,Object> hm = new HashMap<String,Object>();  // HashMap은 ArrayList와 비슷하지만 "이름: 값"의 형식을 가지고 있다. mybatis에서 권장함
 		hm.put("startPageNum", (scri.getPage() - 1) * scri.getPerPageNum());
@@ -37,7 +38,7 @@ public class BoardServiceImpl implements BoardService {
 		hm.put("boardcode", boardcode);
 		hm.put("period", period);
 		
-		ArrayList<BoardVo> blist = bm.boardSelectAll(hm);
+		ArrayList<BoardDto> blist = bm.boardSelectAll(hm);
 		
 		return blist;
 	}
@@ -46,7 +47,8 @@ public class BoardServiceImpl implements BoardService {
 	public int boardTotalCount(SearchCriteria scri, String boardcode, int period) {
 		
 		HashMap<String,Object> hm = new HashMap<String,Object>();
-		hm.put("scri", scri);
+		hm.put("searchType", scri.getSearchType());
+		hm.put("keyword", scri.getKeyword());
 		hm.put("boardcode", boardcode);
 		hm.put("period", period);
 		

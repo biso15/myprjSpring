@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <!doctype html>
 <html lang="ko" data-bs-theme="auto">
@@ -37,71 +38,56 @@
         </ol>
       </nav>
     </div>
-
+   
     <!-- 검색영역 -->
+    <c:choose>
+    <c:when test="${sessionScope.adminyn == 'Y' || requestScope.boardcode == 'free'}">
     <div class="d-flex justify-content-between">
-      <c:if test="${sessionScope.adminyn == 'Y'}">
-      <a herf="${pageContext.request.contextPath}/board/${requestScope.boardcode}/${requestScope.period}/boardWrite.do" class="btn btn-outline-primary">글쓰기</a>
-      </c:if>
+    <a href="${pageContext.request.contextPath}/board/${requestScope.boardcode}/${requestScope.period}/boardWrite.do" class="btn btn-outline-primary">글쓰기</a>
+    </c:when>
+    <c:otherwise>
+    <div class="d-flex justify-content-end">
+    </c:otherwise>
+    </c:choose>
       <form class="d-flex w-35" role="search" name="frm" action="${pageContext.request.contextPath}/board/${requestScope.boardcode}/${requestScope.period}/boardList.do" method="get">
         <select class="form-select me-2" name="searchType">
           <option value="title" selected>제목</option>
-          <option value="summary">부제목</option>
           <option value="contents">내용</option>
         </select>
         <div class="d-flex col-9">
-          <input class="form-control me-2 w-auto search" type="search" name="keyword" placeholder="검색어를 입력해주세요." value="" required="">
+          <input class="form-control me-2 w-auto search" type="search" name="keyword" placeholder="검색어를 입력해주세요." value="">
           <button class="btn btn-secondary" type="submit">검색</button>
         </div>
       </form>
     </div>
 
-    <!-- 목록 -->
-    <div class="album py-5">
-      <div class="row row-cols-md-4 g-3">
-        <c:forEach items="${requestScope.blist}" var="bv" varStatus="status">
-        <a class="col" href="${pageContext.request.contextPath}/board/${bv.bidx}/boardContents.do">
-          <div class="card shadow-sm flex-column justify-content-between">
-            <div>
-           		<img src="${pageContext.request.contextPath}/board/displayFile.do?fileName=${bv.thumbnail}&type=thumbnail" alt="thumbnail">
- 	        </div>
-            <div class="card-body">
-              <p class="card-text ellipsis">${bv.title}</p>
-              <small class="text-body-secondary ellipsis ellipsis3">${bv.summary}</small>
-            </div>
-          </div>
-        </a>
-        </c:forEach>
-      </div>
-            
-    <div class="py-5">
+    <!-- 목록 --> 
+    <div class="py-5 list">
       <table class="table">
         <colgroup>
-          <col width="8%">
-          <col width="">
           <col width="10%">
+          <col width="">
           <col width="8%">
+          <col width="10%">
           <col width="8%">
         </colgroup>
         <thead>
           <tr class="text-center">
             <th>순번</th>
             <th>제목</th>
-            <th>여행기간</th>
-            <th>총금액</th>
-            <th>예약일</th>
-            <th>상태</th>
+            <th>작성자</th>
+            <th>작성일</th>
+            <th>조회수</th>
           </tr>
         </thead>
         <tbody>
-          <c:forEach items="${requestScope.blist}" var="bv" varStatus="status">
+          <c:forEach items="${requestScope.blist}" var="bd" varStatus="status">
           <tr>
-            <td class="text-center">1</td>
-            <td>${bv.title}</td>
-            <td class="text-center">${cv.startday} ~ ${cv.endday}</td>
-            <td class="text-center">${cv.adultprice} * ${cv.adultnumber} + ${cv.childprice} * ${cv.childnumber}</td>
-            <td class="text-center">${bv.date}</td>
-            <td class="text-center">${rv.status}</td>
+            <td class="text-center">${requestScope.pm.totalCount - status.index}</td>
+            <td><a class="ellipsis" href="${pageContext.request.contextPath}/board/${bd.bidx}/boardContents.do">${bd.title}</a></td>
+            <td class="text-center">${bd.name}</td>
+            <td class="text-center">${fn:substringBefore(bd.date, ' ')}</td>  <!-- 뒤쪽의 시간부분 삭제 -->
+            <td class="text-center">${bd.view}</td>
           </tr>
           </c:forEach>
         </tbody>

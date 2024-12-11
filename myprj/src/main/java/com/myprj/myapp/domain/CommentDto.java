@@ -1,6 +1,6 @@
 package com.myprj.myapp.domain;
 
-public class CommentVo {
+public class CommentDto {	
 	private int cidx;
 	private String contents;
 	private String date;
@@ -8,6 +8,7 @@ public class CommentVo {
 	private String delyn;
 	private int bidx;
 	private int midx;
+	private String name;
 	
 	public int getCidx() {
 		return cidx;
@@ -51,5 +52,12 @@ public class CommentVo {
 	public void setMidx(int midx) {
 		this.midx = midx;
 	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	
 }
 

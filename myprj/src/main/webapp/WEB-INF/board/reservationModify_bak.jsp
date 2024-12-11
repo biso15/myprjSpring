@@ -11,7 +11,7 @@
   <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
   <meta name="generator" content="Hugo 0.122.0">
   <title>개인프로젝트</title>
-
+  
     <%@ include file="/WEB-INF/header.jsp" %>
     
 	<div class="d-flex align-items-center justify-content-between mb-4">
@@ -38,54 +38,72 @@
       </nav>
     </div>
 
-    <!-- 컨텐츠 -->
-    <div class="card mb-3">
-      <div class="row g-0">
-        <div class="col-6">
-          <div class="card-header">
-            여행기간
-          </div>
-          <div class="card-body">
-            <p class="card-text">${requestScope.rd.startday} ~ ${requestScope.rd.endday}</p>
-          </div>
-          <div class="card-header border-top">
-            예약자
-          </div>
-          <div class="card-body">
-            <p class="card-text">${requestScope.rd.name}, ${requestScope.rd.phone}</p>
-          </div>
-        </div>
-        <div class="col-6 border-left">
-          <div class="card-header">
-            상품가격
-          </div>
-          <div class="card-body">
-          	<p id="adult-detail" class="card-text"></p>
-	        <p id="child-detail" class="card-text"></p>
-	        <p class="child-detail m-0" id="totalprice"></p>
-          </div>
-        </div>
-      </div>
+    <!-- 컨텐츠 -->   
+    <div class="list">
+	    <table class="table table-sm table-bordered">
+	      <colgroup>
+	        <col width="20%">
+	      </colgroup>
+	      <tbody>
+	      <tr>
+	        <th scope="row" class="text-center p-3">제목</th>
+	        <td class="p-3"><a href="${pageContext.request.contextPath}/board/${requestScope.rd.bidx}/boardContents.do" class="ellipsis">${requestScope.rd.title}</a></td>
+	      </tr>
+	      <tr>
+	        <th scope="row" class="text-center p-3">여행기간</th>
+	        <td class="p-3">${requestScope.rd.startday} ~ ${requestScope.rd.endday}</td>
+	      </tr>
+	      <tr>
+	        <th scope="row" class="text-center p-3">예약자 이름</th>
+	        <td class="p-3"><input name="name" value="${requestScope.rd.name}"></td>
+	      </tr>
+	      <tr>
+	        <th scope="row" class="text-center p-3">예약자 연락처</th>
+	        <td class="p-3"><input name="phone" value="${requestScope.rd.phone}"></td>
+	      </tr>
+	      <tr>
+	        <th scope="row" class="text-center p-3">상품가격</th>
+	        <td class="p-3">
+	          <div class="pl-4">
+                <p id="price">성인👩 0원 │ 아동👶 0원</p>
+              </div>
+	        </td>
+	      </tr>
+	      <tr>
+	        <th scope="row" class="text-center p-3">예약인원</th>
+	        <td class="p-3">
+	          <div class="row mb-3">
+                <div class="col-6 pl-4">
+                  <label for="adultnumber" class="form-label">성인👩</label>
+                  <input type="number" class="form-control" id="adultnumber" name="adultnumber" min="0" value="${requestScope.rd.adultnumber}">
+                </div>
+                <div class="col-6 pr-4">
+                  <label for="childnumber" class="form-label">아동👶</label>
+                  <input type="number" class="form-control" id="childnumber" name="childnumber" min="0" value="${requestScope.rd.childnumber}">
+                </div>
+              </div>
+	        </td>
+	      </tr>
+	      <tr>
+	        <th scope="row" class="text-center p-3">총금액</th>
+	        <td class="p-3">
+	        <div class="pl-4">
+                <p id="totalprice">0원</p>
+              </div>
+	        </td>
+	      </tr>
+	      </tbody>
+	    </table>
+	</div>
+
+    <div class="text-center">
+      <a class="btn btn-primary mb-3" href="${pageContext.request.contextPath}/reservation/${requestScope.rd.ridx}/reservationModify.do">수정</a>
+      <button type="button" class="btn btn-primary mb-3" onclick="history.back();">목록</button>
     </div>
+    
+    <%@ include file="/WEB-INF/footer.jsp" %>   
 
-    <div class="detail pb-5">
-      <div class="card text-center mb-3">
-        <h3 class="card-title fw-bold mb-4">${requestScope.rd.title}</h3>
-        <p class="card-text text-body-secondary pt-4 border-top-dashed">${requestScope.rd.summary}</p>
-      </div>
-
-      <div class="card contents mb-3 p-4">
-          ${requestScope.rd.contents}
-      </div>
-
-      <div class="text-center">
-        <button type="button" onclick="history.back();" class="btn btn-primary mb-3">목록</button>
-      </div>
-    </div>
-
-    <%@ include file="/WEB-INF/footer.jsp" %>
-     
-    <script>
+	<script>
 	const adultDetail = document.querySelector("#adult-detail");
 	const childDetail = document.querySelector("#child-detail");
 	const totalprice = document.querySelector("#totalprice");
@@ -103,6 +121,5 @@
 	totalprice.textContent = "총금액 " + (adultnumber * adultprice + childnumber * childprice).toLocaleString() + "원";
 	
 	</script>
-  </div>
 </body>
 </html>

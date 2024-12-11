@@ -5,9 +5,12 @@
 <typeAliases>
  <typeAlias alias="mv" type="com.myprj.myapp.domain.MemberVo"/>  <!-- mybatis 내부에서의 별칭 설정 alias="mv" -->
  <typeAlias alias="bv" type="com.myprj.myapp.domain.BoardVo"/>
+ <typeAlias alias="bd" type="com.myprj.myapp.domain.BoardDto"/> 
  <typeAlias alias="scri" type="com.myprj.myapp.domain.SearchCriteria"/>
  <typeAlias alias="cv" type="com.myprj.myapp.domain.CalendarVo"/>
  <typeAlias alias="rv" type="com.myprj.myapp.domain.ReservationVo"/>
  <typeAlias alias="rd" type="com.myprj.myapp.domain.ReservationDto"/>
+ <typeAlias alias="cmv" type="com.myprj.myapp.domain.CommentVo"/>
+ <typeAlias alias="cd" type="com.myprj.myapp.domain.CommentDto"/>
 </typeAliases>
 </configuration>

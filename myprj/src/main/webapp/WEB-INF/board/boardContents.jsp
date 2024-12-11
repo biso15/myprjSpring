@@ -1,265 +1,197 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html lang="ko" data-bs-theme="auto">
 <head>
-<meta charset="UTF-8">
-<title>글내용</title>
-<link href="${pageContext.request.contextPath}/resources/css/style2.css" rel="stylesheet">
-<script src="https://code.jquery.com/jquery-latest.min.js"></script>
-<script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="">
+  <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
+  <meta name="generator" content="Hugo 0.122.0">
+  <title>개인프로젝트</title>
+  <script src="https://code.jquery.com/jquery-latest.min.js"></script>
 
-// 파일 다운로드시 썸네일을 다운받게 되므로 파일 이름에서 "s-"를 제거해야함
-function checkImageType(fileName) {  // 패턴과 확장자가 일치하는 파일 이름을 리턴받음
-	var pattern = /jpg$|gif$|png$|jpeg$/i;  // 자바스크립트 정규표현식
-	return fileName.match(pattern);
-}
-
-function getOriginalFileName(fileName) {  // 원본 파일 이름 추출	
-	var idx = fileName.lastIndexOf("_")+1  // DB에 있는 파일 이름 형식 : /2024/11/08/s-64ca590f-3e9e-4194-80f6-c6645e1f611f_rose.jpg
-	return fileName.substr(idx);
-}
-
-function getImageLink(fileName) {	
-	var front = fileName.substr(0,12);  // 0 ~ 12 전까지 추출. /2024/11/08/
-	var end = fileName.substr(14);  // 14부터 끝까지 추출. 64ca590f-3e9e-4194-80f6-c6645e1f611f_rose.jpg
-	return front + end;  // 13번 글자만 제외하고 추출
-}
-
-function download() {  // 주소 사이에 s-를 뺀 주소를 리턴
-	var downloadImageName = getImageLink("${requestScope.bv.filename}");  // 썸네일 이미지 이름으로 원본 이미지 이름 변환
-	var downLink = "${pageContext.request.contextPath}/board/displayFile.aws?fileName=" + downloadImageName + "&down=1";
-	return downLink;	
-}
-
-
-// 댓글 삭제
-function commentDel(cidx) {
+  <script>
+  	// 게시글 삭제
+	function del() {
+		
+        let fm = document.frm;
+		let ans = confirm("삭제하시겠습니까?");
+	  	  if (ans == true) {
+			  fm.action="${pageContext.request.contextPath}/board/${requestScope.bv.bidx}/boardDeleteAction.do";
+			  fm.method="post";
+			  fm.submit();
+		}
+		
+		return;
+	}
 	
-	let ans = confirm("삭제하시겠습니까?");
 	
-	if(ans == true) {
+	// 댓글 삭제
+	function commentDel(cidx) {
+		
+		let ans = confirm("삭제하시겠습니까?");
+		
+		if(ans == true) {
+			$.ajax({
+				type: "get",  // 전송방식
+				url: "${pageContext.request.contextPath}/comment/" + cidx + "/commentDeleteAction.do",
+				dataType: "json",
+				success: function(result) {
+					// alert("전송성공");
+					alert("삭제가 완료되었습니다.");
+					$.boardCommentList();
+				},
+				error: function(xhr, status, error) {  // 결과가 실패했을 때 받는 영역
+					alert("전송실패");
+				}
+			});
+		}
+		
+		return;
+	}
+
+	// 댓글 리스트 새로고침
+	$.boardCommentList = function() {
+
 		$.ajax({
 			type: "get",  // 전송방식
-			url: "${pageContext.request.contextPath}/comment/" + cidx + "/commentDeleteAction.aws",
+			url: "${pageContext.request.contextPath}/comment/${requestScope.bv.bidx}/commentList.do",
 			dataType: "json",
 			success: function(result) {
-				// alert("전송성공");
+				// alert("전송성공 테스트");
 				
-				$.boardCommentList();
+				var str = "";
+				var strTr = "";
+				$(result.clist).each(function() {
+					var btn = "";
+					if (this.midx == "${sessionScope.midx}" || ${sessionScope.adminyn == "Y"}) {
+						btn = "<button type='button' class='btn btn-primary btn-comment' onclick='commentDel(" + this.cidx + ")'>댓글 삭제</button>";
+					}
+			        
+					strTr += "<div class='d-flex gap-2'><div class='row p-3 border m-0 d-flex justify-content-between align-items-center flex-fill'>" + 
+							"<strong class='fw-semibold col-1'>" + this.name + "</strong>" + 
+							"<span class='d-block flex-fill col-8'>" + this.contents + "</span>" + 
+							"<span class='small col-2 text-right'>" + this.date.split(' ')[0] + "</span>" + 
+							"</div>" + btn + "</div>";
+				});
+				
+				str = str + strTr;
+				
+				$(".list-group").html(str);
+
 			},
-			error: function(xhr, status, error) {  // 결과가 실패했을 때 받는 영역
-				alert("전송실패");
+		    error: function(xhr, status, error) {  // 결과가 실패했을 때 받는 영역
+				alert("전송실패 테스트");
+			    console.log("Error Status: " + status);
+			    console.log("Error Detail: " + error);
+			    console.log("Response: " + xhr.responseText);
 			}
 		});
 	}
 	
-	return;
-}
 
-//jquery로 만드는 함수
-// 댓글 리스트 새로고침
-$.boardCommentList = function() {
-
-	let block = $("#block").val();
+	$(document).ready(function() {
+		$.boardCommentList();
 	
-	$.ajax({
-		type: "get",  // 전송방식
-		<%-- url: "${pageContext.request.contextPath}/comment/commentList.aws?bidx=${requestScope.bv.getBidx()%>", --%>
-		url: "${pageContext.request.contextPath}/comment/${requestScope.bv.bidx}/" +block+ "/commentList.aws",  /* RestFul 방식(Rest api 사용) */
-		dataType: "json",  // 받는 형식. json 타입은 문서에서 {"key값": "value값", "key값" : "value값"} 형식으로 구성
-		success: function(result) {  // 결과가 넘어와서 성공했을 때 받는 영역
-			// alert("전송성공 테스트");			
-			
-			if(result.moreView == "N") {
-				$("#moreBtn").css("display", "none");
-				$("#blockPre").val($("#block").val());
-			} else {
-				$("#moreBtn").css("display", "block");
-				$("#blockPre").val($("#block").val() - 1);
-			}
-			
-			let nextBlock = result.nextBlock;	
-			$("#block").val(nextBlock);
-			
-			var str = "<table class='replyTable'><tr><th>번호</th><th>작성자</th><th>내용</th><th>날짜</th><th>DEL</th></tr>";
-
-			var strTr = "";
-			var index = result.length;
-			
-			$(result.clist).each(function(index) {
-				var btnn = "";
-				if (this.midx == "${sessionScope.midx}") {
-					if(this.delyn == "N") {
-						btnn = "<button type='button' class='btn' onclick='commentDel(" + this.cidx + ")'>삭제</button>";
-					}
-				}
-				
-				var index = index + 1;
-				strTr += "<tr><td class='cidx'>" + index-- + "</td>" + 
-						"<td class='cwriter'>" + this.cwriter + "</td>" + 
-						"<td class='ccontents'>" + this.ccontents + "</td>" + 
-						"<td class='writeday'>" + this.writeday + "</td>" + 
-						"<td class='delyn'>" + btnn + "</td></tr>";
-			});
-			
-			str = str + strTr + "</table>";
-			
-			$("#commentListView").html(str);
-
-		},
-	    error: function(xhr, status, error) {  // 결과가 실패했을 때 받는 영역
-			alert("전송실패 테스트");
-		    /* console.log("Error Status: " + status);
-		    console.log("Error Detail: " + error);
-		    console.log("Response: " + xhr.responseText); */
-		}
-	});
-}
-
-
-$(document).ready(function() {
-	
-	// 파일 이름 변경
-	$("#dUrl").html(getOriginalFileName("${requestScope.bv.filename}") + " 다운받기");
-
-	// 원본 파일 다운로드
-	$("#dUrl").click(function() {
-		$("#dUrl").attr("href", download());
-		return;
-	})
-
-	$.boardCommentList();
-	
-	// 추천수 업데이트
- 	$("#btn").click(function() {
-		// alert("추천버튼 클릭");
-		
-		$.ajax({
-			type: "get",  // bidx를 보내야 함
-			url: "${pageContext.request.contextPath}/board/boardRecom.aws?bidx=${requestScope.bv.bidx}>",
-			dataType: "json",
-			// data: {"bidx": bidx},  // get 방식으로 parameter로 넘긴다
-			success: function(result) {
-				// alert("전송성공");				
-				
-				var str = "추천(" + result.recom + ")";
-				$("#btn").val(str);
-			},
-			error: function(xhr, status, error) {  // 결과가 실패했을 때 받는 영역
-				// alert("전송실패");
-			}
-		});
-	 })
-	
-	 
 	 // 댓글 작성
- 	$("#cmtBtn").click(function() {
-  		
-		let midx = "${sessionScope.midx}";
-		if(midx == "" || midx == null || midx == "null" || midx == 0) {
-			alert("로그인을 해주세요");
-			return;
-		}
-		
-		let cwriter = $("#cwriter").val();
-		let ccontents = $("#ccontents").val();
-			  
-		if (cwriter == "") {  // 페이지 접속시 로그인 체크를 해서 해당되는 경우는 거의 없지만, 혹시라도 우회해서 접속할 경우 거르기 위해 사용
-			alert("로그인을 해주세요");
-			$("#cwriter").focus();
-			return;
-			 
-		} else if (ccontents == "") {
-			alert("내용을 입력해주세요");
-			$("#ccontents").focus();
-			return;
-		}
-		
-		$.ajax({
-			type: "post",  // 전송방식
-			url: "${pageContext.request.contextPath}/comment/commentWriteAction.aws",
-			dataType: "json",  // 받는 형식. json 타입은 문서에서 {"key값": "value값", "key값" : "value값"} 형식으로 구성
-			data: {"cwriter": cwriter, "ccontents": ccontents, "bidx": "${requestScope.bv.bidx}", "midx": "${sessionScope.midx}"},
-			success: function(result) {  // 결과가 넘어와서 성공했을 때 받는 영역
-				
-				// alert("전송성공 테스트");
-				if(result.value == 1) {
-					$("#ccontents").val("");
-				}
-				
-				// 페이지 증가 상쇄
-				if($("#blockPre").val() < $("#block").val()) {
-					$("#block").val($("#block").val() - 1);
-				}
-				
-				$.boardCommentList();
-				
-			},
-		    error: function(xhr, status, error) {  // 결과가 실패했을 때 받는 영역
-				alert("전송실패 테스트");
-			    /* console.log("Error Status: " + status);
-			    console.log("Error Detail: " + error);
-			    console.log("Response: " + xhr.responseText);  */
+	 	$("#cmtBtn").click(function() {
+			let contents = $("#contents").val();
+			
+			if (contents == "") {
+				alert("내용을 입력해주세요");
+				$("#contents").focus();
+				return;
 			}
-		});
+			
+			$.ajax({
+				type: "post",  // 전송방식
+				url: "${pageContext.request.contextPath}/comment/commentWriteAction.do",
+				dataType: "json",  // 받는 형식. json 타입은 문서에서 {"key값": "value값", "key값" : "value값"} 형식으로 구성
+				data: {"contents": contents, "bidx": "${requestScope.bv.bidx}", "midx": "${sessionScope.midx}"},
+				success: function(result) {  // 결과가 넘어와서 성공했을 때 받는 영역
+					
+					// alert("전송성공 테스트");
+					if(result.value == 1) {
+						$("#contents").val("");
+					}
+
+					alert("등록이 완료되었습니다.");
+					$.boardCommentList();
+					
+				},
+			    error: function(xhr, status, error) {  // 결과가 실패했을 때 받는 영역
+					alert("전송실패 테스트");
+				    /* console.log("Error Status: " + status);
+				    console.log("Error Detail: " + error);
+				    console.log("Response: " + xhr.responseText);  */
+				}
+			});
+		})
+
 	})
-	
-	 // 더보기
- 	$("#more").click(function() {
- 		$.boardCommentList();
- 	});
+  </script>
+  
+    <%@ include file="/WEB-INF/header.jsp" %>
+        
+    <div class="d-flex align-items-center justify-content-between mb-4">
+      <h2>${requestScope.menu}</h2>
+      <!-- 네비게이션 -->
+      <nav aria-label="breadcrumb">
+        <svg xmlns="http://www.w3.org/2000/svg" class="d-none">
+          <symbol id="house-door-fill" viewBox="0 0 16 16">
+            <path d="M6.5 14.5v-3.505c0-.245.25-.495.5-.495h2c.25 0 .5.25.5.5v3.5a.5.5 0 0 0 .5.5h4a.5.5 0 0 0 .5-.5v-7a.5.5 0 0 0-.146-.354L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.354 1.146a.5.5 0 0 0-.708 0l-6 6A.5.5 0 0 0 1.5 7.5v7a.5.5 0 0 0 .5.5h4a.5.5 0 0 0 .5-.5z"/>
+          </symbol>
+        </svg>
+        <ol class="breadcrumb breadcrumb-chevron p-3 justify-content-end">
+          <li class="breadcrumb-item">
+            <a class="link-body-emphasis" href="${pageContext.request.contextPath}">
+              <svg class="bi" width="16" height="16"><use xlink:href="#house-door-fill"></use></svg>
+              <span class="visually-hidden">Home</span>
+            </a>
+          </li>
+          <!-- <li class="breadcrumb-item">
+            <a class="link-body-emphasis fw-semibold text-decoration-none" href="#">Library</a>
+          </li> -->
+          <li class="breadcrumb-item active" aria-current="page">${requestScope.menu}</li>
+        </ol>
+      </nav>
+    </div>
 
-});
+    <!-- 컨텐츠 -->
+    <form class="detail pb-5" name="frm">
+   	  <input type="hidden" name="boardcode" value="${requestScope.bv.boardcode}">
+   	  <input type="hidden" name="period" value="${requestScope.bv.period}">
+      <div class="card text-center mb-3">
+        <h3 class="card-title fw-bold mb-4">${requestScope.bv.title}</h3>
+        <div class="card-text text-body-secondary pt-4 border-top-dashed">
+          ${requestScope.bv.contents}
+        </div>
+      </div>      
+      
+      <c:if test="${requestScope.bv.boardcode == 'free'}">
+      <div class="d-flex mb-2 gap-2">        
+        <textarea class="form-control flex-fill" rows="2" name="contents" id="contents"></textarea>
+        <button type="button" class="btn btn-primary btn-comment" id="cmtBtn">댓글 등록</a>
+      </div>
+      <div class="list-group d-grid gap-2 mb-3"></div>
+	  </c:if>
+	  
+      <div class="text-center">
+    	<c:if test="${sessionScope.adminyn == 'Y' || sessionScope.midx == requestScope.bv.midx}">
+        <a href="${pageContext.request.contextPath}/board/${requestScope.bv.bidx}/boardModify.do" class="btn btn-primary mb-3">수정</a>
+        </c:if>
+        <c:if test="${sessionScope.adminyn == 'Y'}">
+        <button type="button" class="btn btn-primary mb-3" onClick="del()">삭제</button>
+    	</c:if>
+        <button type="button" class="btn btn-primary mb-3" onclick="history.back();">목록</button>
+      </div>
+    </form>
 
-</script>
-</head>
-<body>
-<header>
-	<h2 class="mainTitle">글내용</h2>
-</header>
-
-<article class="detailContents">
-	<div class="detailTitle">
-		<h2 class="contentTitle">${requestScope.bv.subject} (조회수:${requestScope.bv.viewcnt})</h2>		
-		<input type="button" id="btn" value="추천(${requestScope.bv.recom})" class="btn">
-	</div>
-	<p class="write">${requestScope.bv.writer} (${requestScope.bv.writeday})</p>
-	
-	<div class="content">
-		${requestScope.bv.contents}
-	</div>
-	
-	<c:if test="${!empty requestScope.bv.filename}">
-	<img src="${pageContext.request.contextPath}/board/displayFile.aws?fileName=${requestScope.bv.filename}" class="fileImage">  <!-- down의 값을 넘기지 않으면 기본값이 0이므로 이미지인 경우 미리보기로 나타남 -->
-	<p><a href="#" id="dUrl" class="fileDown">첨부파일다운로드</a></p>
-	</c:if>
-</article>
-	
-<div class="btnBox">
-	<a class="btn aBtn" href="${pageContext.request.contextPath}/board/boardModify.aws?bidx=${requestScope.bv.bidx}">수정</a>
-	<a class="btn aBtn" href="${pageContext.request.contextPath}/board/boardDelete.aws?bidx=${requestScope.bv.bidx}">삭제</a>
-	<a class="btn aBtn" href="${pageContext.request.contextPath}/board/boardReply.aws?bidx=${requestScope.bv.bidx}">답변</a>
-	<button type="button" class="btn" onclick="history.back();">목록</button>
-</div>
-
-<article class="commentContents">
-	<form name="frm">
-		<input type="text" name="cwriter" id="cwriter" class="commentWriter" value="${sessionScope.memberName}" readonly="readonly">
-		<input type="text" name="ccontents" id="ccontents">
-		<button type="button" class="replyBtn" id="cmtBtn">댓글쓰기</button>
-	</form>
-	
-	<div id="commentListView"></div>
-	
-	<input type="hidden" id="block" value="1">
-	<input type="hidden" id="blockPre" value="1">
-	<div id="moreBtn">
-		<button type="button" id="more" class="btn moreBtn">더보기</button>
-	</div>
-</article>
-
+    <%@ include file="/WEB-INF/footer.jsp" %>   
+  </div>
 </body>
 </html>

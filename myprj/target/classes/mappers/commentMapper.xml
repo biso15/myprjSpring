@@ -4,21 +4,22 @@
 
 <mapper namespace="com.myprj.myapp.persistance.CommentMapper">
 	
-	<select id="commentSelectAll" resultType="cv">
-		select * from comment where delyn='N' and bidx = #{0} order by writeday desc limit 0, #{1}  <!-- 여러개의 변수를 파라미터로 사용시 번호로 사용 가능 -->
+	<select id="commentSelectAll" resultType="cd">
+		SELECT C.*, M.name 
+		FROM comment AS C 
+		JOIN member AS M 
+		ON C.midx = M.midx 
+		where C.delyn = 'N' AND C.bidx = #{bidx} 
+		order by C.date desc		
 	</select>
 	
-	<insert id="commentInsert" parameterType="cv">
-		insert into comment(csubject, ccontents, cwriter, midx, bidx, cip)
-		values(null, #{ccontents}, #{cwriter}, #{midx}, #{bidx}, #{cip})
+	<insert id="commentInsert" parameterType="cmv">
+		insert into comment(contents, ip, bidx, midx) 
+		values(#{contents}, #{ip}, #{bidx}, #{midx})
 	</insert>
 	
-	<update id="commentDelete" parameterType="cv">
-		update comment set delyn = 'Y', cip = #{cip} where cidx = #{cidx} and midx = #{midx}
+	<update id="commentDelete" parameterType="cmv">
+		update comment set delyn = 'Y', ip = #{ip} where cidx = #{cidx}
 	</update>
-	
-	<select id="commentTotalCnt" parameterType = "int" resultType="int">
-		select count(*) as cnt from comment where delyn = 'N' and bidx = #{bidx}
-	</select>
 	
 </mapper>

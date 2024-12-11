@@ -42,7 +42,7 @@
 		</c:forEach>		
       </div>
 
-      <%-- <div class="mt-5 mb-4">
+      <div class="mt-5 mb-4">
         <h2>공지사항</h2>
       </div>
 
@@ -51,7 +51,7 @@
         <div class="row g-3">
           <c:forEach items="${requestScope.nlist}" var="bv" varStatus="status">  
           <div class="col">
-            <a class="card shadow-sm" href="#">
+            <a class="card shadow-sm" href="${pageContext.request.contextPath}/board/${bv.bidx}/boardContents.do">
               <div class="card-body">
                 <p class="card-text ellipsis ellipsis2">${bv.title}</p>
                 <small class="text-body-secondary">${bv.date}</small>
@@ -60,7 +60,7 @@
           </div>
 		  </c:forEach>
         </div>
-      </div> --%>
+      </div>
     </div>
 
     <%@ include file="footer.jsp" %>    

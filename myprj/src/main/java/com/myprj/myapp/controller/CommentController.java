@@ -18,7 +18,7 @@ import com.myprj.myapp.domain.CommentVo;
 import com.myprj.myapp.service.CommentService;
 import com.myprj.myapp.util.UserIp;
 
-@RestController  // @ResponseBody가 포함되어 있는 Controller
+@RestController
 @RequestMapping(value="/comment")
 public class CommentController {
 
@@ -30,45 +30,30 @@ public class CommentController {
 	
 	private static final Logger logger = LoggerFactory.getLogger(SampleAdvice.class);
 	
-	@RequestMapping(value="/{bidx}/{block}/commentList.aws")  // RestFul 방식
-	public JSONObject commentList(
-			@PathVariable("bidx") int bidx,
-			@PathVariable("block") int block
-			) {
+	@RequestMapping(value="/{bidx}/commentList.do")
+	public JSONObject commentList(@PathVariable("bidx") int bidx) {
 
 		logger.info("commentList 들어옴");
-		
-		String moreView = "";
-		int nextBlock = 0;
-		int cnt = commentService.commentTotalCnt(bidx);
-		if(cnt > block * 15) {
-			moreView = "Y";
-			nextBlock = block + 1;
-		} else {
-			moreView = "N";
-			nextBlock = block;
-		}
-
-		ArrayList<CommentVo> clist = commentService.commentSelectAll(bidx, block);
+				
+		ArrayList<CommentVo> clist = commentService.commentSelectAll(bidx);
 		
 		JSONObject js = new JSONObject();
 
 		js.put("clist", clist);
-		js.put("moreView", moreView);
-		js.put("nextBlock", nextBlock);
 		
 		return js;
 	}
 	
-	@RequestMapping(value="/commentWriteAction.aws", method=RequestMethod.POST)
+	@RequestMapping(value="/commentWriteAction.do", method=RequestMethod.POST)
 	public JSONObject commentWriteAction(
 			CommentVo cv,
 			HttpServletRequest request
 			) throws Exception {
 
+		System.out.println("comment : " + cv.getContents());
 		logger.info("commentWriteAction 들어옴");
 		
-		cv.setCip(userip.getUserIp(request));
+		cv.setIp(userip.getUserIp(request));
 
 		int value = commentService.commentInsert(cv);
 		
@@ -78,7 +63,7 @@ public class CommentController {
 		return js;
 	}
 	
-	@RequestMapping(value="/{cidx}/commentDeleteAction.aws")
+	@RequestMapping(value="/{cidx}/commentDeleteAction.do")
 	public JSONObject commentDeleteAction(
 			@PathVariable("cidx") int cidx,
 			HttpServletRequest request,
@@ -89,7 +74,7 @@ public class CommentController {
 		int midx = Integer.parseInt(request.getSession().getAttribute("midx").toString());
 		cv.setMidx(midx);
 		cv.setCidx(cidx);
-		cv.setCip(userip.getUserIp(request));
+		cv.setIp(userip.getUserIp(request));
 		
 		int value = commentService.commentDelete(cv);
 		

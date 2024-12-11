@@ -6,7 +6,7 @@ import com.myprj.myapp.domain.CommentVo;
 
 public interface CommentService {
 	
-	public ArrayList<CommentVo> commentSelectAll(int bidx, int block);
+	public ArrayList<CommentVo> commentSelectAll(int bidx);
 
 	public int commentInsert(CommentVo cv);
 
