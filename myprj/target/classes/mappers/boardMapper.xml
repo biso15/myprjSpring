@@ -17,6 +17,12 @@
 		</if>
 	</sql>
 	
+	<sql id="sort">
+		<if test="sortType.equals('view')">
+			view desc, 
+		</if>
+	</sql>
+	
 <!-- 	<select id="boardSelectAll" parameterType="HashMap" resultType="bv">  mybatis에서는 여러개의 변수를 받아서 사용할수 없다.(같은 타입 2개까지는 가능하지만 지양) HashMap으로 여러개의 변수를 한번에 받아서 사용
 		 select * from board where delyn='N' AND boardcode = #{boardcode} AND period = #{period}
 		 <include refid="search"/>
@@ -80,6 +86,9 @@
 	
 	<!-- 메인에서 사용 -->
 	<select id="boardSelect" resultType="bv">
-		SELECT * FROM BOARD WHERE delyn = 'N' and boardcode = #{boardcode} order by view desc limit #{number}
+		SELECT * FROM BOARD WHERE delyn = 'N' and boardcode = #{boardcode} 
+		order by 
+		<include refid="sort"/>
+		date desc limit #{number}
 	</select>
 </mapper>

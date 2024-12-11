@@ -48,7 +48,6 @@
 	  	  // 데이터 로드 후 처리
  		  const ckContent = document.querySelector(".ck-content");
 	  	  if(ckContent) {
-	  		  alert(1);
 		      const cleanedHTML = cleanHTML(ckContent.innerHTML);
 	 		  fm.contents.value = cleanedHTML;	  		  
 	  	  }

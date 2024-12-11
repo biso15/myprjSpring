@@ -111,10 +111,11 @@ public class BoardServiceImpl implements BoardService {
 	}
 	
 	@Override
-	public ArrayList<BoardVo> boardSelect(String boardcode, int number) {
+	public ArrayList<BoardVo> boardSelect(String boardcode, String sortType, int number) {
 		
 		HashMap<String,Object> hm = new HashMap<String,Object>();
 		hm.put("boardcode", boardcode);
+		hm.put("sortType", sortType);
 		hm.put("number", number);
 		
 		ArrayList<BoardVo> blist = bm.boardSelect(hm);

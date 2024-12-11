@@ -92,6 +92,7 @@ textarea { resize: none; }
 .fc-day.select .fc-daygrid-day-frame { cursor: pointer; background: var(--bs-secondary-bg); border-radius: var(--bs-border-radius); }
 
 /* editor 디자인 수정 */
+.ck.ck-editor__main { max-height: calc(100vh - 300px); overflow: auto; }
 .ck-rounded-corners .ck.ck-editor__main>.ck-editor__editable, .ck.ck-editor__main>.ck-editor__editable.ck-rounded-corners {
     min-height: 20rem; transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
     border: var(--bs-border-width) solid var(--bs-border-color); box-shadow: none; }

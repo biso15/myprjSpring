@@ -24,6 +24,6 @@ public interface BoardService {
 	
 	public int boardReply(BoardVo bv);
 	
-	public ArrayList<BoardVo> boardSelect(String boardcode, int number);
+	public ArrayList<BoardVo> boardSelect(String boardcode, String sortType, int number);
 	
 }

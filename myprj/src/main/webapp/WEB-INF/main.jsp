@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <!DOCTYPE html>
 <html lang="ko" data-bs-theme="auto">
@@ -54,7 +55,7 @@
             <a class="card shadow-sm" href="${pageContext.request.contextPath}/board/${bv.bidx}/boardContents.do">
               <div class="card-body">
                 <p class="card-text ellipsis ellipsis2">${bv.title}</p>
-                <small class="text-body-secondary">${bv.date}</small>
+                <small class="text-body-secondary">${fn:substringBefore(bv.date, ' ')}</small>
               </div>
             </a>
           </div>
@@ -71,7 +72,8 @@
     $('.slide').slick({
       centerMode: true,
       centerPadding: '60px',
-      slidesToShow: 4
+      slidesToShow: 4,
+      initialSlide: 2
     });
   });
   </script>

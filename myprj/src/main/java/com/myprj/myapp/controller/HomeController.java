@@ -26,8 +26,8 @@ public class HomeController {
 		
 		logger.info("mainµé¾î¿È");
 		
-		ArrayList<BoardVo> tlist = boardService.boardSelect("travel", 10);
-		ArrayList<BoardVo> nlist = boardService.boardSelect("notice", 4);
+		ArrayList<BoardVo> tlist = boardService.boardSelect("travel", "view", 10);
+		ArrayList<BoardVo> nlist = boardService.boardSelect("notice", "date", 4);
 		model.addAttribute("tlist", tlist);
 		model.addAttribute("nlist", nlist);
 		
