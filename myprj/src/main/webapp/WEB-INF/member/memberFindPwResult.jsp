@@ -42,7 +42,7 @@
     <div class="findresult w-100 m-auto align-items-center text-center">
       <div class="card p-5">
         <p>등록된</p>
-        <p><mark class="fw-bold">abcd123@asdfas.com</mark> 메일로</p>
+        <p><mark class="fw-bold">${requestScope.email}</mark> 메일로</p>
         <p class="mb-0">임시 비밀번호가 전송되었습니다.</p>
       </div>
       <a href="${pageContext.request.contextPath}/" class="btn btn-primary py-2 mt-3" type="button">메인가기</a>

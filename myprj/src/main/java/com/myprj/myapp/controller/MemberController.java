@@ -303,7 +303,6 @@ public class MemberController {
 		String email = "";
 		email = memberService.memberFindPw(mv);
 	
-		System.out.println(email);
 		String path = "";
 		if(email == null) {
 			rttr.addFlashAttribute("msg", "아이디가 없습니다.");

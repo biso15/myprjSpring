@@ -99,37 +99,52 @@
 	
 	 // 댓글 작성
 	 	$("#cmtBtn").click(function() {
-			let contents = $("#contents").val();
-			
-			if (contents == "") {
-				alert("내용을 입력해주세요");
-				$("#contents").focus();
-				return;
-			}
-			
-			$.ajax({
-				type: "post",  // 전송방식
-				url: "${pageContext.request.contextPath}/comment/commentWriteAction.do",
-				dataType: "json",  // 받는 형식. json 타입은 문서에서 {"key값": "value값", "key값" : "value값"} 형식으로 구성
-				data: {"contents": contents, "bidx": "${requestScope.bv.bidx}", "midx": "${sessionScope.midx}"},
-				success: function(result) {  // 결과가 넘어와서 성공했을 때 받는 영역
-					
-					// alert("전송성공 테스트");
-					if(result.value == 1) {
-						$("#contents").val("");
-					}
-
-					alert("등록이 완료되었습니다.");
-					$.boardCommentList();
-					
-				},
-			    error: function(xhr, status, error) {  // 결과가 실패했을 때 받는 영역
-					alert("전송실패 테스트");
-				    /* console.log("Error Status: " + status);
-				    console.log("Error Detail: " + error);
-				    console.log("Response: " + xhr.responseText);  */
+	 		
+	 		const midx = "${sessionScope.midx}"; 
+	 		
+ 	 		if(midx == "") {
+	 			//location.href = "${pageContext.request.contextPath}/member/memberLogin.do";
+	 			
+				let ans = confirm("로그인페이지로 이동하겠습니까?");
+				
+				if(ans == true) {
+					location.href = "${pageContext.request.contextPath}/member/memberLogin.do";
 				}
-			});
+				
+	 		} else {
+	 		
+				let contents = $("#contents").val();
+				
+				if (contents == "") {
+					alert("내용을 입력해주세요");
+					$("#contents").focus();
+					return;
+				}
+				
+				$.ajax({
+					type: "post",  // 전송방식
+					url: "${pageContext.request.contextPath}/comment/commentWriteAction.do",
+					dataType: "json",  // 받는 형식. json 타입은 문서에서 {"key값": "value값", "key값" : "value값"} 형식으로 구성
+					data: {"contents": contents, "bidx": "${requestScope.bv.bidx}", "midx": "${sessionScope.midx}"},
+					success: function(result) {  // 결과가 넘어와서 성공했을 때 받는 영역
+						
+						// alert("전송성공 테스트");
+						if(result.value == 1) {
+							$("#contents").val("");
+						}
+	
+						alert("등록이 완료되었습니다.");
+						$.boardCommentList();
+						
+					},
+				    error: function(xhr, status, error) {  // 결과가 실패했을 때 받는 영역
+						alert("전송실패 테스트");
+					    /* console.log("Error Status: " + status);
+					    console.log("Error Detail: " + error);
+					    console.log("Response: " + xhr.responseText);  */
+					}
+				});
+	 		}
 		})
 
 	})
@@ -174,7 +189,7 @@
       
       <c:if test="${requestScope.bv.boardcode == 'free'}">
       <div class="d-flex mb-2 gap-2">        
-        <textarea class="form-control flex-fill" rows="2" name="contents" id="contents"></textarea>
+        <textarea class="form-control flex-fill" rows="2" name="contents" id="contents" placeholder="로그인 후 이용 가능합니다."></textarea>
         <button type="button" class="btn btn-primary btn-comment" id="cmtBtn">댓글 등록</a>
       </div>
       <div class="list-group d-grid gap-2 mb-3"></div>
@@ -183,8 +198,6 @@
       <div class="text-center">
     	<c:if test="${sessionScope.adminyn == 'Y' || sessionScope.midx == requestScope.bv.midx}">
         <a href="${pageContext.request.contextPath}/board/${requestScope.bv.bidx}/boardModify.do" class="btn btn-primary mb-3">수정</a>
-        </c:if>
-        <c:if test="${sessionScope.adminyn == 'Y'}">
         <button type="button" class="btn btn-primary mb-3" onClick="del()">삭제</button>
     	</c:if>
         <button type="button" class="btn btn-primary mb-3" onclick="history.back();">목록</button>
