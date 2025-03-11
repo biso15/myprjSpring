@@ -24,6 +24,10 @@
 - 국내 여행은 해외 여행처럼 이동시간이 길지 않기 때문에 단기간에 다녀올 수 있는 일정 위주로 구성했고, 사이트는 캘린더 API, 에디터 API 등을 사용해서 구현하였습니다.
 
 ----------------
+### 테이블정의서
+![image](https://github.com/user-attachments/assets/7cfa7c76-a653-4997-9cca-1f88f95fecbc)
+
+----------------
 ### 메인
 ![image](https://github.com/user-attachments/assets/fc722870-51ae-4ba2-ad0e-e4c9340fb268)
 - 사이트 접속시 최초 로딩 페이지<br>
