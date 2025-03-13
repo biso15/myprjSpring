@@ -28,6 +28,10 @@
 ![image](https://github.com/user-attachments/assets/7cfa7c76-a653-4997-9cca-1f88f95fecbc)
 
 ----------------
+### ERD
+<img width="100%" src="https://drive.google.com/file/d/1kVObCDyVz-UFYn4ZoFboTfT2-zjV_A5g/view?usp=drivesdk"/>
+
+----------------
 ### 메인
 ![image](https://github.com/user-attachments/assets/fc722870-51ae-4ba2-ad0e-e4c9340fb268)
 - 사이트 접속시 최초 로딩 페이지<br>
