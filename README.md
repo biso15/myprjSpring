@@ -29,7 +29,7 @@
 
 ----------------
 ### ERD
-<img width="100%" src="https://drive.google.com/file/d/1kVObCDyVz-UFYn4ZoFboTfT2-zjV_A5g/view?usp=drivesdk"/>
+![ERD](https://github.com/user-attachments/assets/18118990-b9e4-458b-8d8c-289945b6e176)
 
 ----------------
 ### 메인
